@@ -32,12 +32,14 @@ public class ScreenDebug : MonoBehaviour
         
 
         Vector2 vLeftPosition = new Vector2(5, 5);
-        Vector2 vRightPosition = new Vector2(Screen.width - 405, 30);
+        Vector2 vRightPosition = new Vector2(Screen.width - 405, 60);
 
         GUIStyle rightStyle = new GUIStyle
         {
             alignment = TextAnchor.MiddleRight
         };
+
+        rightStyle.normal.textColor = Color.white;
         
         void AddTextLeft(string text)
         {
@@ -59,6 +61,17 @@ public class ScreenDebug : MonoBehaviour
         if (GUI.Button(new Rect(Screen.width - 205, 5, 200, 24), "Reset Data"))
         {
             Service.Data.DeleteAllData();
+        }
+
+        if (GUI.Button(new Rect(Screen.width - 205, 30, 200, 24), "Save Data"))
+        {
+            Service.Data.SaveAll();
+        }
+
+        var persData = Service.Data.DebugGetIntData();
+        foreach (var data in persData)
+        {
+            AddTextRight($"{data.Key}:{data.Value}");
         }
 
     }

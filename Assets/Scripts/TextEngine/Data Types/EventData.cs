@@ -21,16 +21,16 @@ public class EventData
     /// <summary>
     /// What type of event is this, what will it do?
     /// </summary>
-    public string Type = "damage|delay|loadroom|conversation|choice|inventory|event|declaredatamembers";
+    public string Type = "damage|delay|loadroom|conversation|choice|inventory|event|declaredatamembers|setdata";
 
     // Allow testing against a PlayerPref key with a condition before allowing anything else in the event to fire off
-    public string ConditionKey;
-    public string Condition;
+    public string ConditionKey = "";
+    public string Condition = "";
 
     // If ConditionKey + Condition succeed and the event does it's logic, any other queued events after this will be removed
-    public bool KillOtherEventsWhenConditionTrue;
+    public bool KillOtherEventsWhenConditionTrue = false;
 
-    public bool AddsEventsToFrontOfQueue;
+    public bool AddsEventsToFrontOfQueue = false;
 
     #region Damage Event
 
@@ -105,10 +105,11 @@ public class EventData
 
     #endregion
 
-    #region Add Data Member
+    #region Add Data Member / Set Data
 
     public List<string> Keys = new List<string>();
-    public List<int> Defaults = new List<int>();
+    public List<int> Values = new List<int>();
 
     #endregion
+
 }

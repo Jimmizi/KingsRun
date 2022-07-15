@@ -2,6 +2,6 @@
     "Type": "event",
     "EventsToFire": 
     [
-        "game_init/set_data_members"
+        "game_init/declare_data_members"
     ]
 }

@@ -20,7 +20,7 @@ public class JsonDataExecuter
 
     private CurrentTextFormat mFormatProcessing;
 
-    private Queue<EventData> mQueuedEvents = new Queue<EventData>();
+    private LinkedList<EventData> mQueuedEvents = new LinkedList<EventData>();
     private EventData mCurrentEvent = null;
     private bool processedConditionOnCurrentEvent = false;
 
@@ -30,12 +30,20 @@ public class JsonDataExecuter
     private bool mDelayStarted;
     private float mDelayTimer;
     
-    private void LoadEvent(string json)
+    private void LoadEvent(string json, bool addToFront)
     {
         Debug.Log("Loading EventData: " + json);
-        mQueuedEvents.Enqueue(JsonUtility.FromJson<EventData>(json));
-        
-        if (mQueuedEvents.Peek().Equals(new EventData()))
+
+        if (!addToFront)
+        {
+            mQueuedEvents.AddLast(JsonUtility.FromJson<EventData>(json));
+        }
+        else
+        {
+            mQueuedEvents.AddFirst(JsonUtility.FromJson<EventData>(json));
+        }
+
+        if (mQueuedEvents.Last.Value.Equals(new EventData()))
         {
             throw new Exception("Managed to attempt loading an invalid Event Data file. json = " + json);
         }
@@ -63,19 +71,19 @@ public class JsonDataExecuter
     /// Add the name of the event to the queue of events to process in order
     /// </summary>
     /// <param name="eventName">path and name of the event from the Resource/Dialogue/ folder</param>
-    private void AddEventNameToQueue(string eventName)
+    private void AddEventNameToQueue(string eventName, bool addToFront)
     {
         var eventFile = (TextAsset)Resources.Load("Dialogue/" + eventName, typeof(TextAsset));
 
         Assert.IsNotNull(eventFile, "Unable to load event file " + eventName);
 
-        LoadEvent(eventFile.text);
+        LoadEvent(eventFile.text, addToFront);
     }
     private void AddEventNamesToQueue(List<string> eventNames)
     {
         foreach (var evt in eventNames)
         {
-            AddEventNameToQueue(evt);
+            AddEventNameToQueue(evt, mCurrentEvent.AddsEventsToFrontOfQueue);
         }
     }
 
@@ -86,7 +94,7 @@ public class JsonDataExecuter
         switch(jsonFormat)
         {
             case CurrentTextFormat.Event:
-                LoadEvent(json);
+                LoadEvent(json, false);
                 break;
             case CurrentTextFormat.Conversation:
                 LoadConversation(json);
@@ -173,23 +181,23 @@ public class JsonDataExecuter
         }
         else if (moreThanCondition)
         {
-            return data.Value == number;
+            return data.Value > number;
         }
         else if(moreThanEqualCondition)
         {
-            return data.Value == number;
+            return data.Value >= number;
         }
         else if(lessThanCondition)
         {
-            return data.Value == number;
+            return data.Value < number;
         }
         else if(lessThanEqualCondition)
         {
-            return data.Value == number;
+            return data.Value <= number;
         }
         else if(doesNotEqualCondition)
         {
-            return data.Value == number;
+            return data.Value != number;
         }
 
         Debug.LogError($"Shouldn't have gotten down here: {mCurrentEvent.ConditionKey} - {mCurrentEvent.Condition}");
@@ -321,9 +329,9 @@ public class JsonDataExecuter
 
     private bool ProcessEvent_DeclareDataMembers()
     {
-        if (mCurrentEvent.Keys.Count != mCurrentEvent.Defaults.Count)
+        if (mCurrentEvent.Keys.Count != mCurrentEvent.Values.Count)
         {
-            Debug.LogError("DeclareDataMembers: number of keys and defaults do not match.");
+            Debug.LogError("DeclareDataMembers: number of keys and values do not match.");
             return true;
         }
 
@@ -335,10 +343,32 @@ public class JsonDataExecuter
 
         for (int i = 0; i < mCurrentEvent.Keys.Count; ++i)
         {
-            Service.Data.AddDataMember(mCurrentEvent.Keys[i], mCurrentEvent.Defaults[i]);
+            Service.Data.AddDataMember(mCurrentEvent.Keys[i], mCurrentEvent.Values[i]);
         }
 
         Service.Data.LoadAll();
+
+        return true;
+    }
+
+    private bool ProcessEvent_SetData()
+    {
+        if (mCurrentEvent.Keys.Count != mCurrentEvent.Values.Count)
+        {
+            Debug.LogError("SetData: number of keys and values do not match.");
+            return true;
+        }
+
+        if (!Service.Data.IsDataLoaded())
+        {
+            Debug.LogError("Trying to set data before loading it all.");
+            return true;
+        }
+
+        for (int i = 0; i < mCurrentEvent.Keys.Count; ++i)
+        {
+            Service.Data.TrySetData(mCurrentEvent.Keys[i], mCurrentEvent.Values[i]);
+        }
 
         return true;
     }
@@ -372,6 +402,7 @@ public class JsonDataExecuter
                 case "inventory": doneProcessing = ProcessEvent_Inventory(); break;
                 case "event": doneProcessing = ProcessEvent_Event(); break;
                 case "declaredatamembers": doneProcessing = ProcessEvent_DeclareDataMembers(); break;
+                case "setdata": doneProcessing = ProcessEvent_SetData(); break;
 
                 default: throw new Exception("Event of type " + mCurrentEvent.Type.ToLower() + " is not supported.");
             }
@@ -391,7 +422,8 @@ public class JsonDataExecuter
     {
         if (mCurrentEvent == null && mQueuedEvents.Count > 0)
         {
-            mCurrentEvent = mQueuedEvents.Dequeue();
+            mCurrentEvent = mQueuedEvents.First.Value;
+            mQueuedEvents.RemoveFirst();
         }
 
         if (mCurrentEvent != null)
@@ -478,7 +510,7 @@ public class JsonDataExecuter
                         Service.Text.EndCleanup();
 
                         //Done with chatbox, fire any events off
-                        AddEventNameToQueue(mCurrentChoiceData.Choices[mCurrentChoiceData.ChoiceTaken].EventFile);
+                        AddEventNameToQueue(mCurrentChoiceData.Choices[mCurrentChoiceData.ChoiceTaken].EventFile, false);
 
                         //Choices always launch events
                         mFormatProcessing = CurrentTextFormat.Event;
