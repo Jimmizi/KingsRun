@@ -11,12 +11,26 @@ public class EventData
      * conversation
      * choice
      * inventory
+     * event
+     * declaredatamembers
      */
-    
+
+    // Dummy data member, purely to allow a description of what's going on in a file (as json doesn't like comments)
+    public string Description = "";
+
     /// <summary>
     /// What type of event is this, what will it do?
     /// </summary>
-    public string Type = "damage|delay|loadroom|conversation|choice|inventory|event";
+    public string Type = "damage|delay|loadroom|conversation|choice|inventory|event|declaredatamembers";
+
+    // Allow testing against a PlayerPref key with a condition before allowing anything else in the event to fire off
+    public string ConditionKey;
+    public string Condition;
+
+    // If ConditionKey + Condition succeed and the event does it's logic, any other queued events after this will be removed
+    public bool KillOtherEventsWhenConditionTrue;
+
+    public bool AddsEventsToFrontOfQueue;
 
     #region Damage Event
 
@@ -88,6 +102,13 @@ public class EventData
     /// List of events to fire. Only the first choice or conversation event is accepted if there are duplicates.
     /// </summary>
     public List<string> EventsToFire = new List<string>();
+
+    #endregion
+
+    #region Add Data Member
+
+    public List<string> Keys = new List<string>();
+    public List<int> Defaults = new List<int>();
 
     #endregion
 }

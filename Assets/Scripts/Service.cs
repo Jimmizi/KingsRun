@@ -10,4 +10,5 @@ public static class Service
     public static ConfigSettings Config;
     public static JsonDataExecuter Executer;
     public static GameFlow Flow;
+    public static DataManager Data;
 }

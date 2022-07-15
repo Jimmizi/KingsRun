@@ -55,6 +55,20 @@ public class GameFlow : MonoBehaviour
     
     void Start()
     {
+        LinkedList<int> test = new LinkedList<int>();
+
+        test.AddLast(1);
+        test.AddLast(2);
+        test.AddLast(3);
+        test.AddLast(4);
+        test.AddLast(5);
+
+        test.AddFirst(6);
+
+        int i = test.First.Value;
+
+        test.RemoveFirst();
+
         Assert.IsNotNull(StartEvent);
 
         Service.UI.OnFirstGameShown += OnGameStart;

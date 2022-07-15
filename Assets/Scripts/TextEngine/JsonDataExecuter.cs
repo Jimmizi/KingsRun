@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -20,18 +22,19 @@ public class JsonDataExecuter
 
     private Queue<EventData> mQueuedEvents = new Queue<EventData>();
     private EventData mCurrentEvent = null;
+    private bool processedConditionOnCurrentEvent = false;
 
     private ConversationData mCurrentConversationData = null;
     private ChoiceData mCurrentChoiceData = null;
 
     private bool mDelayStarted;
     private float mDelayTimer;
-
+    
     private void LoadEvent(string json)
     {
         Debug.Log("Loading EventData: " + json);
         mQueuedEvents.Enqueue(JsonUtility.FromJson<EventData>(json));
-
+        
         if (mQueuedEvents.Peek().Equals(new EventData()))
         {
             throw new Exception("Managed to attempt loading an invalid Event Data file. json = " + json);
@@ -99,6 +102,100 @@ public class JsonDataExecuter
     }
 
     #region Processing Events
+    
+    private bool DoesEventConditionPass()
+    {
+        // Invalid condition settings - we're good to go
+        if (mCurrentEvent.ConditionKey.Length == 0 || mCurrentEvent.Condition.Length == 0)
+        {
+            return true;
+        }
+
+        int? data = Service.Data.TryGetData(mCurrentEvent.ConditionKey);
+
+        if (!data.HasValue)
+        {
+            Debug.LogWarning($"Failed to find condition key of {mCurrentEvent.ConditionKey}");
+            return true;
+        }
+
+        int numConditions = 0;
+        int indexOfCondition = 0;
+        int indexOfNumber = 0;
+
+        bool TryGetConditionType(string condition)
+        {
+            bool containsType = mCurrentEvent.Condition.Contains(condition);
+
+            if (containsType)
+            {
+                numConditions++;
+
+                // Nothing should be before the condition ">=55" (FOR NOW)
+                indexOfCondition = mCurrentEvent.Condition.IndexOf(condition);
+                Debug.Assert(indexOfCondition == 0);
+
+                indexOfNumber = condition.Length;
+            }
+
+            return containsType;
+        }
+
+        bool equalsCondition = TryGetConditionType("==");
+        bool moreThanCondition = TryGetConditionType(">");
+        bool moreThanEqualCondition = TryGetConditionType(">=");
+        bool lessThanCondition = TryGetConditionType("<");
+        bool lessThanEqualCondition = TryGetConditionType("<=");
+        bool doesNotEqualCondition = TryGetConditionType("!=");
+
+        if (numConditions != 1)
+        {
+            Debug.LogError($"Found invalid number of conditions ({numConditions}) for evaluating {mCurrentEvent.ConditionKey} - Condition: {mCurrentEvent.Condition}");
+            return true;
+        }
+
+        string strNumber = mCurrentEvent.Condition.Substring(indexOfNumber);
+        int number = 0;
+
+        try
+        {
+            number = Int32.Parse(strNumber);
+        }
+        catch (FormatException)
+        {
+            Debug.LogError($"Unable to parse '{strNumber}'");
+            return true;
+        }
+
+        if (equalsCondition)
+        {
+            return data.Value == number;
+        }
+        else if (moreThanCondition)
+        {
+            return data.Value == number;
+        }
+        else if(moreThanEqualCondition)
+        {
+            return data.Value == number;
+        }
+        else if(lessThanCondition)
+        {
+            return data.Value == number;
+        }
+        else if(lessThanEqualCondition)
+        {
+            return data.Value == number;
+        }
+        else if(doesNotEqualCondition)
+        {
+            return data.Value == number;
+        }
+
+        Debug.LogError($"Shouldn't have gotten down here: {mCurrentEvent.ConditionKey} - {mCurrentEvent.Condition}");
+        return false;
+    }
+
 
     private bool ProcessEvent_Damage()
     {
@@ -222,26 +319,66 @@ public class JsonDataExecuter
         return true;
     }
 
+    private bool ProcessEvent_DeclareDataMembers()
+    {
+        if (mCurrentEvent.Keys.Count != mCurrentEvent.Defaults.Count)
+        {
+            Debug.LogError("DeclareDataMembers: number of keys and defaults do not match.");
+            return true;
+        }
+
+        if (Service.Data.IsDataLoaded())
+        {
+            Debug.LogError("Trying to add data after having already loaded it all.");
+            return true;
+        }
+
+        for (int i = 0; i < mCurrentEvent.Keys.Count; ++i)
+        {
+            Service.Data.AddDataMember(mCurrentEvent.Keys[i], mCurrentEvent.Defaults[i]);
+        }
+
+        Service.Data.LoadAll();
+
+        return true;
+    }
+    
     private void ProcessCurrentEvent()
     {
         var doneProcessing = false;
 
-        // damage|delay|loadroom|conversation|choice|inventory|event
-        switch (mCurrentEvent.Type.ToLower())
+        if (!processedConditionOnCurrentEvent)
         {
-            case "damage": doneProcessing = ProcessEvent_Damage();  break;
-            case "delay": doneProcessing = ProcessEvent_Delay(); break;
-            case "loadroom": doneProcessing = ProcessEvent_LoadRoom(); break;
-            case "conversation": doneProcessing = ProcessEvent_Conversation(); break;
-            case "choice": doneProcessing = ProcessEvent_Choice(); break;
-            case "inventory": doneProcessing = ProcessEvent_Inventory(); break;
-            case "event": doneProcessing = ProcessEvent_Event(); break;
-
-            default: throw new Exception("Event of type " + mCurrentEvent.Type.ToLower() + " is not supported.");
+            processedConditionOnCurrentEvent = true;
+            if (!DoesEventConditionPass())
+            {
+                doneProcessing = true;
+            }
+            else if(mCurrentEvent.KillOtherEventsWhenConditionTrue)
+            {
+                mQueuedEvents.Clear();
+            }
         }
 
+        if(!doneProcessing)
+        {
+            switch (mCurrentEvent.Type.ToLower())
+            {
+                case "damage": doneProcessing = ProcessEvent_Damage();  break;
+                case "delay": doneProcessing = ProcessEvent_Delay(); break;
+                case "loadroom": doneProcessing = ProcessEvent_LoadRoom(); break;
+                case "conversation": doneProcessing = ProcessEvent_Conversation(); break;
+                case "choice": doneProcessing = ProcessEvent_Choice(); break;
+                case "inventory": doneProcessing = ProcessEvent_Inventory(); break;
+                case "event": doneProcessing = ProcessEvent_Event(); break;
+                case "declaredatamembers": doneProcessing = ProcessEvent_DeclareDataMembers(); break;
+
+                default: throw new Exception("Event of type " + mCurrentEvent.Type.ToLower() + " is not supported.");
+            }
+        }
         if (doneProcessing)
         {
+            processedConditionOnCurrentEvent = false;
             mCurrentEvent = null;
         }
     }
@@ -252,13 +389,19 @@ public class JsonDataExecuter
     /// <returns></returns>
     private bool ProcessEventQueue()
     {
-        if (mQueuedEvents.Count > 0)
+        if (mCurrentEvent == null && mQueuedEvents.Count > 0)
         {
             mCurrentEvent = mQueuedEvents.Dequeue();
+        }
+
+        if (mCurrentEvent != null)
+        {
             ProcessCurrentEvent();
         }
-        else
+
+        if(mCurrentEvent == null && mQueuedEvents.Count == 0)
         {
+            processedConditionOnCurrentEvent = false;
             mCurrentEvent = null;
         }
 

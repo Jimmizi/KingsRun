@@ -29,23 +29,37 @@ public class ScreenDebug : MonoBehaviour
             return;
         }
 
-        Vector2 vPosition = new Vector2(5, 5);
+        
 
-        void IncrementVerticalPos()
+        Vector2 vLeftPosition = new Vector2(5, 5);
+        Vector2 vRightPosition = new Vector2(Screen.width - 405, 30);
+
+        GUIStyle rightStyle = new GUIStyle
         {
-            vPosition.y += 14;
-        }
-        void AddText(string text)
+            alignment = TextAnchor.MiddleRight
+        };
+        
+        void AddTextLeft(string text)
         {
-            GUI.Label(new Rect(vPosition.x, vPosition.y, 400, 24), text);
-            IncrementVerticalPos();
+            GUI.Label(new Rect(vLeftPosition.x, vLeftPosition.y, 400, 24), text);
+            vLeftPosition.y += 14;
+        }
+        void AddTextRight(string text)
+        {
+            GUI.Label(new Rect(vRightPosition.x, vRightPosition.y, 400, 24), text, rightStyle);
+            vRightPosition.y += 14;
         }
 
-        AddText("Debug (F1)");
-        IncrementVerticalPos();
+        AddTextLeft("Debug (F1)");
+        vLeftPosition.y += 14;
 
-        AddText($"Fade: {Service.UI.FadeState.ToString()}");
-        AddText($"Game: {Service.Flow.GameState.ToString()}");
+        AddTextLeft($"Fade: {Service.UI.FadeState.ToString()}");
+        AddTextLeft($"Game: {Service.Flow.GameState.ToString()}");
+
+        if (GUI.Button(new Rect(Screen.width - 205, 5, 200, 24), "Reset Data"))
+        {
+            Service.Data.DeleteAllData();
+        }
 
     }
 #endif
