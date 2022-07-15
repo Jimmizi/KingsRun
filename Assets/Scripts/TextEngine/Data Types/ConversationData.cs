@@ -28,7 +28,11 @@ public class ConversationData
     /// <summary>
     /// Lines in this section of dialogue
     /// </summary>
-    public List<LineData> Lines = new List<LineData>();
+
+    // If we want to re-enable speaker names
+    //public List<LineData> Lines = new List<LineData>();
+
+    public List<string> Lines = new List<string>();
 
     /// <summary>
     /// List of events to fire. Only the first choice or conversation event is accepted if there are duplicates.

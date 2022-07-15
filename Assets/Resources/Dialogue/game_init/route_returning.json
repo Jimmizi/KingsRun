@@ -1,0 +1,13 @@
+{
+    "Description": "First time returning to the game after having quit, start the second route",
+
+    "KillOtherEventsWhenConditionTrue": true,
+    "ConditionKey": "NumTimesPlayed",
+    "Condition": "==1",
+
+    "Type": "event",
+    "EventsToFire": 
+    [
+        ""
+    ]
+}

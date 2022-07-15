@@ -1,0 +1,13 @@
+{
+    "Description": "Quit the second route, yer barred mate",
+
+    "KillOtherEventsWhenConditionTrue": true,
+    "ConditionKey": "NumTimesPlayed",
+    "Condition": ">=2",
+
+    "Type": "event",
+    "EventsToFire": 
+    [
+        ""
+    ]
+}

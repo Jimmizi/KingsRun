@@ -93,7 +93,7 @@ public class ChatBox : MonoBehaviour
 
     private void SetSpeakerName()
     {
-        SpeakerTextComponent.text = mCurrentConversationData.Lines[mCurrentConvLine].Speaker;
+        //SpeakerTextComponent.text = mCurrentConversationData.Lines[mCurrentConvLine].Speaker;
 
         //var names = Service.Party().MemberNames;
         //var colors = Service.Party().MemberColours;
@@ -194,7 +194,7 @@ public class ChatBox : MonoBehaviour
         mCurrentConversationData = null;
 
         SpeechTextComponent.text = "";
-        SpeakerTextComponent.text = "";
+        //SpeakerTextComponent.text = "";
         mChoicePicked = -1;
 
         SetButtons(false, true);
@@ -270,6 +270,13 @@ public class ChatBox : MonoBehaviour
         }
     }
 
+    // If we want to re-enable speaker names
+    //string GetCurrentSpeech() => mCurrentConversationData.Lines[mCurrentConvLine].Speech;
+    //int GetCurrentSpeechLength() => mCurrentConversationData.Lines[mCurrentConvLine].Speech.Length;
+
+    string GetCurrentSpeech() => mCurrentConversationData.Lines[mCurrentConvLine];
+    int GetCurrentSpeechLength() => mCurrentConversationData.Lines[mCurrentConvLine].Length;
+
     private void ProcessConversation()
     {
         //if we have a valid conversation line, proceed with displaying it
@@ -289,18 +296,17 @@ public class ChatBox : MonoBehaviour
                 {
                     StartTypingSoundIfPossible();
 
-                    if (mCurrentLineChar < mCurrentConversationData.Lines[mCurrentConvLine].Speech.Length)
+                    if (mCurrentLineChar < GetCurrentSpeechLength())
                     {
                         mCharacterTimer = 0.0f;
                         bool italics;
                         bool testItalics = mCurrentLineChar == 0;
 
-                        var nextChar = mCurrentConversationData.Lines[mCurrentConvLine].Speech
-                            .Substring(mCurrentLineChar++, 1);
+                        var nextChar = GetCurrentSpeech().Substring(mCurrentLineChar++, 1);
 
                         if (testItalics)
                         {
-                            if (mCurrentConversationData.Lines[mCurrentConvLine].Speech.Substring(0, 3).Equals("[i]"))
+                            if (GetCurrentSpeech().Substring(0, 3).Equals("[i]"))
                             {
                                 SpeechTextComponent.fontStyle = FontStyle.Italic;
                                 mCurrentLineChar = 3;
@@ -332,15 +338,13 @@ public class ChatBox : MonoBehaviour
                                 mUnderscorePauseTimer = PeriodPauseTime;
 
                                 //if there are more characters
-                                if (mCurrentLineChar + 1 < mCurrentConversationData.Lines[mCurrentConvLine].Speech.Length
+                                if (mCurrentLineChar + 1 < GetCurrentSpeechLength()
                                     && mCurrentLineChar > 0)
                                 {
                                     //If there isn't a period in front or behind us, double the length of the pause
                                     //  don't want to make "..." super long
-                                    if (!mCurrentConversationData.Lines[mCurrentConvLine].Speech
-                                        .Substring(mCurrentLineChar, 1).Equals(".")
-                                    && !mCurrentConversationData.Lines[mCurrentConvLine].Speech
-                                        .Substring(mCurrentLineChar-1, 1).Equals("."))
+                                    if (!GetCurrentSpeech().Substring(mCurrentLineChar, 1).Equals(".")
+                                    && !GetCurrentSpeech().Substring(mCurrentLineChar-1, 1).Equals("."))
                                     {
                                         mUnderscorePauseTimer += PeriodPauseTime;
                                     }
@@ -363,10 +367,10 @@ public class ChatBox : MonoBehaviour
 
                 if (Service.Config.InstantText)
                 {
-                    SpeechTextComponent.text = mCurrentConversationData.Lines[mCurrentConvLine].Speech;
+                    SpeechTextComponent.text = GetCurrentSpeech();
                 }
 
-                mLineComplete = mCurrentLineChar >= mCurrentConversationData.Lines[mCurrentConvLine].Speech.Length;
+                mLineComplete = mCurrentLineChar >= GetCurrentSpeechLength();
 
                 if (mLineComplete)
                 {

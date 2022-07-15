@@ -1,7 +1,11 @@
 {
+    "Description":"Sets up data, then conditions will choose the first route to go depending on how many times you've played",
     "Type": "event",
     "EventsToFire": 
     [
-        "game_init/declare_data_members"
+        "game_init/declare_data_members",
+        "game_init/route_fresh_start",
+        "game_init/route_returning",
+        "game_init/route_barred"
     ]
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ConfigSettings : MonoBehaviour
 {
-    public bool AutomaticEndOfLineSkip;
-    public bool InstantText;
-    public bool IgnoreTextPauses;
+    public bool AutomaticEndOfLineSkip = false;
+    public bool InstantText = false;
+    public bool IgnoreTextPauses = false;
 
     void Awake()
     {
