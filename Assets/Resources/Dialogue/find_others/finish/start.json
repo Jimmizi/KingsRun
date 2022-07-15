@@ -1,8 +1,0 @@
-{
-    "Type": "event",
-    "EventsToFire": 
-    [
-        "find_others/finish/event/set_room",
-        "find_others/finish/event/set_conv"
-    ]
-}
