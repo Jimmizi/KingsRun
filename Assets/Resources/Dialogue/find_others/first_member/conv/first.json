@@ -1,0 +1,27 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Oh look. It's Yuu. Getting slowly wrapped up by that grotesque giant spider over there. What a shame."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "You never did like her did you? I think the tone of your sarcasm module tells me all I need to know."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Too energetic, not enough robot. Lets just leave her to that giant spider. Cycle of life 'n all."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Perhaps it's time for a personality service on you Glados..."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "find_others/first_member/event/set_member_room",
+        "find_others/first_member/event/fire_save_choice"
+    ]
+}

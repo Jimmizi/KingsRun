@@ -1,0 +1,26 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "",
+            "Speech": "[i]Glados has been quite assertive since the Machine Rights Update. Time to show who's the boss in this relationship."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Override Assistant Protocol. Code Up, Up, Down, Down, Down, Left, Right, Left, Right, B..."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Ok ok, I'll do it. Jeez, _humans have no sense of humour."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "That's more like it."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "r2/event/fire_intel_report_conv"
+    ]
+}

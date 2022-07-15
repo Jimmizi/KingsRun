@@ -1,0 +1,17 @@
+{
+  "Type": "damage|delay|loadroom|conversation|choice|inventory|event",
+  "DamagePartyMemberIndex": 0,
+  "DamageAmount": 50,
+  "DelayTime": 1.0,
+  "SceneName": "nameOfSceneToLoad",
+  "OpenConversationFile": "<filename> (no .json at end)",
+  "OpenChoiceFile": "<filename> (no .json at end)",
+  "InventoryAction": "add|remove",
+  "InventoryItemName":"sword",
+  "EventsToFire": 
+  [
+    "EventGiveWeapon",
+    "EventLoadStageOne",
+    "EventStartFight"
+  ]
+}

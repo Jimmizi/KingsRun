@@ -1,0 +1,22 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "The terrain looks hostile, Command. Can't proceed without intel."
+        },
+        {
+            "Speaker": "COMMAND",
+            "Speech": "I'm sending it to Glados as we speak. Complete the mission soldier, there are lives at stake."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Yes Sir."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "r2/enter"
+    ]
+}

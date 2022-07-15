@@ -1,0 +1,8 @@
+{
+    "Type": "event",
+    "EventsToFire": 
+    [
+        "r1/event/set_room",
+        "r1/event/set_conv"
+    ]
+}

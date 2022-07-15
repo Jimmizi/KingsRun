@@ -1,0 +1,13 @@
+{
+    "Choices": 
+    [
+      {
+        "Text": "[Ask For The Intel Nicely]",
+        "EventFile": "r2/event/fire_intel_ask_conv"
+      },
+      {
+        "Text": "[Threaten For The Intel]",
+        "EventFile": "r2/event/fire_intel_threat_conv"
+      }
+    ]
+}

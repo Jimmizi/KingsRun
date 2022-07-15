@@ -1,0 +1,13 @@
+{
+    "Choices": 
+    [
+      {
+        "Text": "[Go Back Home]",
+        "EventFile": "r1/event/fire_gohome_conv"
+      },
+      {
+        "Text": "[Report To Mission Command]",
+        "EventFile": "r1/event/fire_commander_conv"
+      }
+    ]
+}

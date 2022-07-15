@@ -1,0 +1,26 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "",
+            "Speech": "[i]You creep around the giant spider that's focused on making Yuu its next meal."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Good choice, Boss. More money for you at the end of this ordeal. _Oh_ by the way. _I checked the calendar, my personality service isn't due until next year."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Great, thanks for the update."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]A muffled scream reverberates around the cave as you make your way out of the webs."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "find_others/second_member_without_first/start"
+    ]
+}

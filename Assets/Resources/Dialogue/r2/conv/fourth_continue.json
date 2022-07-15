@@ -1,0 +1,18 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "No. _We should at least see what happened in case they question us."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "How goody-goody of you."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "find_others/first_member/start"
+    ]
+}

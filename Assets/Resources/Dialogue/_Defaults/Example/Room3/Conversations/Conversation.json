@@ -1,0 +1,40 @@
+{
+    "Lines": [
+        {
+            "Speaker": "AGENT SCULLY",
+            "Speech": "Just getting some fresh air."
+        },
+        {
+            "Speaker": "COMMANDER",
+            "Speech": "Did I hear 'Air' soldier? Your file didn't mentioned \"Breathes Poison.\"\nNeither \"It's a Deserter.\"\n Should I update it?"
+        },
+        {
+            "Speaker": "AGENT SCULLY",
+            "Speech": "N-No sir."
+        },
+        {
+            "Speaker": "COMMANDER",
+            "Speech": "Good. I'm sending it the mission report."
+        },
+        {
+            "Speaker": "BEEP",
+            "Speech": "."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Are you going to let him talk to you like that?"
+        },
+        {
+            "Speaker": "AGENT SCULLY",
+            "Speech": "Shut up and play the mission report."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "I think you should ask more nicely... I'm not your phone you know, I might get EMOTIONAL. Did you ever watched The MATRIX?"
+        }
+
+    ],
+    "EventsToFire": [
+        "Example/Room3/Events/Choice"
+    ]
+}

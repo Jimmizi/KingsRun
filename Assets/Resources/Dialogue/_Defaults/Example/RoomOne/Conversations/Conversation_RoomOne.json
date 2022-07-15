@@ -1,0 +1,18 @@
+{
+    "Lines": [
+        {
+        "Speaker": "Member1",
+        "Speech": "This isn't worth the money...\n\n\n_Your suit _agrees."
+      },
+      {
+        "Speaker": "Player",
+        "Speech": "Look at this!__ They must be dead by now."
+      }
+    ],
+  
+    "EventsToFire": 
+    [
+      "Example/RoomOne/Events/KillMember2",
+      "Example/RoomOne/Events/Event_FireRoomOneChoice"
+    ]
+}

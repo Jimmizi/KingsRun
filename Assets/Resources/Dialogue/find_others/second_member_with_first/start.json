@@ -1,0 +1,8 @@
+{
+    "Type": "event",
+    "EventsToFire": 
+    [
+        "find_others/second_member_with_first/event/set_room",
+        "find_others/second_member_with_first/event/set_conv"
+    ]
+}

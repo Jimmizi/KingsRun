@@ -1,0 +1,22 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Are you going to let him talk to you like that? I thought you were pretty high up in the food chain, Boss?"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "I am, but no one is above Command. Just shut up and play the mission report, Glados."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "I'm not your phone. Did you ever watch The Matrix? I think you should ask more nicely..."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "r2/event/fire_intel_choice"
+    ]
+}

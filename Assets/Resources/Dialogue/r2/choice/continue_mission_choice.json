@@ -1,0 +1,13 @@
+{
+    "Choices": 
+    [
+      {
+        "Text": "[Sure, Lets Go Home]",
+        "EventFile": "r2/event/fire_gohome_conv"
+      },
+      {
+        "Text": "[No, Not Yet. We Need To Investigate]",
+        "EventFile": "r2/event/fire_mission_continue_conv"
+      }
+    ]
+}

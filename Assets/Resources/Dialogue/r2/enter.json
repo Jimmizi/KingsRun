@@ -1,0 +1,9 @@
+{
+    "Type": "event",
+    "EventsToFire": 
+    [
+        "r2/event/set_room",
+        "r2/event/spawn_player",
+        "r2/event/set_conv"
+    ]
+}

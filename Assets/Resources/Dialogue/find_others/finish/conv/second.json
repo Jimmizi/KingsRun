@@ -1,0 +1,39 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Command. _Command come in."
+        },
+        {
+            "Speaker": "COMMAND",
+            "Speech": "Speaking. What is it Agent?"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Confirmation on possession of the Mandaryan Crystals. We're making our way back to the surface as we speak."
+        },
+        {
+            "Speaker": "COMMAND",
+            "Speech": "Outstanding, Agent. What of your personnel report?"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Nearly done uploadin-_ ah there we go. You should have it now."
+        },
+        {
+            "Speaker": "COMMAND",
+            "Speech": "Yes we have it on screen. _I see, commendable report, Agent. It's a shame to lose so many, _but the payoff is worth it."
+        },
+        {
+            "Speaker": "COMMAND",
+            "Speech": "You have clearance for immediate station docking. _Godspeed, Agent. Over and out."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "find_others/finish/event/set_third_conv_room",
+        "find_others/finish/event/fire_third_conv"
+    ]
+}

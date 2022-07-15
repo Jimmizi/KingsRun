@@ -1,0 +1,13 @@
+{
+    "Choices": 
+    [
+      {
+        "Text": "Restart",
+        "EventFile": "Example/start"
+      },
+      {
+        "Text": "Truth",
+        "EventFile": "Example/start"
+      }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "COMMAND",
+            "Speech": "Sewers got you dizzy, Soldier? Get your ass back in there Agent Scully!"
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "r1/event/fire_commander_choice"
+    ]
+}

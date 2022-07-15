@@ -1,0 +1,4 @@
+{
+    "Type": "choice",
+    "OpenChoiceFile": "r2/choice/ask_threat_for_intel_choice"
+}

@@ -24,6 +24,8 @@ public class UIManager : MonoBehaviour
 
     // Public vars
 
+    public VoidCallback OnFirstGameShown;
+
     // Called just after the game has been fully faded in
     public VoidCallback OnGameShown;
 
@@ -89,6 +91,8 @@ public class UIManager : MonoBehaviour
     public bool IsGameHidden => currentFadeState == ScreenFadeState.GameHidden;
     public bool IsCurrentlyFading => currentFadeState is ScreenFadeState.ShowingGame or ScreenFadeState.HidingGame or ScreenFadeState.PausingGame or ScreenFadeState.ResumingGame;
 
+    public ScreenFadeState FadeState => currentFadeState;
+
     // Private vars
 
     private ScreenFadeState currentFadeState;
@@ -111,10 +115,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private CanvasGroup BlackScreenGroup;
 
-#if UNITY_EDITOR
-    private bool debugVisible = true;
-#endif
-
+    private bool hasShownOnce = false;
 
     // Private functions
 
@@ -141,6 +142,8 @@ public class UIManager : MonoBehaviour
         else
         {
             BlackScreenGroup.alpha = 0.0f;
+            hasShownOnce = true;
+            OnFirstGameShown?.Invoke();
         }
     }
 
@@ -161,15 +164,10 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            debugVisible = !debugVisible;
-        }
-#endif
+
     }
 
-private IEnumerator Start_ShowGame()
+    private IEnumerator Start_ShowGame()
     {
         currentFadeState = ScreenFadeState.ShowingGame;
         BlackScreenGroup.alpha = 1.0f;
@@ -194,6 +192,12 @@ private IEnumerator Start_ShowGame()
 
         currentFadeState = ScreenFadeState.GameVisible;
         BlackScreenGroup.alpha = 0.0f;
+
+        if (!hasShownOnce)
+        {
+            hasShownOnce = true;
+            OnFirstGameShown?.Invoke();
+        }
 
         OnGameShown?.Invoke();
     }
@@ -288,31 +292,5 @@ private IEnumerator Start_ShowGame()
 
         OnGameResumed?.Invoke();
     }
-
-#if UNITY_EDITOR
-    private void OnGUI()
-    {
-        if (!debugVisible)
-        {
-            return;
-        }
-
-        Vector2 vPosition = new Vector2(5, 5);
-
-        void IncrementVerticalPos()
-        {
-            vPosition.y += 14;
-        }
-        void AddText(string text)
-        {
-            GUI.Label(new Rect(vPosition.x, vPosition.y, 400, 24), text);
-            IncrementVerticalPos();
-        }
-
-        AddText("UI Debug (F1)");
-        IncrementVerticalPos();
-
-        AddText($"Fade State: {currentFadeState.ToString()}");
-    }
-#endif
+    
 }

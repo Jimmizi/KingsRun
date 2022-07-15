@@ -1,0 +1,14 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "",
+            "Speech": "[i]Screw this, I'll tell command everyone was either dead or lost. That'll give me some time to catch up on the ol' intergalactic Soaps."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "event_fail"
+    ]
+}

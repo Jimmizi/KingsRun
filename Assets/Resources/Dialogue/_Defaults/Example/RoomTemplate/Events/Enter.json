@@ -1,0 +1,8 @@
+{
+    "Type": "event",
+    "EventsToFire": 
+    [
+      "Example/RoomX/Events/SetRoom",
+      "Example/RoomX/Events/Conversation"
+    ]
+}

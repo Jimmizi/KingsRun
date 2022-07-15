@@ -1,0 +1,13 @@
+{
+    "Choices": 
+    [
+      {
+        "Text": "[Save Yuu]",
+        "EventFile": "find_others/first_member/event/fire_choice_save_conv"
+      },
+      {
+        "Text": "[Leave Yuu]",
+        "EventFile": "find_others/first_member/event/fire_choice_leave_conv"
+      }
+    ]
+}

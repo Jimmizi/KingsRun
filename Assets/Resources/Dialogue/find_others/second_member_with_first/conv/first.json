@@ -1,0 +1,67 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "Yuu",
+            "Speech": "Soooo __do you know where the crystal is Scull?"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "S.C.U.L.L.Y _Not Scull.\nAnd no. If I knew where it was, I would have it in my possession already."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Hahahaha. I see you're already regretting your decision... Agent Scull."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Glados knock it off. Look, _up ahead."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]Looking ahead, you see the unconcious form of Kt-7, the half human, half robot member of the squadron your lieutenant was running... was."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]Luminescent spores from nearby fungi littering the floor funnel into Kt-7's mouth as each breath vacuums them up."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "She'd be stone cold dead if she weren't half robot. Those spores register on my HUD as extremely poisonous. Glados, you had the advanced filter module installed right?"
+        },
+        {
+            "Speaker": "Yuu",
+            "Speech": "You talking to your AI Scull? Glados huh? Nice name! __Hiiiiiiii Glados."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Absolutely insufferable. Please dispose of her, Boss."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "No. Did you have that module installed or not."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "I've already begun initialisation of the advanced filter module, Boss. We need to save Kt-7 as soon as possible, she might only have minutes left!"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "You seem in an awful hurry to save her. Not at all like that when we found Yuu."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Well duuuh. Kt-7 is half robot... have to look out for my own kind."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Apparently not humans though... definitely need to move that personality service appointment up sooner."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "find_others/second_member_with_first/event/set_member_room",
+        "find_others/second_member_with_first/event/fire_save_choice"
+    ]
+}

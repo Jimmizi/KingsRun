@@ -1,0 +1,45 @@
+=== SCENE/ROOM One START
+
+Agent Scully (TO SELF)
+This isn't worth the money, your suit agrees.
+
+GLADOS SAYS
+They must be dead by now, lets go back home. It didn't upgrade for this.
+
+Choice:
+ [Go back home]
+ [Report mission command]
+
+INT. COMMANDER THREAT
+COMMANDER says
+Sewers got you dizzy soldier? Get your ass back in there Agent Scully!
+
+Choice:
+{
+    [Lie]
+    AGENT SCULLY says
+    Just trying to get some fresh air.
+    [Truth]
+    AGENT SCULLY says
+    The terrain looks hostile Commander. Can't proceed without intel.
+}
+
+{
+    [Lie] Answer
+    COMMANDER says back
+    So you breath poison now? Glados is the only thing keeping you from kicking the bucket. Are you a deserter Ag. Scully?
+    AGENT SCULLY
+    N-No sir.
+    COMMANDER
+    Good. I'm sending it the mission report.
+
+
+    [Truth] Answer
+
+    COMMANDER says back
+    I'm sending it to Glados as we speak. Complete the mission soldier, there are lives at stake.
+    AGENT SCULLY
+    Yes sir.
+}
+
+=== SCENE/ROOM One END

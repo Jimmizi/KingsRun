@@ -1,0 +1,26 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Just trying to get some fresh air, Command."
+        },
+        {
+            "Speaker": "COMMAND",
+            "Speech": "Did I hear you say 'Air' soldier? Your file didn't mention 'Breathes Poison', nor 'Is a deserter'. Would you like me to update that for you?"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "N-_No Sir."
+        },
+        {
+            "Speaker": "COMMAND",
+            "Speech": "That's what I like to hear. Good. I'm sending it the mission report.\n\n_Read up, Scully."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "r2/enter"
+    ]
+}

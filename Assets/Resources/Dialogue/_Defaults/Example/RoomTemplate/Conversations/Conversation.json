@@ -1,0 +1,17 @@
+{
+    "Lines": [
+        {
+            "Speaker": "",
+            "Speech": ""
+        },
+        {
+            "Speaker": "",
+            "Speech": ""
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+      "Example/RoomX/Events/Choice"
+    ]
+}

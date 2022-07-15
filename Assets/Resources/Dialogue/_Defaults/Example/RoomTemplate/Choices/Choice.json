@@ -1,0 +1,13 @@
+{
+    "Choices": 
+    [
+      {
+        "Text": "Lie",
+        "EventFile": "Example/RoomX/Choices/Choice"
+      },
+      {
+        "Text": "Truth",
+        "EventFile": "Example/RoomX/Choices/Choice"
+      }
+    ]
+}

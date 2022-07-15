@@ -1,0 +1,60 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "",
+            "Speech": "[i]With the advanced filter warmed up ready to go, you move forward to retrieve Kt-7 from the deadly fungi. Spores race up to the air filter as you bend over and scoop her up. Thankfully, _the spores stop at the filter."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Now, lets patch her up before moving on."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]It takes a while, but applying a mixture of Chemicals AZ-707 and RuF 02 rapidly heals a few skin wounds and brings her back to consciousness."
+        },
+        {
+            "Speaker": "Kt-7",
+            "Speech": "Ugh... where am I? _Oh Agent Scully! It appears I failed the mission given to me. I have no excuse."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]Upon seeing you, Kt-7 quickly rises to her feet, performs a perfect salute and holds it."
+        },
+        {
+            "Speaker": "Yuu",
+            "Speech": "Kt-7! I'm glad you're okay. I was so worried about you after we got split up."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]Yuu runs up to hug Kt-7 who gently stops her."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "*Hums in joy* __Yes! Now we have the best person in your unit alongside us. Minus losing against some mushrooms that is."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "No excuse needed Kt-7, we're in hostile territory. I'm just glad you survived. At ease, Soldier."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]Kt-7 breaks her salute, then points further into the cave system."
+        },
+        {
+            "Speaker": "Kt-7",
+            "Speech": "We sighted the target down that way, Sir. We were securing the exit route out before attempting to retrieve it. That's when I must have fell victim to the spores; I don't remember much more than that."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Excellent. Lets carry on. Kt-7, you lead up front. Yuu, I want you in the middle, and I'll cover the rear."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "find_others/second_member_with_first/event/set_room",
+        "find_others/second_member_with_first/event/add_member_to_party",
+        "find_others/second_member_with_first/event/fire_save_third_conv"
+    ]
+}

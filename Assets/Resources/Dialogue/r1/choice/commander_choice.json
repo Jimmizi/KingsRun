@@ -1,0 +1,13 @@
+{
+    "Choices": 
+    [
+      {
+        "Text": "[Lie]",
+        "EventFile": "r1/event/fire_command_lie_conv"
+      },
+      {
+        "Text": "[Truth]",
+        "EventFile": "r1/event/fire_command_truth_conv"
+      }
+    ]
+}

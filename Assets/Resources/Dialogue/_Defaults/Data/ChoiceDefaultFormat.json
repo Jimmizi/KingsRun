@@ -1,0 +1,13 @@
+{
+  "Choices": 
+  [
+    {
+      "Text": "Sample text",
+      "EventFile": "Next file to open"
+    },
+    {
+      "Text": "Sample text 2",
+      "EventFile": "Next file to open 2"
+    }
+  ]
+}

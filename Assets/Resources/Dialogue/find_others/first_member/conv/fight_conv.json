@@ -1,0 +1,66 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "",
+            "Speech": "[i]Screeching fills the cave, as the spider reaches your position and swings a claw to strike towards Yuu."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]The strike would have hit, if not for that fact that Yuu grabbed your arm and pulled you in front of her. The claw renders a scrape across your chestpiece."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "OH _HELL _NO. She did not just do that.__\n\nOi Yuu. What the heck!"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "You know she can't hear you, plus it saved her life. Eyes up Glados, we have a spider to dispatch."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "But my beautiful paint job! I'm never going to look the same again... you know, until we get back to the repairs dock. Ooo, perhaps it's time for a different colour!"
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]As you roll your eyes, a long blade extension shoots out of your arm as you swing across the width of the spider. It comically and perfectly slides apart a second later."
+        },
+        {
+            "Speaker": "Yuu",
+            "Speech": "Nice one Scull! You really showed that spider eh?"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "I guess so. Come on, Yuu. We have to find the crystal."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]*Yuu tilts her head to the side, looking confused.*"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "The Mandaryan Crystal? The whole reason any of us are down in this forsaken place?"
+        },
+        {
+            "Speaker": "Yuu",
+            "Speech": "Haha yeah just messing with ya! _I only got this far into the cave before the spider attacked us. Went straight for me it did. Not happy about that."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "She's actually worse than useless, aghhh!"
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Come on Yuu. We have to go deeper."
+        },
+        {
+            "Speaker": "Yuu",
+            "Speech": "Right behind you... plus another ten meters."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "find_others/second_member_with_first/start"
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "",
+            "Speech": "[i]Looking further ahead, you see a faint light. Hope rises as you remember that these crystals glow like the Sun."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Enough pouting Glados. Alright team, head on to that light. Expect hostiles. Kt-7 I want you on full alert."
+        },
+        {
+            "Speaker": "Kt-7",
+            "Speech": "Affirmative."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "find_others/finish/start"
+    ]
+}

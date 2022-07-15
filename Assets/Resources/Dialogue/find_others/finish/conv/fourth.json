@@ -1,0 +1,30 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "",
+            "Speech": "[i]You exit the entrance of the caves back into the old sewer system below the Alive Dead City. __Hurrying along you spot the ladder that brought you down. __You mutter to yourself to never visit this place again."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]Coming up into Alive Dead City, you're greeted with sounds of entertainment, calls for checking fresh store wares, and a dazzle of lights in the cityscape."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]Ironically, this is all scheduled programming for the city system. __No one has actually lived here in decades, since the calamity poison engulfed the surface of this planet."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]You seem to frequent this place so much that it wouldn't be a far cry to call yourself a resident of Alive Dead City."
+        },
+        {
+            "Speaker": "",
+            "Speech": "[i]But there is too much work for salvage down here, I'd be a fool not to be Command's dog running around here collecting for them.\n\n__Woe is me."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "event_win"
+    ]
+}

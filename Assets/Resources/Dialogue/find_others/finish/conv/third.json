@@ -1,0 +1,39 @@
+{
+    "Lines": 
+    [
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Well we got what we came for. Command doesn't care one bit for the dead humans; _that _we share in common."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Ever the delight, Glados. Remind me why I put up with you."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "'Cause I'm the darn best fighter suit you'll ever have access to? _'Cause I'm a shining star in this sea of despair?"
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Just be glad Command didn't pair you with CORTI. _She's a real piece of work."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Coming from you? Damn. That's really something. Bless the poor soul who has to put up with that."
+        },
+        {
+            "Speaker": "Agent Scully",
+            "Speech": "Anyway, lets get out of here. Took a bit longer than expected. Hopefully the TV recorder caught our programs ok."
+        },
+        {
+            "Speaker": "GLADOS",
+            "Speech": "Oh don't worry, JASPER learned after the last time to not miss our shows. There'll be _hell _to _pay _if we miss them after this."
+        }
+    ],
+  
+    "EventsToFire": 
+    [
+        "find_others/finish/event/set_fourth_conv_room",
+        "find_others/finish/event/fire_fourth_conv"
+    ]
+}

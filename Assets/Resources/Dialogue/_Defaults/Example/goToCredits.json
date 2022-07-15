@@ -1,0 +1,8 @@
+{
+    "Type": "event",
+    "EventsToFire": 
+    [
+      "Example/killParty",
+      "Example/loadCreditsRoom"
+    ]
+}
