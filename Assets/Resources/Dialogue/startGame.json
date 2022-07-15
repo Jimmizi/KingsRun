@@ -1,7 +1,8 @@
 {
+    "Description": "Entry point to the game - we'll tell game_init to do it's thing",
     "Type": "event",
     "EventsToFire": 
     [
-      "r1/enter"
+      "game_init/process"
     ]
 }

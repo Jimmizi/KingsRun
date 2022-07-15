@@ -72,6 +72,8 @@ public class GameFlow : MonoBehaviour
             case State.GameUpdate:
                 StateGameUpdate();
                 break;
+            case State.GameOver:
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }

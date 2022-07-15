@@ -1,0 +1,7 @@
+{
+    "Type": "event",
+    "EventsToFire": 
+    [
+        "game_init/declare_data_members"
+    ]
+}
