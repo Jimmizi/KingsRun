@@ -15,11 +15,12 @@ public class Picker : MonoBehaviour
     float holdDistance = 10;
 
     List<Pickup> heldPickups = new List<Pickup>();
+    DiceRollRigger diceRollRigger;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        diceRollRigger = GetComponent<DiceRollRigger>();
     }
 
     // Update is called once per frame
@@ -27,17 +28,17 @@ public class Picker : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            CastRay();
+            PickObject();
         }
 
         if (Input.GetMouseButton(0) && Input.GetMouseButtonDown(1))
         {
-            CastRay();
+            PickObject();
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            heldPickups.Clear();
+            ThrowObjects();            
         }
 
         Vector3 mousePos = Input.mousePosition;
@@ -64,7 +65,7 @@ public class Picker : MonoBehaviour
         }
     }
 
-    void CastRay()
+    void PickObject()
     {
         Vector3 mousePos = Input.mousePosition;
 
@@ -101,6 +102,20 @@ public class Picker : MonoBehaviour
                     return;
                 }
             }
+        }
+    }
+
+    void ThrowObjects()
+    {
+        if (heldPickups.Count > 0)
+        {
+            GameObject[] pickedObjects = new GameObject[heldPickups.Count];
+            for (int i = 0; i < pickedObjects.Length; i++)
+            {
+                pickedObjects[i] = heldPickups[i].pickable.gameObject;
+            }
+            heldPickups.Clear();
+            diceRollRigger.SimulateThrow(pickedObjects);
         }
     }
 }

@@ -20,7 +20,7 @@ using System.Collections;
 // Die subclass to expose the D6 side hitVectors
 public class Die_d6 : Die {
 		
-    override protected Vector3 HitVector(int side)
+    override public Vector3 HitVector(int side)
     {
         switch (side)
         {

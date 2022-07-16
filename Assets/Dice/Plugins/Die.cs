@@ -125,9 +125,19 @@ public class Die : MonoBehaviour {
 
 	// virtual  method that to get a die side hitVector.
 	// this has to be overridden in the dieType specific subclass
-    protected virtual Vector3 HitVector(int side)
+    public virtual Vector3 HitVector(int side)
     {
         return Vector3.zero;
     }
 	
+    public virtual Quaternion GetRequiredRotationToValue(Quaternion FromRotation, int side)
+    {
+        Vector3 targetUpVector = FromRotation * HitVector(side);
+        return Quaternion.FromToRotation(targetUpVector, Vector3.up);
+    }
+
+    public virtual Quaternion GetRequiredRotationToValue(int side)
+    {
+        return GetRequiredRotationToValue(transform.rotation, side);
+    }
 }
