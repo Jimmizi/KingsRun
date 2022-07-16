@@ -99,13 +99,13 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void ProcessGameStartFade()
+    public void ProcessGameStartFade(bool instant = false)
     {
         Debug.Assert(!hasShownOnce);
 
         IEnumerator DelayGameShow()
         {
-            float fTime = 0.0f;
+            float fTime = instant ? startHiddenShowDelayTime : 0.0f;
             while (fTime < startHiddenShowDelayTime)
             {
                 fTime += Time.deltaTime;
@@ -115,7 +115,7 @@ public class UIManager : MonoBehaviour
             StartCoroutine(Start_ShowGame());
         }
 
-        if (startGameHidden)
+        if (!instant)
         {
             BlackScreenGroup.alpha = 1.0f;
             currentFadeState = ScreenFadeState.GameHidden;
@@ -123,7 +123,13 @@ public class UIManager : MonoBehaviour
         }
         else
         {
+            TitleScreenGroup.alpha = 0.0f;
             BlackScreenGroup.alpha = 0.0f;
+            ThunderFlashGroup.alpha = 0.0f;
+            CreditsGo.SetActive(false);
+
+            currentFadeState = ScreenFadeState.GameVisible;
+            
             hasShownOnce = true;
             OnFirstGameShown?.Invoke();
         }
@@ -141,7 +147,7 @@ public class UIManager : MonoBehaviour
     private ScreenFadeState currentFadeState;
 
     [SerializeField]
-    private bool startGameHidden;
+    public bool instantStartGame;
 
     [SerializeField] [Tooltip("Time to delay at the start of the game before fading in (if startGameHidden set)")]
     private float startHiddenShowDelayTime = 1.0f;
@@ -241,8 +247,11 @@ public class UIManager : MonoBehaviour
     {
         // TODO Bring in rain/music sound
 
-        TitleScreenGroup.alpha = 0;
+        TitleScreenGroup.alpha = 0.0f;
+        BlackScreenGroup.alpha = 1.0f;
         ThunderFlashGroup.alpha = 0;
+        CreditsGo.SetActive(true);
+        
 
         float fTime = 0.0f;
 

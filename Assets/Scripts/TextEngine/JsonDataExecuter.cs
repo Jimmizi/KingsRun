@@ -43,6 +43,15 @@ public class JsonDataExecuter
             throw new Exception("Managed to attempt loading an invalid Conversation Data file. json = " + json);
         }
 
+        foreach (var line in data.Lines)
+        {
+            if (line.Length >= 175)
+            {
+                // Not the biggest issue, but if much bigger than 130, once the font has resized and the spacing reduced we do have a chance to start overflowing
+                Debug.LogWarning($"Warning: dialogue line more than 130 ({line.Length}) - Consider making this into multiple lines otherwise it will incur font resizing. Line: {line}");
+            }
+        }
+
         return data;
     }
 
@@ -82,6 +91,8 @@ public class JsonDataExecuter
     }
     private static void LoadConversation(string json)
     {
+        Debug.Log("Loading Conversation: " + json);
+
         mCurrentConversationData = MakeConversation(json);
     }
     private static void LoadChoice(string json)

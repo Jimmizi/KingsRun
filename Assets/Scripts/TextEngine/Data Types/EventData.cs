@@ -14,7 +14,7 @@ public class EventData
      * event
      * declaredatamembers
      */
-
+    
     // Dummy data member, purely to allow a description of what's going on in a file (as json doesn't like comments)
     public string Description = "";
 

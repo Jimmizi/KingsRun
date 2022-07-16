@@ -11,4 +11,5 @@ public static class Service
     public static JsonDataExecuter Executer;
     public static GameFlow Flow;
     public static DataManager Data;
+    public static QuitButton QuitButtonObj;
 }

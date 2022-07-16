@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Bson;
 using UnityEngine;
 using UnityEngine.UI;
 using RectTransform = UnityEngine.RectTransform;
@@ -9,7 +10,8 @@ using Vector3 = UnityEngine.Vector3;
 [RequireComponent(typeof(Button))]
 public class QuitButton : MonoBehaviour
 {
-    public TextAsset InterruptDialogue;
+    public List<TextAsset> InterruptDialogue = new List<TextAsset>();
+    private int timesPressed = 0;
 
     public EaserEase MoveType;
 
@@ -22,8 +24,15 @@ public class QuitButton : MonoBehaviour
     private Bounds activeBounds;
     private Rect activeBoundsRect;
 
+    private bool currentlyMoving = false;
+
     private Button uiButton;
-    
+
+    void Awake()
+    {
+        Service.QuitButtonObj = this;
+    }
+
     void Start()
     {
         uiButton = GetComponent<Button>();
@@ -39,20 +48,61 @@ public class QuitButton : MonoBehaviour
         
     }
 
-    public void ResetPosition()
+    public void SetButtonActive(bool b)
     {
-        MoveToStartingPosition();
+        uiButton.interactable = b;
+    }
+
+    public void ResetPosition(float overrideSpeed = 0.0f)
+    {
+        MoveToStartingPosition(overrideSpeed);
     }
 
     public void OnButtonClicked()
     {
-        if (InterruptDialogue != null)
+        if (currentlyMoving)
         {
-            ConversationData data = JsonDataExecuter.MakeConversation(InterruptDialogue);
-            Service.Text.StartOrInterruptChat(data);
+            return;
         }
 
-        MoveToFreePlace();
+        Debug.Assert(timesPressed < InterruptDialogue.Count);
+
+        currentlyMoving = true;
+
+        // Only pause the first time (as if in shock the player pressed the button
+        bool shockedPause = (timesPressed == 0);
+
+        if (shockedPause)
+        {
+            Service.Text.PausePlayback = true;
+            Service.Text.AddText("-");
+        }
+
+        StartCoroutine(OnQuitButtonPressed(shockedPause));
+    }
+
+    IEnumerator OnQuitButtonPressed(bool doPause)
+    {
+        bool actuallyQuit = timesPressed == InterruptDialogue.Count - 1;
+
+        if (!actuallyQuit)
+        {
+            MoveToFreePlace();
+        }
+
+        if(doPause)
+        {
+            float fTime = 0.0f;
+            while (fTime < 1.0f)
+            {
+                fTime += Time.deltaTime;
+                yield return new WaitForSeconds(Time.deltaTime);
+            }
+        }
+
+        ConversationData data = JsonDataExecuter.MakeConversation(InterruptDialogue[timesPressed++]);
+        Service.Text.PausePlayback = false;
+        Service.Text.StartOrInterruptChat(data); // Will resume processing if paused first time in here
     }
 
     private bool IsPointInBounds(Vector2 point, float padding = 0.0f)
@@ -108,11 +158,6 @@ public class QuitButton : MonoBehaviour
 
     private void MoveToFreePlace()
     {
-        if (!uiButton.interactable)
-        {
-            return;
-        }
-
         List<Vector2> directionsToTest = new List<Vector2>()
         {
             new Vector2(1.0f, 0.0f), // Right
@@ -179,19 +224,17 @@ public class QuitButton : MonoBehaviour
         }
     }
 
-    private void MoveToStartingPosition()
+    private void MoveToStartingPosition(float overrideSpeed = 0.0f)
     {
-        if (!uiButton.interactable)
+        if (!currentlyMoving)
         {
-            return;
+            Debug.Assert(vStartPosition != Vector2.zero);
+            vTargetPosition = vStartPosition;
+            StartCoroutine(GoToTargetPosition(default, overrideSpeed));
         }
-
-        Debug.Assert(vStartPosition != Vector2.zero);
-        vTargetPosition = vStartPosition;
-        StartCoroutine(GoToTargetPosition());
     }
 
-    IEnumerator GoToTargetPosition()
+    IEnumerator GoToTargetPosition(bool setInteractableAfterMove = false, float overrideSpeed = 0.0f)
     {
         RectTransform rectTransform = transform as RectTransform;
         if (!rectTransform)
@@ -200,22 +243,26 @@ public class QuitButton : MonoBehaviour
         }
         
         uiButton.interactable = false;
+        currentlyMoving = true;
+
+        float timeToMove = overrideSpeed > 0.0f ? overrideSpeed : MoveTime;
 
         Vector2 vStart = rectTransform.anchoredPosition;
 
         float fTime = 0.0f;
-        while (fTime < MoveTime)
+        while (fTime < timeToMove)
         {
             fTime += Time.deltaTime;
 
-            float fGraphTime = fTime / MoveTime;
+            float fGraphTime = fTime / timeToMove;
             rectTransform.anchoredPosition = Easer.EaseVector2(MoveType, vStart, vTargetPosition, fGraphTime);
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
 
         rectTransform.anchoredPosition = vTargetPosition;
-        uiButton.interactable = true;
+        uiButton.interactable = setInteractableAfterMove;
+        currentlyMoving = false;
     }
 
     private static Vector3[] WorldCorners = new Vector3[4];

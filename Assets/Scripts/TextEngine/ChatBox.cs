@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +15,7 @@ public class ChatBox : MonoBehaviour
 
     public Text SpeakerTextComponent;
     public Text SpeechTextComponent;
+    public TMP_Text SpeechTextProComponent;
 
     public CanvasGroup NextLineMarkerGroup;
     public GameObject NextLineMarker;
@@ -20,6 +23,7 @@ public class ChatBox : MonoBehaviour
     private float mLineMarkerTimer;
 
     public Button[] ChoiceButtons = new Button[MAX_CHOICES];
+    public Button NextLineButton;
 
     public CanvasGroup AlphaGroup;
     public CanvasGroup ButtonAlphaGroup;
@@ -37,7 +41,7 @@ public class ChatBox : MonoBehaviour
 
     private float mConvEndOfLineSkipTimer = 0.0f;
 
-    private ConversationData conversationToGoBackToAfterInterrupt;
+    private ConversationData conversationToGoBackToAfterInterrupt = null;
 
     private ConversationData mCurrentConversationData = null;
     private ChoiceData mCurrentChoiceData = null;
@@ -61,7 +65,13 @@ public class ChatBox : MonoBehaviour
 
     private bool mTypingLoopPlaying;
 
-    public bool Processing => mProcessingChat;
+    public bool PausePlayback;
+
+    public bool Processing
+    {
+        get => mProcessingChat;
+        private set => mProcessingChat = value;
+    }
     public bool HasValidChat => mCurrentConversationData != null || mCurrentChoiceData != null;
 
     #region Conversation Vars
@@ -98,60 +108,29 @@ public class ChatBox : MonoBehaviour
     private bool mNextLinePressed;
     private bool mLineComplete;
 
-    private bool nextPressed;
+    public bool nextPressed;
 
     public void GoToNext()
     {
         nextPressed = true;
+        NextLineButton.interactable = false;
     }
 
-    private void SetSpeakerName()
+    void SetText(string text)
     {
-        //SpeakerTextComponent.text = mCurrentConversationData.Lines[mCurrentConvLine].Speaker;
+        SpeechTextComponent.text = text;
+        SpeechTextProComponent.text = text;
+    }
+    public void AddText(string text)
+    {
+        SpeechTextComponent.text += text;
+        SpeechTextProComponent.text += text;
+    }
 
-        //var names = Service.Party().MemberNames;
-        //var colors = Service.Party().MemberColours;
-
-        //int speakerIndex = -1;
-
-        //for (var i = 0; i < names.Length; i++)
-        //{
-        //    if (SpeakerTextComponent.text.ToLower().Equals(names[i].ToLower()))
-        //    {
-        //        speakerIndex = i;
-        //        SpeakerTextComponent.color = colors[i];
-        //        break;
-        //    }
-        //}
-
-        //if (speakerIndex > -1)
-        //{
-        //    //Service.Party().SetMemberAsSpeaker(speakerIndex);
-        //}
-        //else
-        //{
-        //    var namesOther = Service.Party().OtherNames;
-        //    var colorsOther = Service.Party().OtherColours;
-        //    bool foundAnOtherColour = false;
-
-        //    for (var i = 0; i < namesOther.Count; i++)
-        //    {
-        //        if (SpeakerTextComponent.text.ToLower().Equals(namesOther[i].ToLower()))
-        //        {
-        //            foundAnOtherColour = true;
-        //            SpeakerTextComponent.color = colorsOther[i];
-        //            break;
-        //        }
-        //    }
-
-        //    if (!foundAnOtherColour)
-        //    {
-        //        SpeakerTextComponent.color = Color.white;
-        //    }
-
-        //    //No speaker name
-        //    //Service.Party().ResetSpeakerMembers();
-        //}
+    void SetItalics(bool b)
+    {
+        SpeechTextComponent.fontStyle = b ? FontStyle.Italic : FontStyle.Normal;
+        SpeechTextProComponent.fontStyle = b ? FontStyles.Italic : FontStyles.Normal;
     }
 
     /// <summary>
@@ -159,8 +138,7 @@ public class ChatBox : MonoBehaviour
     /// </summary>
     private void ResetConversationToCurrentLine()
     {
-        SetSpeakerName();
-        SpeechTextComponent.text = "";
+        SetText("");
         mCurrentLineChar = 0;
         mLineComplete = false;
     }
@@ -200,11 +178,15 @@ public class ChatBox : MonoBehaviour
         {
             StartChat(newConv);
         }
-        else
+        else if(conversationToGoBackToAfterInterrupt == null)
         {
             conversationToGoBackToAfterInterrupt = mCurrentConversationData;
             interruptedLineChar = mCurrentLineChar;
             interruptedConvLine = mCurrentConvLine;
+            StartChat(newConv);
+        }
+        else // Don't go back to interrupting text if also interrupting that
+        {
             StartChat(newConv);
         }
     }
@@ -219,7 +201,7 @@ public class ChatBox : MonoBehaviour
         mCurrentChoiceData = choice;
         mCurrentConversationData = null;
 
-        SpeechTextComponent.text = "";
+        SetText("");
         //SpeakerTextComponent.text = "";
         mChoicePicked = -1;
 
@@ -289,14 +271,12 @@ public class ChatBox : MonoBehaviour
 
                 conversationToGoBackToAfterInterrupt = null;
 
-                speedUpToChar = interruptedLineChar; //Changed this so that instead of instant display, we speed it up a bunch
+                speedUpToChar = interruptedLineChar;
                 mCurrentConvLine = interruptedConvLine;
-                //SpeechTextComponent.text = GetCurrentSpeech().Substring(0, mCurrentLineChar);
             }
             else
             {
                 StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
-                //Service.Party().ResetSpeakerMembers();
                 StopTypingSoundIfPossible();
             }
         }
@@ -323,11 +303,7 @@ public class ChatBox : MonoBehaviour
             mTypingLoopPlaying = false;
         }
     }
-
-    // If we want to re-enable speaker names
-    //string GetCurrentSpeech() => mCurrentConversationData.Lines[mCurrentConvLine].Speech;
-    //int GetCurrentSpeechLength() => mCurrentConversationData.Lines[mCurrentConvLine].Speech.Length;
-
+    
     string GetCurrentSpeech() => mCurrentConversationData.Lines[mCurrentConvLine];
     int GetCurrentSpeechLength() => mCurrentConversationData.Lines[mCurrentConvLine].Length;
 
@@ -365,13 +341,15 @@ public class ChatBox : MonoBehaviour
                         {
                             if (GetCurrentSpeech().Substring(0, 3).Equals("[i]"))
                             {
-                                SpeechTextComponent.fontStyle = FontStyle.Italic;
+                                SetItalics(true);
+                                //SpeechTextComponent.fontStyle = FontStyle.Italic;
                                 mCurrentLineChar = 3;
                                 return;
                             }
                             else
                             {
-                                SpeechTextComponent.fontStyle = FontStyle.Normal;
+                                SetItalics(false);
+                                //SpeechTextComponent.fontStyle = FontStyle.Normal;
                             }
                         }
 
@@ -430,7 +408,8 @@ public class ChatBox : MonoBehaviour
                                     mUnderscorePauseTimer = PeriodPauseTime * 2;
                             }
 
-                            SpeechTextComponent.text += nextChar;
+                            AddText(nextChar);
+                            //SpeechTextComponent.text += nextChar;
                         }
                     }
                 }
@@ -441,7 +420,7 @@ public class ChatBox : MonoBehaviour
 
                 if (Service.Config.InstantText)
                 {
-                    SpeechTextComponent.text = GetCurrentSpeech();
+                    SetText(GetCurrentSpeech());
                 }
 
                 mLineComplete = mCurrentLineChar >= GetCurrentSpeechLength();
@@ -457,6 +436,14 @@ public class ChatBox : MonoBehaviour
                     }
 
                     mLineMarkerTimer = 0;
+
+                    if (!mCurrentConversationData.MoveQuitButtonAtStartOfLine)
+                    {
+                        if (mCurrentConversationData.QuitButtonInterruptLineToResetButton == mCurrentConvLine)
+                        {
+                            Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
+                        }
+                    }
                 }
 
                 return;
@@ -464,7 +451,6 @@ public class ChatBox : MonoBehaviour
             //If we're done with appending text, wait until the player has pressed something to advance text
             else if (!nextPressed)
             {
-                mNextLinePressed = false;
                 mNeedEndOfLineMarker = true;
 
                 if (!Service.Config.AutomaticEndOfLineSkip && !autoSkipEndOfLine)
@@ -482,13 +468,7 @@ public class ChatBox : MonoBehaviour
                     mConvEndOfLineSkipTimer = 0;
                 }
             }
-
-            //Waiting for anyKey to be released and this set to false
-            if (mNextLinePressed)
-            {
-                return;
-            }
-
+            
             nextPressed = false;
             mNextLinePressed = true;
             mNeedEndOfLineMarker = false;
@@ -503,9 +483,37 @@ public class ChatBox : MonoBehaviour
                 mCurrentConvLine++;
                 
                 ResetConversationToCurrentLine();
+
+                if (mCurrentConversationData.MoveQuitButtonAtStartOfLine)
+                {
+                    if (mCurrentConversationData.QuitButtonInterruptLineToResetButton == mCurrentConvLine)
+                    {
+                        Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
+                    }
+                }
             }
             else
             {
+                if (mCurrentConversationData.DataToSetAfterLines.Length > 0)
+                {
+                    Service.Data.TrySetData(mCurrentConversationData.DataToSetAfterLines, mCurrentConversationData.DataValue);
+                }
+
+                if (mCurrentConversationData.QuitButtonInterruptLineToResetButton != -1)
+                {
+                    Debug.Log("Setting quit button active after conversation");
+                    Service.QuitButtonObj.SetButtonActive(true);
+                }
+
+                if (mCurrentConversationData.QuitGameAfterConversationFinish)
+                {
+                    Debug.Log("Qutting game after conversation");
+                    Service.Flow.QuitGameToTitle();
+                    conversationToGoBackToAfterInterrupt = null;
+                    EndChat();
+                    return;
+                }
+
                 //Once we're out of lines, set to -1 to begin processing end of conversation events
                 mCurrentConvLine = -1;
             }
@@ -581,12 +589,15 @@ public class ChatBox : MonoBehaviour
 
     void Start()
     {
+        NextLineButton = NextLineMarker.GetComponent<Button>();
+        Debug.Assert(NextLineButton != null);
 
+        NextLineButton.interactable = false;
     }
     
     void Update()
     {
-        if (mProcessingChat)
+        if (mProcessingChat && !PausePlayback)
         {
             if (mIsConversation)
             {
@@ -685,6 +696,8 @@ public class ChatBox : MonoBehaviour
     }
     public IEnumerator FadeLineMarkerGroup(float startAlpha, float endAlpha, float duration)
     {
+        NextLineButton.interactable = false;
+
         if (Math.Abs(NextLineMarkerGroup.alpha - endAlpha) > 0.01f)
         {
             float elapsedTime = 0f;
@@ -699,6 +712,11 @@ public class ChatBox : MonoBehaviour
 
                 yield return null;
             }
+
+            NextLineMarkerGroup.alpha = endAlpha;
         }
+
+        // enable the button if alphaed in
+        NextLineButton.interactable = endAlpha > 0.5f;
     }
 }
