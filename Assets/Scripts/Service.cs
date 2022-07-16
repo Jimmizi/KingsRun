@@ -12,4 +12,5 @@ public static class Service
     public static GameFlow Flow;
     public static DataManager Data;
     public static QuitButton QuitButtonObj;
+    public static ResetPuzzleManager Puzzle;
 }

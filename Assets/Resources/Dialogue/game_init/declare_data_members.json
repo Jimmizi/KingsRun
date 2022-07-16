@@ -1,5 +1,5 @@
 {
-    "Description":"In here, we're declaring data members to be used with PlayerPrefs and which can be used in conditions",
+    "Description":"(Runs from code) In here, we're declaring data members to be used with PlayerPrefs and which can be used in conditions",
     "Type": "declaredatamembers",
     "Keys": 
     [

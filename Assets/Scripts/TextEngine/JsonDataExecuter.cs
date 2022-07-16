@@ -411,6 +411,25 @@ public class JsonDataExecuter
         return true;
     }
 
+    private static bool ProcessEvent_IncrementData(EventData evt)
+    {
+        if (!Service.Data.IsDataLoaded())
+        {
+            Debug.LogError("Trying to set data before loading it all.");
+            return true;
+        }
+
+        for (int i = 0; i < evt.Keys.Count; ++i)
+        {
+            int? data = Service.Data.TryGetData(evt.Keys[i]);
+            Debug.Assert(data.HasValue);
+
+            Service.Data.TrySetData(evt.Keys[i], data.Value + 1);
+        }
+
+        return true;
+    }
+
     public static bool ProcessEvent(EventData evt, bool tryCondition)
     {
         if (tryCondition)
@@ -434,7 +453,8 @@ public class JsonDataExecuter
             case "inventory": return ProcessEvent_Inventory(evt); 
             case "event": return ProcessEvent_Event(evt); 
             case "declaredatamembers": return ProcessEvent_DeclareDataMembers(evt); 
-            case "setdata": return ProcessEvent_SetData(evt); 
+            case "setdata": return ProcessEvent_SetData(evt);
+            case "incrementdata": return ProcessEvent_IncrementData(evt);
 
             default: throw new Exception("Event of type " + evt.Type.ToLower() + " is not supported.");
         }

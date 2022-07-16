@@ -3,7 +3,6 @@
     "Type": "event",
     "EventsToFire": 
     [
-      "game_init/declare_data_members",
       "game_init/route_fresh_start",
       "game_init/route_returning",
       "game_init/route_barred"

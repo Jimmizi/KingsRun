@@ -21,7 +21,7 @@ public class EventData
     /// <summary>
     /// What type of event is this, what will it do?
     /// </summary>
-    public string Type = "damage|delay|loadroom|conversation|choice|inventory|event|declaredatamembers|setdata";
+    public string Type = "damage|delay|loadroom|conversation|choice|inventory|event|declaredatamembers|setdata|incrementdata";
 
     // Allow testing against a PlayerPref key with a condition before allowing anything else in the event to fire off
     public string ConditionKey = "";

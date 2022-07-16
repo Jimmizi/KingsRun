@@ -8,6 +8,6 @@
     "Type": "event",
     "EventsToFire": 
     [
-        ""
+        "game_init/increment_times_played"
     ]
 }

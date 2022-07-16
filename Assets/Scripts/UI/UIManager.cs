@@ -29,7 +29,7 @@ public class UIManager : MonoBehaviour
 
     // Public vars
 
-    public VoidCallback OnFirstGameShown;
+    public VoidCallback OnStartGame;
 
     // Called just after the game has been fully faded in
     public VoidCallback OnGameShown;
@@ -44,6 +44,17 @@ public class UIManager : MonoBehaviour
     public VoidCallback OnGameResumed;
 
     // Public functions
+
+    public void GoBackToMenuFromGame()
+    {
+        currentFadeState = ScreenFadeState.TitleStart;
+        isRunningAfterQuitGame = true;
+    }
+
+    public void ResetMenu()
+    {
+        currentFadeState = ScreenFadeState.TitleStart;
+    }
 
     public void TogglePause()
     {
@@ -131,7 +142,7 @@ public class UIManager : MonoBehaviour
             currentFadeState = ScreenFadeState.GameVisible;
             
             hasShownOnce = true;
-            OnFirstGameShown?.Invoke();
+            OnStartGame?.Invoke();
         }
     }
     
@@ -180,16 +191,36 @@ public class UIManager : MonoBehaviour
     private GameObject CreditsGo;
 
     [SerializeField]
+    private GameObject TitleGo;
+    [SerializeField]
+    private GameObject PressToPlayGo;
+
+    [SerializeField]
+    private GameObject ReturnedToTitleGo;
+    [SerializeField]
+    private GameObject SecondTimeLaunchingGo;
+    [SerializeField]
+    private GameObject LastTimeLaunchingGo;
+
+    [SerializeField]
     private EaserEase ThunderFlashGraph;
 
     private bool hasShownOnce = false;
-    
+    private bool isRunningAfterQuitGame = false;
 
     // Private functions
 
     private void Start()
     {
-        
+        Debug.Assert(Service.Flow.JsonScriptToLoadDataMembers != null);
+        EventData loadMemberEvent = JsonDataExecuter.MakeEvent(Service.Flow.JsonScriptToLoadDataMembers);
+        Debug.Assert(loadMemberEvent != null);
+        JsonDataExecuter.ProcessEvent(loadMemberEvent, false);
+    }
+
+    int GetNumTimesPlayed()
+    {
+        return Service.Data.TryGetData("NumTimesPlayed").Value;
     }
 
     private void Awake()
@@ -247,14 +278,53 @@ public class UIManager : MonoBehaviour
     {
         // TODO Bring in rain/music sound
 
+        Service.Puzzle.PuzzleDone = false;
+
         TitleScreenGroup.alpha = 0.0f;
         BlackScreenGroup.alpha = 1.0f;
         ThunderFlashGroup.alpha = 0;
-        CreditsGo.SetActive(true);
+
+        TitleGo.SetActive(false);
+        CreditsGo.SetActive(false);
+        PressToPlayGo.SetActive(false);
+        ReturnedToTitleGo.SetActive(false);
+        SecondTimeLaunchingGo.SetActive(false);
+        LastTimeLaunchingGo.SetActive(false);
+
         
 
-        float fTime = 0.0f;
+        if (!isRunningAfterQuitGame)
+        {
+            int iNumTimesPlayed = GetNumTimesPlayed();
 
+            // We've quit once and come back in
+            if (iNumTimesPlayed == 1)
+            {
+                SecondTimeLaunchingGo.SetActive(true);
+                Service.QuitButtonObj.SetGoActive(false);
+            }
+            // We've quit again and are now blocked from entering
+            else if(iNumTimesPlayed > 1)
+            {
+                LastTimeLaunchingGo.SetActive(true);
+            }
+            else
+            {
+                // First time
+                CreditsGo.SetActive(true);
+                PressToPlayGo.SetActive(true);
+                TitleGo.SetActive(true);
+
+                Service.QuitButtonObj.SetGoActive(true);
+            }
+        }
+        else
+        {
+            TitleGo.SetActive(true);
+            ReturnedToTitleGo.SetActive(true);
+        }
+        
+        float fTime = 0.0f;
         yield return new WaitForSeconds(1.0f);
 
         // TODO Play sfx
@@ -344,7 +414,7 @@ public class UIManager : MonoBehaviour
         if (!hasShownOnce)
         {
             hasShownOnce = true;
-            OnFirstGameShown?.Invoke();
+            OnStartGame?.Invoke();
         }
 
         OnGameShown?.Invoke();

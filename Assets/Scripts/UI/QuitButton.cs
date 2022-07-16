@@ -48,6 +48,11 @@ public class QuitButton : MonoBehaviour
         
     }
 
+    public void SetGoActive(bool b)
+    {
+        gameObject.SetActive(b);
+    }
+
     public void SetButtonActive(bool b)
     {
         uiButton.interactable = b;
@@ -68,17 +73,11 @@ public class QuitButton : MonoBehaviour
         Debug.Assert(timesPressed < InterruptDialogue.Count);
 
         currentlyMoving = true;
-
-        // Only pause the first time (as if in shock the player pressed the button
-        bool shockedPause = (timesPressed == 0);
-
-        if (shockedPause)
-        {
-            Service.Text.PausePlayback = true;
-            Service.Text.AddText("-");
-        }
-
-        StartCoroutine(OnQuitButtonPressed(shockedPause));
+        
+        Service.Text.PausePlayback = true;
+        Service.Text.AddText("-");
+        
+        StartCoroutine(OnQuitButtonPressed(true));
     }
 
     IEnumerator OnQuitButtonPressed(bool doPause)
@@ -88,6 +87,10 @@ public class QuitButton : MonoBehaviour
         if (!actuallyQuit)
         {
             MoveToFreePlace();
+        }
+        else
+        {
+            uiButton.interactable = false;
         }
 
         if(doPause)

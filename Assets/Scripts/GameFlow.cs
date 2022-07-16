@@ -24,6 +24,7 @@ public class GameFlow : MonoBehaviour
         GameOver
     }
 
+    public TextAsset JsonScriptToLoadDataMembers;
 
     private State gameStateInternal;
     public State GameState
@@ -38,7 +39,15 @@ public class GameFlow : MonoBehaviour
 
     public void QuitGameToTitle()
     {
+        GameState = State.Title;
+        Service.UI.OnGameHidden += OnGameHidden;
+        Service.UI.HideGame();
+    }
 
+    private void OnGameHidden()
+    {
+        Service.UI.OnGameHidden -= OnGameHidden;
+        Service.UI.GoBackToMenuFromGame();
     }
 
     /// <summary>
@@ -66,7 +75,7 @@ public class GameFlow : MonoBehaviour
     {
         Assert.IsNotNull(StartEvent);
 
-        Service.UI.OnFirstGameShown += OnGameStart;
+        Service.UI.OnStartGame += OnGameStart;
 
         if (Service.UI.instantStartGame)
         {
