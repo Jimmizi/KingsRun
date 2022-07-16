@@ -14,7 +14,8 @@ public class ChatBox : MonoBehaviour
     public Text SpeakerTextComponent;
     public Text SpeechTextComponent;
 
-    public Text NextLineMarker;
+    public CanvasGroup NextLineMarkerGroup;
+    public GameObject NextLineMarker;
     private Vector3 mLineMarkerStartPos;
     private float mLineMarkerTimer;
 
@@ -36,7 +37,7 @@ public class ChatBox : MonoBehaviour
 
     private float mConvEndOfLineSkipTimer = 0.0f;
 
-    private ConversationData mConversationToDisplay;
+    private ConversationData conversationToGoBackToAfterInterrupt;
 
     private ConversationData mCurrentConversationData = null;
     private ChoiceData mCurrentChoiceData = null;
@@ -75,10 +76,16 @@ public class ChatBox : MonoBehaviour
     /// </summary>
     private int mCurrentLineChar;
 
+    private int interruptedLineChar;
+    private int interruptedConvLine;
+
     /// <summary>
     /// Time before displaying the next character
     /// </summary>
     private float mCharacterTimer;
+
+    private int speedUpToChar = 0;
+    private bool autoSkipEndOfLine = false;
 
     #endregion
 
@@ -90,6 +97,13 @@ public class ChatBox : MonoBehaviour
 
     private bool mNextLinePressed;
     private bool mLineComplete;
+
+    private bool nextPressed;
+
+    public void GoToNext()
+    {
+        nextPressed = true;
+    }
 
     private void SetSpeakerName()
     {
@@ -160,10 +174,7 @@ public class ChatBox : MonoBehaviour
         mCurrentLineChar = 0;
         mProcessingChat = true;
 
-        NextLineMarker.color = new Color(NextLineMarker.color.r,
-                                         NextLineMarker.color.g,
-                                         NextLineMarker.color.b,
-                                         0f);
+        NextLineMarkerGroup.alpha = 0.0f;
     }
 
     /// <summary>
@@ -181,6 +192,21 @@ public class ChatBox : MonoBehaviour
 
         SetReadyToStart();
         ResetConversationToCurrentLine();
+    }
+
+    public void StartOrInterruptChat(ConversationData newConv)
+    {
+        if (mCurrentConversationData == null)
+        {
+            StartChat(newConv);
+        }
+        else
+        {
+            conversationToGoBackToAfterInterrupt = mCurrentConversationData;
+            interruptedLineChar = mCurrentLineChar;
+            interruptedConvLine = mCurrentConvLine;
+            StartChat(newConv);
+        }
     }
 
     /// <summary>
@@ -216,6 +242,7 @@ public class ChatBox : MonoBehaviour
     public void EndCleanup()
     {
         mCurrentConversationData = null;
+        conversationToGoBackToAfterInterrupt = null;
         mCurrentChoiceData = null;
     }
 
@@ -242,9 +269,36 @@ public class ChatBox : MonoBehaviour
 
         if (mIsConversation)
         {
-            StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
-            //Service.Party().ResetSpeakerMembers();
-            StopTypingSoundIfPossible();
+            if (conversationToGoBackToAfterInterrupt != null)
+            {
+                // Manually fire off events
+                foreach (var eventName in mCurrentConversationData.EventsToFire)
+                {
+                    var eventFile = (TextAsset)Resources.Load("Dialogue/" + eventName, typeof(TextAsset));
+
+                    Debug.AssertFormat(eventFile != null, $"Failed to load in event resource file: {eventName}");
+
+                    EventData evt = JsonDataExecuter.MakeEvent(eventFile);
+                    if (evt != null)
+                    {
+                        JsonDataExecuter.ProcessEvent(evt, true);
+                    }
+                }
+
+                StartChat(conversationToGoBackToAfterInterrupt);
+
+                conversationToGoBackToAfterInterrupt = null;
+
+                speedUpToChar = interruptedLineChar; //Changed this so that instead of instant display, we speed it up a bunch
+                mCurrentConvLine = interruptedConvLine;
+                //SpeechTextComponent.text = GetCurrentSpeech().Substring(0, mCurrentLineChar);
+            }
+            else
+            {
+                StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
+                //Service.Party().ResetSpeakerMembers();
+                StopTypingSoundIfPossible();
+            }
         }
         else
         {
@@ -285,7 +339,10 @@ public class ChatBox : MonoBehaviour
             //Iterate and append text until we've added it all
             if (!mLineComplete)
             {
-                if (mUnderscorePauseTimer > 0.0f && !Service.Config.IgnoreTextPauses)
+                bool bReachedSpeedUpChar = (speedUpToChar == 0 || speedUpToChar <= mCurrentLineChar);
+
+                // no pausing until reached speed up point
+                if (bReachedSpeedUpChar && mUnderscorePauseTimer > 0.0f && !Service.Config.IgnoreTextPauses)
                 {
                     mUnderscorePauseTimer -= Time.deltaTime;
                     return;
@@ -318,11 +375,21 @@ public class ChatBox : MonoBehaviour
                             }
                         }
 
+                        if (nextChar.Equals("^"))
+                        {
+                            autoSkipEndOfLine = true;
+                            return;
+                        }
                         //Completely gets skipped
-                        if (nextChar.Equals("_"))
+                        else if (nextChar.Equals("_"))
                         {
                             StopTypingSoundIfPossible();
-                            mUnderscorePauseTimer = UnderscorePauseTime;
+
+                            if (bReachedSpeedUpChar)
+                            {
+                                mUnderscorePauseTimer = UnderscorePauseTime;
+                            }
+
                             return;
                         }
                         else
@@ -330,30 +397,37 @@ public class ChatBox : MonoBehaviour
                             //These only add to the pause timer, also get added
                             if (nextChar.Equals(","))
                             {
-                                mUnderscorePauseTimer = CommaPauseTime;
+                                if(bReachedSpeedUpChar)
+                                    mUnderscorePauseTimer = CommaPauseTime;
                             }
                             else if (nextChar.Equals("."))
                             {
                                 StopTypingSoundIfPossible();
-                                mUnderscorePauseTimer = PeriodPauseTime;
 
-                                //if there are more characters
-                                if (mCurrentLineChar + 1 < GetCurrentSpeechLength()
-                                    && mCurrentLineChar > 0)
+                                if (bReachedSpeedUpChar)
                                 {
-                                    //If there isn't a period in front or behind us, double the length of the pause
-                                    //  don't want to make "..." super long
-                                    if (!GetCurrentSpeech().Substring(mCurrentLineChar, 1).Equals(".")
-                                    && !GetCurrentSpeech().Substring(mCurrentLineChar-1, 1).Equals("."))
+                                    mUnderscorePauseTimer = PeriodPauseTime;
+
+                                    //if there are more characters
+                                    if (mCurrentLineChar + 1 < GetCurrentSpeechLength()
+                                        && mCurrentLineChar > 0)
                                     {
-                                        mUnderscorePauseTimer += PeriodPauseTime;
+                                        //If there isn't a period in front or behind us, double the length of the pause
+                                        //  don't want to make "..." super long
+                                        if (!GetCurrentSpeech().Substring(mCurrentLineChar, 1).Equals(".")
+                                            && !GetCurrentSpeech().Substring(mCurrentLineChar - 1, 1).Equals("."))
+                                        {
+                                            mUnderscorePauseTimer += PeriodPauseTime;
+                                        }
                                     }
                                 }
                             }
                             else if (nextChar.Equals("!") || nextChar.Equals("?"))
                             {
                                 StopTypingSoundIfPossible();
-                                mUnderscorePauseTimer = PeriodPauseTime * 2;
+
+                                if(bReachedSpeedUpChar)
+                                    mUnderscorePauseTimer = PeriodPauseTime * 2;
                             }
 
                             SpeechTextComponent.text += nextChar;
@@ -362,7 +436,7 @@ public class ChatBox : MonoBehaviour
                 }
                 else
                 {
-                    mCharacterTimer += Time.deltaTime;
+                    mCharacterTimer += Time.deltaTime * (bReachedSpeedUpChar ? 1.0f : 3.0f);
                 }
 
                 if (Service.Config.InstantText)
@@ -375,20 +449,25 @@ public class ChatBox : MonoBehaviour
                 if (mLineComplete)
                 {
                     StopTypingSoundIfPossible();
-                    NextLineMarker.transform.position = mLineMarkerStartPos;
-                    StartCoroutine(FadeLineMarkerGroup(0.0f, 1.0f, 0.5f));
+
+                    if (!autoSkipEndOfLine)
+                    {
+                        NextLineMarker.transform.position = mLineMarkerStartPos;
+                        StartCoroutine(FadeLineMarkerGroup(0.0f, 1.0f, 0.5f));
+                    }
+
                     mLineMarkerTimer = 0;
                 }
 
                 return;
             }
             //If we're done with appending text, wait until the player has pressed something to advance text
-            else if (!Input.anyKey)
+            else if (!nextPressed)
             {
                 mNextLinePressed = false;
                 mNeedEndOfLineMarker = true;
 
-                if (!Service.Config.AutomaticEndOfLineSkip)
+                if (!Service.Config.AutomaticEndOfLineSkip && !autoSkipEndOfLine)
                 {
                     return;
                 }
@@ -410,8 +489,11 @@ public class ChatBox : MonoBehaviour
                 return;
             }
 
+            nextPressed = false;
             mNextLinePressed = true;
             mNeedEndOfLineMarker = false;
+            autoSkipEndOfLine = false;
+            speedUpToChar = 0;
 
             StartCoroutine(FadeLineMarkerGroup(1.0f, 0.0f, 0.25f));
 
@@ -493,6 +575,7 @@ public class ChatBox : MonoBehaviour
         Service.Text = this;
         AlphaGroup.alpha = 0;
         ButtonAlphaGroup.alpha = 0;
+        NextLineMarkerGroup.alpha = 0;
         mLineMarkerStartPos = NextLineMarker.transform.position;
     }
 
@@ -602,7 +685,7 @@ public class ChatBox : MonoBehaviour
     }
     public IEnumerator FadeLineMarkerGroup(float startAlpha, float endAlpha, float duration)
     {
-        if (Math.Abs(NextLineMarker.color.a - endAlpha) > 0.01f)
+        if (Math.Abs(NextLineMarkerGroup.alpha - endAlpha) > 0.01f)
         {
             float elapsedTime = 0f;
             float totalDuration = duration;
@@ -612,10 +695,7 @@ public class ChatBox : MonoBehaviour
                 elapsedTime += Time.deltaTime;
                 float currentAlpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / totalDuration);
 
-                NextLineMarker.color = new Color(NextLineMarker.color.r,
-                                                 NextLineMarker.color.g,
-                                                 NextLineMarker.color.b, 
-                                                 currentAlpha);
+                NextLineMarkerGroup.alpha = currentAlpha;
 
                 yield return null;
             }

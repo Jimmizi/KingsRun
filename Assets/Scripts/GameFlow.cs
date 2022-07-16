@@ -44,8 +44,15 @@ public class GameFlow : MonoBehaviour
     /// </summary>
     public TextAsset StartEvent;
 
+    [SerializeField]
+    private bool startGameHidden;
+
+    [SerializeField]
+    [Tooltip("Time to delay at the start of the game before fading in (if startGameHidden set)")]
+    private float startHiddenShowDelayTime = 1.0f;
+
+
     private JsonDataExecuter mExecuter = new JsonDataExecuter();
-    
     
     void Awake()
     {
@@ -58,6 +65,7 @@ public class GameFlow : MonoBehaviour
         Assert.IsNotNull(StartEvent);
 
         Service.UI.OnFirstGameShown += OnGameStart;
+        Service.UI.ProcessGameStartFade();
     }
 
     void Update()
@@ -87,7 +95,7 @@ public class GameFlow : MonoBehaviour
     private void StateGameInit()
     {
         Debug.Assert(!mExecuter.Processing);
-        mExecuter.GiveJsonToExecute(CurrentTextFormat.Event, StartEvent.text);
+        JsonDataExecuter.GiveJsonToExecute(CurrentTextFormat.Event, StartEvent.text);
 
         GameState = State.GameUpdate;
     }
