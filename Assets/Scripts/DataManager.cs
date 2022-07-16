@@ -79,6 +79,7 @@ public class DataManager : MonoBehaviour
     {
         foreach (var data in intData)
         {
+            Debug.Log($"Saving PlayerPref {data.Key} as {intData[data.Key]}");
             PlayerPrefs.SetInt(data.Key, intData[data.Key]);
         }
     }

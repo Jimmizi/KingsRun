@@ -13,6 +13,8 @@ public class ChatBox : MonoBehaviour
     private const int MAX_CHOICES = 4;
     #region Public settings
 
+    public AudioClip TextDisplayClip;
+
     public Text SpeakerTextComponent;
     public Text SpeechTextComponent;
     public TMP_Text SpeechTextProComponent;
@@ -28,6 +30,7 @@ public class ChatBox : MonoBehaviour
     public CanvasGroup AlphaGroup;
     public CanvasGroup ButtonAlphaGroup;
 
+    
     /// <summary>
     /// How long to wait between appending characters to the speech box
     /// </summary>
@@ -65,7 +68,19 @@ public class ChatBox : MonoBehaviour
 
     private bool mTypingLoopPlaying;
 
-    public bool PausePlayback;
+    private bool PausePlayback;
+
+    public void SetPausePlayback()
+    {
+        PausePlayback = true;
+        AddText("-");
+        StopTypingSoundIfPossible();
+    }
+
+    public void UnpausePlayback()
+    {
+        PausePlayback = false;
+    }
 
     public bool Processing
     {
@@ -166,7 +181,7 @@ public class ChatBox : MonoBehaviour
         mCurrentChoiceData = null;
 
         SetButtons(false);
-        StartCoroutine(FadeChatGroup(0.0f, 1.0f, 0.5f));
+        //StartCoroutine(FadeChatGroup(0.0f, 1.0f, 0.5f));
 
         SetReadyToStart();
         ResetConversationToCurrentLine();
@@ -276,7 +291,8 @@ public class ChatBox : MonoBehaviour
             }
             else
             {
-                StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
+                SetText("");
+                //StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
                 StopTypingSoundIfPossible();
             }
         }
@@ -290,6 +306,7 @@ public class ChatBox : MonoBehaviour
     {
         if (!mTypingLoopPlaying)
         {
+            Service.Flow.TextBoxAudioSource.Play();
             //Service.Audio().PlayTypingLoop();
             mTypingLoopPlaying = true;
         }
@@ -299,7 +316,8 @@ public class ChatBox : MonoBehaviour
     {
         if (mTypingLoopPlaying)
         {
-           // Service.Audio().StopTypingLoop();
+            Service.Flow.TextBoxAudioSource.Stop();
+            // Service.Audio().StopTypingLoop();
             mTypingLoopPlaying = false;
         }
     }
@@ -444,6 +462,14 @@ public class ChatBox : MonoBehaviour
                             Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
                         }
                     }
+
+                    if (!mCurrentConversationData.ShowQuitButtonStartOfLine 
+                        && mCurrentConversationData.ShowQuitButtonLine == mCurrentConvLine)
+                    {
+                        Debug.Log("Showing quit button");
+                        Service.QuitButtonObj.SetGoActive(true);
+                        Service.QuitButtonObj.SetButtonActive(false);
+                    }
                 }
 
                 return;
@@ -490,6 +516,14 @@ public class ChatBox : MonoBehaviour
                     {
                         Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
                     }
+                }
+
+                if (mCurrentConversationData.ShowQuitButtonStartOfLine
+                    && mCurrentConversationData.ShowQuitButtonLine == mCurrentConvLine)
+                {
+                    Debug.Log("Showing quit button");
+                    Service.QuitButtonObj.SetGoActive(true);
+                    Service.QuitButtonObj.SetButtonActive(false);
                 }
             }
             else
@@ -581,7 +615,8 @@ public class ChatBox : MonoBehaviour
     void Awake()
     {
         Service.Text = this;
-        AlphaGroup.alpha = 0;
+        SetText("");
+        //AlphaGroup.alpha = 0;
         ButtonAlphaGroup.alpha = 0;
         NextLineMarkerGroup.alpha = 0;
         mLineMarkerStartPos = NextLineMarker.transform.position;
@@ -589,6 +624,9 @@ public class ChatBox : MonoBehaviour
 
     void Start()
     {
+        Service.Flow.TextBoxAudioSource.clip = TextDisplayClip;
+        Service.Flow.TextBoxAudioSource.loop = true;
+
         NextLineButton = NextLineMarker.GetComponent<Button>();
         Debug.Assert(NextLineButton != null);
 
