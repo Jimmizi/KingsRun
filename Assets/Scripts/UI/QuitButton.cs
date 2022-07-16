@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
-using UnityEditor.Experimental.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
+using RectTransform = UnityEngine.RectTransform;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
@@ -16,19 +15,20 @@ public class QuitButton : MonoBehaviour
 
     public RectTransform KeepWithinBounds;
     private Vector2 vTargetPosition = new Vector2();
+    private Vector2 vStartPosition;
 
     private Bounds activeBounds;
     private Rect activeBoundsRect;
 
     private Button uiButton;
-
-    // Start is called before the first frame update
+    
     void Start()
     {
         uiButton = GetComponent<Button>();
 
         activeBounds = GetRectTransformBounds(KeepWithinBounds);
         activeBoundsRect = new Rect(activeBounds.min, activeBounds.size);
+        vStartPosition = (transform as RectTransform)?.anchoredPosition ?? Vector2.zero;
     }
 
     // Update is called once per frame
@@ -37,6 +37,10 @@ public class QuitButton : MonoBehaviour
         
     }
 
+    public void ResetPosition()
+    {
+        MoveToStartingPosition();
+    }
 
     public void OnButtonClicked()
     {
@@ -164,28 +168,19 @@ public class QuitButton : MonoBehaviour
 
             vTargetPosition = rectTransform.anchoredPosition - vDiff;
             StartCoroutine(GoToTargetPosition());
-            //rectTransform.anchoredPosition = vTargetPosition;
+        }
+    }
+
+    private void MoveToStartingPosition()
+    {
+        if (!uiButton.interactable)
+        {
+            return;
         }
 
-        //float fFurthestDist = 0.0f;
-        //Vector2 vFurthest = screenRect.center;
-
-        //Vector2 vCursorPos = Input.mousePosition;
-
-        //foreach (var point in validCentersStageTwo)
-        //{
-        //    float fDist = Vector2.Distance(point, vCursorPos);
-        //    if (fDist > fFurthestDist)
-        //    {
-        //        fFurthestDist = fDist;
-        //        vFurthest = point;
-        //    }
-        //}
-
-        //Vector2 vDiff = screenRect.center - vFurthest;
-
-        //vTargetPosition = rectTransform.anchoredPosition - vDiff;
-        //rectTransform.anchoredPosition = vTargetPosition;
+        Debug.Assert(vStartPosition != Vector2.zero);
+        vTargetPosition = vStartPosition;
+        StartCoroutine(GoToTargetPosition());
     }
 
     IEnumerator GoToTargetPosition()
