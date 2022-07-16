@@ -503,6 +503,7 @@ public class ChatBox : MonoBehaviour
         Service.Text = this;
         AlphaGroup.alpha = 0;
         ButtonAlphaGroup.alpha = 0;
+        NextButtonGroup.alpha = 0;
         mLineMarkerStartPos = NextLineMarker.transform.position;
     }
 
