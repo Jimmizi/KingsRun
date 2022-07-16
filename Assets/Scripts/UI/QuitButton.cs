@@ -9,6 +9,8 @@ using Vector3 = UnityEngine.Vector3;
 [RequireComponent(typeof(Button))]
 public class QuitButton : MonoBehaviour
 {
+    public TextAsset InterruptDialogue;
+
     public EaserEase MoveType;
 
     public float MoveTime = 1.0f;
@@ -44,6 +46,12 @@ public class QuitButton : MonoBehaviour
 
     public void OnButtonClicked()
     {
+        if (InterruptDialogue != null)
+        {
+            ConversationData data = JsonDataExecuter.MakeConversation(InterruptDialogue);
+            Service.Text.StartOrInterruptChat(data);
+        }
+
         MoveToFreePlace();
     }
 

@@ -12,25 +12,57 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class JsonDataExecuter
 {
-    private bool mProcessingJson;
+    private static bool mProcessingJson;
 
     public bool Processing => mProcessingJson;
 
-    private string mLastSceneNameAdded = "";
+    private static string mLastSceneNameAdded = "";
 
-    private CurrentTextFormat mFormatProcessing;
+    private static CurrentTextFormat mFormatProcessing;
 
-    private LinkedList<EventData> mQueuedEvents = new LinkedList<EventData>();
-    private EventData mCurrentEvent = null;
-    private bool processedConditionOnCurrentEvent = false;
+    private static LinkedList<EventData> mQueuedEvents = new LinkedList<EventData>();
+    private static EventData mCurrentEvent = null;
+    private static bool processedConditionOnCurrentEvent = false;
 
-    private ConversationData mCurrentConversationData = null;
-    private ChoiceData mCurrentChoiceData = null;
+    private static ConversationData mCurrentConversationData = null;
+    private static ChoiceData mCurrentChoiceData = null;
 
-    private bool mDelayStarted;
-    private float mDelayTimer;
-    
-    private void LoadEvent(string json, bool addToFront)
+    private static bool mDelayStarted;
+    private static float mDelayTimer;
+
+    public static ConversationData MakeConversation(TextAsset jsonFile)
+    {
+        Debug.Assert(jsonFile != null);
+        return MakeConversation(jsonFile.text);
+    }
+    public static ConversationData MakeConversation(string json)
+    {
+        ConversationData data = JsonUtility.FromJson<ConversationData>(json);
+        if (data.Equals(new ConversationData()))
+        {
+            throw new Exception("Managed to attempt loading an invalid Conversation Data file. json = " + json);
+        }
+
+        return data;
+    }
+
+    public static EventData MakeEvent(TextAsset jsonFile)
+    {
+        Debug.Assert(jsonFile != null);
+        return MakeEvent(jsonFile.text);
+    }
+    public static EventData MakeEvent(string json)
+    {
+        EventData data = JsonUtility.FromJson<EventData>(json);
+        if (data.Equals(new EventData()))
+        {
+            throw new Exception("Managed to attempt loading an invalid event Data file. json = " + json);
+        }
+
+        return data;
+    }
+
+    private static void LoadEvent(string json, bool addToFront)
     {
         Debug.Log("Loading EventData: " + json);
 
@@ -48,16 +80,11 @@ public class JsonDataExecuter
             throw new Exception("Managed to attempt loading an invalid Event Data file. json = " + json);
         }
     }
-    private void LoadConversation(string json)
+    private static void LoadConversation(string json)
     {
-        mCurrentConversationData = JsonUtility.FromJson<ConversationData>(json);
-
-        if (mCurrentConversationData.Equals(new ConversationData()))
-        {
-            throw new Exception("Managed to attempt loading an invalid Conversation Data file. json = " + json);
-        }
+        mCurrentConversationData = MakeConversation(json);
     }
-    private void LoadChoice(string json)
+    private static void LoadChoice(string json)
     {
         mCurrentChoiceData = JsonUtility.FromJson<ChoiceData>(json);
 
@@ -71,7 +98,7 @@ public class JsonDataExecuter
     /// Add the name of the event to the queue of events to process in order
     /// </summary>
     /// <param name="eventName">path and name of the event from the Resource/Dialogue/ folder</param>
-    private void AddEventNameToQueue(string eventName, bool addToFront)
+    private static void AddEventNameToQueue(string eventName, bool addToFront)
     {
         var eventFile = (TextAsset)Resources.Load("Dialogue/" + eventName, typeof(TextAsset));
 
@@ -79,15 +106,15 @@ public class JsonDataExecuter
 
         LoadEvent(eventFile.text, addToFront);
     }
-    private void AddEventNamesToQueue(List<string> eventNames)
+    private static void AddEventNamesToQueue(List<string> eventNames)
     {
         foreach (var evt in eventNames)
         {
             AddEventNameToQueue(evt, mCurrentEvent.AddsEventsToFrontOfQueue);
         }
     }
-
-    public void GiveJsonToExecute(CurrentTextFormat jsonFormat, string json)
+    
+    public static void GiveJsonToExecute(CurrentTextFormat jsonFormat, string json)
     {
         mFormatProcessing = jsonFormat;
 
@@ -111,19 +138,19 @@ public class JsonDataExecuter
 
     #region Processing Events
     
-    private bool DoesEventConditionPass()
+    private static bool DoesEventConditionPass(EventData evt)
     {
         // Invalid condition settings - we're good to go
-        if (mCurrentEvent.ConditionKey.Length == 0 || mCurrentEvent.Condition.Length == 0)
+        if (evt.ConditionKey.Length == 0 || evt.Condition.Length == 0)
         {
             return true;
         }
 
-        int? data = Service.Data.TryGetData(mCurrentEvent.ConditionKey);
+        int? data = Service.Data.TryGetData(evt.ConditionKey);
 
         if (!data.HasValue)
         {
-            Debug.LogWarning($"Failed to find condition key of {mCurrentEvent.ConditionKey}");
+            Debug.LogWarning($"Failed to find condition key of {evt.ConditionKey}");
             return true;
         }
 
@@ -133,14 +160,14 @@ public class JsonDataExecuter
 
         bool TryGetConditionType(string condition)
         {
-            bool containsType = mCurrentEvent.Condition.Contains(condition);
+            bool containsType = evt.Condition.Contains(condition);
 
             if (containsType)
             {
                 numConditions++;
 
                 // Nothing should be before the condition ">=55" (FOR NOW)
-                indexOfCondition = mCurrentEvent.Condition.IndexOf(condition);
+                indexOfCondition = evt.Condition.IndexOf(condition);
                 Debug.Assert(indexOfCondition == 0);
 
                 indexOfNumber = condition.Length;
@@ -158,11 +185,11 @@ public class JsonDataExecuter
 
         if (numConditions != 1)
         {
-            Debug.LogError($"Found invalid number of conditions ({numConditions}) for evaluating {mCurrentEvent.ConditionKey} - Condition: {mCurrentEvent.Condition}");
+            Debug.LogError($"Found invalid number of conditions ({numConditions}) for evaluating {evt.ConditionKey} - Condition: {evt.Condition}");
             return true;
         }
 
-        string strNumber = mCurrentEvent.Condition.Substring(indexOfNumber);
+        string strNumber = evt.Condition.Substring(indexOfNumber);
         int number = 0;
 
         try
@@ -200,19 +227,19 @@ public class JsonDataExecuter
             return data.Value != number;
         }
 
-        Debug.LogError($"Shouldn't have gotten down here: {mCurrentEvent.ConditionKey} - {mCurrentEvent.Condition}");
+        Debug.LogError($"Shouldn't have gotten down here: {evt.ConditionKey} - {evt.Condition}");
         return false;
     }
 
 
-    private bool ProcessEvent_Damage()
+    private static bool ProcessEvent_Damage(EventData evt)
     {
         
 
         return true;
     }
 
-    private bool ProcessEvent_Delay()
+    private static bool ProcessEvent_Delay(EventData evt)
     {
         if (!mDelayStarted)
         {
@@ -220,7 +247,7 @@ public class JsonDataExecuter
             mDelayTimer = 0.0f;
         }
 
-        if (mDelayTimer < mCurrentEvent.DelayTime)
+        if (mDelayTimer < evt.DelayTime)
         {
             mDelayTimer += Time.deltaTime;
             return false;
@@ -231,7 +258,7 @@ public class JsonDataExecuter
         return true;
     }
 
-    private bool ProcessEvent_LoadRoom()
+    private static bool ProcessEvent_LoadRoom(EventData evt)
     {
         //Not the first load scene
         if (mLastSceneNameAdded.Length > 0)
@@ -252,8 +279,8 @@ public class JsonDataExecuter
             }
         }
 
-        if(mCurrentEvent.SceneName.ToLower().Equals("credits")
-        || mCurrentEvent.SceneName.ToLower().Equals("failed"))
+        if(evt.SceneName.ToLower().Equals("credits")
+        || evt.SceneName.ToLower().Equals("failed"))
         {
             //Service.Party().KillParty(true);
             //Service.UI.SetCameraFaderAlpha(false);
@@ -277,59 +304,59 @@ public class JsonDataExecuter
             scenesInBuild.Add(scenePath.Substring(lastSlash + 1, scenePath.LastIndexOf(".") - lastSlash - 1));
         }
 
-        Assert.IsTrue(scenesInBuild.Contains(mCurrentEvent.SceneName), mCurrentEvent.SceneName + " is not in the build list!");
+        Assert.IsTrue(scenesInBuild.Contains(evt.SceneName), evt.SceneName + " is not in the build list!");
 
         //Make sure the scene exists above, then load it additively if so
-        SceneManager.LoadScene(mCurrentEvent.SceneName, LoadSceneMode.Additive);
+        SceneManager.LoadScene(evt.SceneName, LoadSceneMode.Additive);
 
         if (!Service.UI.IsCurrentlyFading)
         {
             Service.UI.ShowGame();
         }
 
-        mLastSceneNameAdded = mCurrentEvent.SceneName;
+        mLastSceneNameAdded = evt.SceneName;
         return true;
     }
 
-    private bool ProcessEvent_Conversation()
+    private static bool ProcessEvent_Conversation(EventData evt)
     {
-        var convFile = (TextAsset)Resources.Load("Dialogue/" + mCurrentEvent.OpenConversationFile, typeof(TextAsset));
+        var convFile = (TextAsset)Resources.Load("Dialogue/" + evt.OpenConversationFile, typeof(TextAsset));
 
-        Assert.IsNull(mCurrentConversationData, "conversation was already loaded when we tried to add a new one: " + mCurrentEvent.OpenConversationFile);
-        Assert.IsNotNull(convFile, "failed to load conversation " + mCurrentEvent.OpenConversationFile);
+        Assert.IsNull(mCurrentConversationData, "conversation was already loaded when we tried to add a new one: " + evt.OpenConversationFile);
+        Assert.IsNotNull(convFile, "failed to load conversation " + evt.OpenConversationFile);
 
         LoadConversation(convFile.text);
 
         return true;
     }
 
-    private bool ProcessEvent_Choice()
+    private static bool ProcessEvent_Choice(EventData evt)
     {
-        var choiceFile = (TextAsset)Resources.Load("Dialogue/" + mCurrentEvent.OpenChoiceFile, typeof(TextAsset));
+        var choiceFile = (TextAsset)Resources.Load("Dialogue/" + evt.OpenChoiceFile, typeof(TextAsset));
 
-        Assert.IsNull(mCurrentChoiceData, "choice was already loaded when we tried to add a new one: " + mCurrentEvent.OpenChoiceFile);
-        Assert.IsNotNull(choiceFile, "failed to load choice " + mCurrentEvent.OpenChoiceFile);
+        Assert.IsNull(mCurrentChoiceData, "choice was already loaded when we tried to add a new one: " + evt.OpenChoiceFile);
+        Assert.IsNotNull(choiceFile, "failed to load choice " + evt.OpenChoiceFile);
 
         LoadChoice(choiceFile.text);
 
         return true;
     }
 
-    private bool ProcessEvent_Inventory()
+    private static bool ProcessEvent_Inventory(EventData evt)
     {
         return true;
     }
 
-    private bool ProcessEvent_Event()
+    private static bool ProcessEvent_Event(EventData evt)
     {
         //Just add the events in this to the queue and we're done with this event
-        AddEventNamesToQueue(mCurrentEvent.EventsToFire);
+        AddEventNamesToQueue(evt.EventsToFire);
         return true;
     }
 
-    private bool ProcessEvent_DeclareDataMembers()
+    private static bool ProcessEvent_DeclareDataMembers(EventData evt)
     {
-        if (mCurrentEvent.Keys.Count != mCurrentEvent.Values.Count)
+        if (evt.Keys.Count != evt.Values.Count)
         {
             Debug.LogError("DeclareDataMembers: number of keys and values do not match.");
             return true;
@@ -341,9 +368,9 @@ public class JsonDataExecuter
             return true;
         }
 
-        for (int i = 0; i < mCurrentEvent.Keys.Count; ++i)
+        for (int i = 0; i < evt.Keys.Count; ++i)
         {
-            Service.Data.AddDataMember(mCurrentEvent.Keys[i], mCurrentEvent.Values[i]);
+            Service.Data.AddDataMember(evt.Keys[i], evt.Values[i]);
         }
 
         Service.Data.LoadAll();
@@ -351,9 +378,9 @@ public class JsonDataExecuter
         return true;
     }
 
-    private bool ProcessEvent_SetData()
+    private static bool ProcessEvent_SetData(EventData evt)
     {
-        if (mCurrentEvent.Keys.Count != mCurrentEvent.Values.Count)
+        if (evt.Keys.Count != evt.Values.Count)
         {
             Debug.LogError("SetData: number of keys and values do not match.");
             return true;
@@ -365,9 +392,40 @@ public class JsonDataExecuter
             return true;
         }
 
-        for (int i = 0; i < mCurrentEvent.Keys.Count; ++i)
+        for (int i = 0; i < evt.Keys.Count; ++i)
         {
-            Service.Data.TrySetData(mCurrentEvent.Keys[i], mCurrentEvent.Values[i]);
+            Service.Data.TrySetData(evt.Keys[i], evt.Values[i]);
+        }
+
+        return true;
+    }
+
+    public static bool ProcessEvent(EventData evt, bool tryCondition)
+    {
+        if (tryCondition)
+        {
+            if (!DoesEventConditionPass(evt))
+            {
+                return true;
+            }
+            else if (evt.KillOtherEventsWhenConditionTrue)
+            {
+                mQueuedEvents.Clear();
+            }
+        }
+        switch (evt.Type.ToLower())
+        {
+            case "damage": return ProcessEvent_Damage(evt);
+            case "delay": return ProcessEvent_Delay(evt); 
+            case "loadroom": return ProcessEvent_LoadRoom(evt); 
+            case "conversation": return ProcessEvent_Conversation(evt); 
+            case "choice": return ProcessEvent_Choice(evt); 
+            case "inventory": return ProcessEvent_Inventory(evt); 
+            case "event": return ProcessEvent_Event(evt); 
+            case "declaredatamembers": return ProcessEvent_DeclareDataMembers(evt); 
+            case "setdata": return ProcessEvent_SetData(evt); 
+
+            default: throw new Exception("Event of type " + evt.Type.ToLower() + " is not supported.");
         }
 
         return true;
@@ -375,38 +433,9 @@ public class JsonDataExecuter
     
     private void ProcessCurrentEvent()
     {
-        var doneProcessing = false;
+        var doneProcessing = ProcessEvent(mCurrentEvent, !processedConditionOnCurrentEvent);
+        processedConditionOnCurrentEvent = true;
 
-        if (!processedConditionOnCurrentEvent)
-        {
-            processedConditionOnCurrentEvent = true;
-            if (!DoesEventConditionPass())
-            {
-                doneProcessing = true;
-            }
-            else if(mCurrentEvent.KillOtherEventsWhenConditionTrue)
-            {
-                mQueuedEvents.Clear();
-            }
-        }
-
-        if(!doneProcessing)
-        {
-            switch (mCurrentEvent.Type.ToLower())
-            {
-                case "damage": doneProcessing = ProcessEvent_Damage();  break;
-                case "delay": doneProcessing = ProcessEvent_Delay(); break;
-                case "loadroom": doneProcessing = ProcessEvent_LoadRoom(); break;
-                case "conversation": doneProcessing = ProcessEvent_Conversation(); break;
-                case "choice": doneProcessing = ProcessEvent_Choice(); break;
-                case "inventory": doneProcessing = ProcessEvent_Inventory(); break;
-                case "event": doneProcessing = ProcessEvent_Event(); break;
-                case "declaredatamembers": doneProcessing = ProcessEvent_DeclareDataMembers(); break;
-                case "setdata": doneProcessing = ProcessEvent_SetData(); break;
-
-                default: throw new Exception("Event of type " + mCurrentEvent.Type.ToLower() + " is not supported.");
-            }
-        }
         if (doneProcessing)
         {
             processedConditionOnCurrentEvent = false;

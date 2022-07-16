@@ -95,7 +95,7 @@ public class GameFlow : MonoBehaviour
     private void StateGameInit()
     {
         Debug.Assert(!mExecuter.Processing);
-        mExecuter.GiveJsonToExecute(CurrentTextFormat.Event, StartEvent.text);
+        JsonDataExecuter.GiveJsonToExecute(CurrentTextFormat.Event, StartEvent.text);
 
         GameState = State.GameUpdate;
     }
