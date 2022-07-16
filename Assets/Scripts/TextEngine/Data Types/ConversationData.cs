@@ -38,4 +38,13 @@ public class ConversationData
     /// List of events to fire. Only the first choice or conversation event is accepted if there are duplicates.
     /// </summary>
     public List<string> EventsToFire = new List<string>();
+
+    public int QuitButtonInterruptLineToResetButton = -1;
+    public bool MoveQuitButtonAtStartOfLine = false;
+    public float QuitButtonMoveSpeedOverride = 0.0f;
+
+    public bool QuitGameAfterConversationFinish = false;
+
+    public string DataToSetAfterLines = "";
+    public int DataValue = 0;
 }

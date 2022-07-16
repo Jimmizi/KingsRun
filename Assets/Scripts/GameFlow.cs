@@ -36,7 +36,10 @@ public class GameFlow : MonoBehaviour
         }
     }
 
+    public void QuitGameToTitle()
+    {
 
+    }
 
     /// <summary>
     /// Event File to start off the game
@@ -64,6 +67,11 @@ public class GameFlow : MonoBehaviour
         Assert.IsNotNull(StartEvent);
 
         Service.UI.OnFirstGameShown += OnGameStart;
+
+        if (Service.UI.instantStartGame)
+        {
+            Service.UI.ProcessGameStartFade(true);
+        }
     }
 
     void Update()
@@ -100,9 +108,6 @@ public class GameFlow : MonoBehaviour
 
     private void StateGameUpdate()
     {
-        if (mExecuter.Update())
-        {
-            GameState = State.GameOver;
-        }
+        mExecuter.Update();
     }
 }

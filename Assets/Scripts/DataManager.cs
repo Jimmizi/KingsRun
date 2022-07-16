@@ -20,6 +20,7 @@ public class DataManager : MonoBehaviour
     {
         if (intData.ContainsKey(key))
         {
+            Debug.Log($"PlayerPrefs: Setting data key {key} to {data}");
             intData[key] = data;
         }
 

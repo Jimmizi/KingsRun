@@ -1,8 +1,13 @@
 {
     "Lines": 
     [
-        "Ah yes... you've found the quit button; very exciting.",
+        "Ah yes..._ you've found the quit button; very exciting.",
         "Just make sure you don't accidently press it again will you.",
+        "In fact I'll move it back for you._There.",
         "Anyway...^"
-    ]
+    ],
+
+    "QuitButtonInterruptLineToResetButton": 2,
+    "MoveQuitButtonAtStartOfLine": false,
+    "QuitButtonMoveSpeedOverride": 0.5
 }

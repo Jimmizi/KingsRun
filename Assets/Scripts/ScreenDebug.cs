@@ -57,6 +57,11 @@ public class ScreenDebug : MonoBehaviour
 
         AddTextLeft($"Fade: {Service.UI.FadeState.ToString()}");
         AddTextLeft($"Game: {Service.Flow.GameState.ToString()}");
+        AddTextLeft($"Next Pressed: {(Service.Text.nextPressed ? "Y": "N")}");
+        if (Service.Text.NextLineButton != null)
+        {
+            AddTextLeft($"Next Button Ready: {(Service.Text.NextLineButton.interactable ? "Y" : "N")}");
+        }
 
         if (GUI.Button(new Rect(Screen.width - 205, 5, 200, 24), "Reset Data"))
         {
