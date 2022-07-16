@@ -107,12 +107,15 @@ public class Picker : MonoBehaviour
 
     void ThrowObjects()
     {
-        GameObject[] pickedObjects = new GameObject[heldPickups.Count];
-        for (int i = 0; i < pickedObjects.Length; i++)
+        if (heldPickups.Count > 0)
         {
-            pickedObjects[i] = heldPickups[i].pickable.gameObject;
+            GameObject[] pickedObjects = new GameObject[heldPickups.Count];
+            for (int i = 0; i < pickedObjects.Length; i++)
+            {
+                pickedObjects[i] = heldPickups[i].pickable.gameObject;
+            }
+            heldPickups.Clear();
+            diceRollRigger.SimulateThrow(pickedObjects);
         }
-        heldPickups.Clear();
-        diceRollRigger.SimulateThrow(pickedObjects);
     }
 }

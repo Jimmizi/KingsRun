@@ -61,9 +61,7 @@ public class DiceRollRigger : MonoBehaviour
             foreach (Pairing pairing in predictionPairings.Values)
             {
                 if (pairing.simulatedPositions.Count > simulatedFrame)
-                {
-                    pairing.realRigidBody.position = pairing.simulatedPositions[simulatedFrame];
-                    pairing.realRigidBody.rotation = pairing.simulatedRotations[simulatedFrame];
+                {                                        
                     anySimulated = true;
 
                     float adjustBy = Mathf.Min(20, pairing.lastMovementFrame);
@@ -72,6 +70,7 @@ public class DiceRollRigger : MonoBehaviour
                     Quaternion rotation = pairing.rotationAdjustment;
 
                     pairing.realRigidBody.rotation = rotation * pairing.simulatedRotations[simulatedFrame];
+                    pairing.realRigidBody.position = pairing.simulatedPositions[simulatedFrame];
                 }
             }
 
@@ -110,10 +109,11 @@ public class DiceRollRigger : MonoBehaviour
         List<Pairing> pairingsToSimulate = new List<Pairing>();
         simulatedFrame = 0;
 
-        foreach (var predictionPairing in predictionPairings)
+        foreach (Pairing pairing in predictionPairings.Values)
         {
-            predictionPairing.Value.simulatedPositions.Clear();
-            predictionPairing.Value.simulatedRotations.Clear();
+            pairing.simulatedPositions.Clear();
+            pairing.simulatedRotations.Clear();
+            pairing.lastMovementFrame = -1;
         }
 
         foreach (GameObject die in diceToSimulate)
@@ -161,11 +161,15 @@ public class DiceRollRigger : MonoBehaviour
             }
 
             Die die = pairing.realObject.GetComponent<Die>();
-            if (die)
+            if (die && pairing.lastMovementFrame >= 0)
             {
                 int targetValue = 6;
                 Quaternion lastSimulatedRotation = pairing.simulatedRotations[pairing.lastMovementFrame];
                 pairing.rotationAdjustment = die.GetRequiredRotationToValue(lastSimulatedRotation, targetValue);
+            }
+            else
+            {
+                pairing.rotationAdjustment = Quaternion.identity;
             }
         }
     }
