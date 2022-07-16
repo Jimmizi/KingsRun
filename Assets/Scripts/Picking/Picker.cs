@@ -11,6 +11,9 @@ class Pickup
 
 public class Picker : MonoBehaviour
 {
+    [SerializeField]
+    float holdDistance = 10;
+
     List<Pickup> heldPickups = new List<Pickup>();
 
     // Start is called before the first frame update
@@ -38,7 +41,7 @@ public class Picker : MonoBehaviour
         }
 
         Vector3 mousePos = Input.mousePosition;
-        mousePos.z = 10;
+        mousePos.z = holdDistance;
 
         Vector3 newPos = Camera.main.ScreenToWorldPoint(mousePos);
 
