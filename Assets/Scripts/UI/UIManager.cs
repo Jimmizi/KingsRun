@@ -128,6 +128,7 @@ public class UIManager : MonoBehaviour
             StartCoroutine(Start_ShowGame());
         }
 
+        // Hide the quit button - dialogue scripts will reveal this later on in the story
         Service.QuitButtonObj.SetGoActive(false);
 
         if (!instant)
