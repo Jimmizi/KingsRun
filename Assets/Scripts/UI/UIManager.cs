@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -10,6 +11,9 @@ public class UIManager : MonoBehaviour
 
     public enum ScreenFadeState
     {
+        TitleStart,
+        TitleShowing,
+        TitleFading,
 
         GameVisible,
         GameHidden,
@@ -87,7 +91,15 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ProcessGameStartFade()
+    public void ButtonClickToStartGame()
+    {
+        if (currentFadeState == ScreenFadeState.TitleShowing)
+        {
+            StartCoroutine(HideTitleScreen());
+        }
+    }
+
+    private void ProcessGameStartFade()
     {
         Debug.Assert(!hasShownOnce);
 
@@ -146,6 +158,21 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private CanvasGroup BlackScreenGroup;
 
+    [SerializeField]
+    private CanvasGroup TitleScreenGroup;
+
+    [SerializeField]
+    private CanvasGroup ThunderFlashGroup;
+
+    [SerializeField]
+    private float ThunderFlashTime = 0.5f;
+
+    [SerializeField]
+    private Button StartGameButton;
+
+    [SerializeField]
+    private EaserEase ThunderFlashGraph;
+
     private bool hasShownOnce = false;
     
 
@@ -173,7 +200,106 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
+        switch (currentFadeState)
+        {
+            case ScreenFadeState.TitleStart:
+                StateTitleStart();
+                break;
+            case ScreenFadeState.TitleShowing:
+                break;
+            case ScreenFadeState.TitleFading:
+                break;
+            case ScreenFadeState.GameVisible:
+                break;
+            case ScreenFadeState.GameHidden:
+                break;
+            case ScreenFadeState.GamePaused:
+                break;
+            case ScreenFadeState.ShowingGame:
+                break;
+            case ScreenFadeState.HidingGame:
+                break;
+            case ScreenFadeState.PausingGame:
+                break;
+            case ScreenFadeState.ResumingGame:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 
+    private void StateTitleStart()
+    {
+        StartCoroutine(BringInTitleScreen());
+        currentFadeState = ScreenFadeState.TitleShowing;
+    }
+
+    private IEnumerator BringInTitleScreen()
+    {
+        // TODO Bring in rain/music sound
+
+        TitleScreenGroup.alpha = 0;
+        ThunderFlashGroup.alpha = 0;
+
+        float fTime = 0.0f;
+
+        yield return new WaitForSeconds(1.0f);
+
+        // TODO Play sfx
+        ThunderFlashGroup.alpha = 1.0f;
+        TitleScreenGroup.alpha = 1.0f;
+
+        StartGameButton.interactable = true;
+        if (StartGameButton.GetComponentInChildren<Animator>() != null)
+        {
+            StartGameButton.GetComponentInChildren<Animator>().enabled = true;
+        }
+
+        while (fTime < ThunderFlashTime)
+        {
+            fTime += Time.deltaTime;
+
+            float fGraphTime = fTime / ThunderFlashTime;
+            ThunderFlashGroup.alpha = Easer.Ease(ThunderFlashGraph, 0.0f, 1.0f, fGraphTime);
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        ThunderFlashGroup.alpha = 0.0f;
+    }
+
+    private IEnumerator HideTitleScreen()
+    {
+        currentFadeState = ScreenFadeState.TitleFading;
+        StartGameButton.interactable = false;
+        TitleScreenGroup.alpha = 1.0f;
+
+        if (StartGameButton.GetComponentInChildren<Animator>() != null)
+        {
+            StartGameButton.GetComponentInChildren<Animator>().enabled = false;
+        }
+
+        float fTime = 0.0f;
+        float fTimeSegment = fadeTime / (float)fadeIterations;
+        float fNextTimeTarget = fTimeSegment;
+        float fFadeSegment = 1.0f / (float)fadeIterations;
+
+        while (fTime < fadeTime && TitleScreenGroup.alpha > 0.0f)
+        {
+            fTime += Time.deltaTime;
+
+            if (fTime >= fNextTimeTarget)
+            {
+                fNextTimeTarget += fTimeSegment;
+                TitleScreenGroup.alpha -= fFadeSegment;
+            }
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        TitleScreenGroup.alpha = 0.0f;
+
+        ProcessGameStartFade();
     }
 
     private IEnumerator Start_ShowGame()
