@@ -1115,7 +1115,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 304.3}
+  m_AnchoredPosition: {x: 0, y: 374.91}
   m_SizeDelta: {x: 525.02, y: 140.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &920679655
@@ -1584,8 +1584,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4293914607
+  m_fontColor: {r: 0.9372549, g: 0.9372549, b: 0.9372549, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2289,8 +2289,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 262.15997}
-  m_SizeDelta: {x: 425.02002, y: -59.159805}
+  m_AnchoredPosition: {x: 0, y: 343.85498}
+  m_SizeDelta: {x: 425.02002, y: 104.23004}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1728436951
 CanvasRenderer:
@@ -2335,8 +2335,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4293914607
+  m_fontColor: {r: 0.9372549, g: 0.9372549, b: 0.9372549, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2665,8 +2665,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4293914607
+  m_fontColor: {r: 0.9372549, g: 0.9372549, b: 0.9372549, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2965,7 +2965,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9372549, g: 0.9372549, b: 0.9372549, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3216,8 +3216,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4293848814
+  m_fontColor: {r: 0.9339623, g: 0.9339623, b: 0.9339623, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3666,6 +3666,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 146ed6a0f4cec3e4488cac7f91ddda67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PuzzleAudioSource: {fileID: 0}
+  TextBoxAudioSource: {fileID: 0}
   JsonScriptToLoadDataMembers: {fileID: 4900000, guid: 71066873a4eedd14a8d01cca18601ed4, type: 3}
   StartEvent: {fileID: 4900000, guid: 40b81134160f58640b39461d5b6acbbb, type: 3}
   startGameHidden: 0
@@ -3694,6 +3696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c9305c62e53a74397022bf9c600e77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TextDisplayClip: {fileID: 8300000, guid: ea5b1067d46ba5945820d5f1abdbba4b, type: 3}
   SpeakerTextComponent: {fileID: 8144507410063915323}
   SpeechTextComponent: {fileID: 8929690388123893317}
   SpeechTextProComponent: {fileID: 717412347641656246}
@@ -3898,8 +3901,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 6e7166461704e554c93703ca76df10b2, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -4036,7 +4039,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4070834809755051235}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 

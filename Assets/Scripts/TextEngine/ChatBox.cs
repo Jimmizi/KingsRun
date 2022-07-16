@@ -13,6 +13,8 @@ public class ChatBox : MonoBehaviour
     private const int MAX_CHOICES = 4;
     #region Public settings
 
+    public AudioClip TextDisplayClip;
+
     public Text SpeakerTextComponent;
     public Text SpeechTextComponent;
     public TMP_Text SpeechTextProComponent;
@@ -28,6 +30,7 @@ public class ChatBox : MonoBehaviour
     public CanvasGroup AlphaGroup;
     public CanvasGroup ButtonAlphaGroup;
 
+    
     /// <summary>
     /// How long to wait between appending characters to the speech box
     /// </summary>
@@ -290,6 +293,7 @@ public class ChatBox : MonoBehaviour
     {
         if (!mTypingLoopPlaying)
         {
+            Service.Flow.TextBoxAudioSource.Play();
             //Service.Audio().PlayTypingLoop();
             mTypingLoopPlaying = true;
         }
@@ -299,7 +303,8 @@ public class ChatBox : MonoBehaviour
     {
         if (mTypingLoopPlaying)
         {
-           // Service.Audio().StopTypingLoop();
+            Service.Flow.TextBoxAudioSource.Stop();
+            // Service.Audio().StopTypingLoop();
             mTypingLoopPlaying = false;
         }
     }
@@ -589,6 +594,9 @@ public class ChatBox : MonoBehaviour
 
     void Start()
     {
+        Service.Flow.TextBoxAudioSource.clip = TextDisplayClip;
+        Service.Flow.TextBoxAudioSource.loop = true;
+
         NextLineButton = NextLineMarker.GetComponent<Button>();
         Debug.Assert(NextLineButton != null);
 

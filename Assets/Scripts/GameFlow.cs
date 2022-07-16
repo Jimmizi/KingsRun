@@ -24,6 +24,9 @@ public class GameFlow : MonoBehaviour
         GameOver
     }
 
+    public AudioSource PuzzleAudioSource;
+    public AudioSource TextBoxAudioSource;
+
     public TextAsset JsonScriptToLoadDataMembers;
 
     private State gameStateInternal;

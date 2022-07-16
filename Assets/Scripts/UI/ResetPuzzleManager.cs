@@ -14,9 +14,7 @@ public class ResetPuzzleManager : MonoBehaviour
 
     public int NextPieceNeeded = 0;
     private int numSuccessfulPressed = 0;
-
-    private AudioSource audSource;
-
+    
     public void SetPiecePressed(int pieceOrder)
     {
         if (numSuccessfulPressed < PuzzlePieces.Count)
@@ -43,9 +41,6 @@ public class ResetPuzzleManager : MonoBehaviour
     void Start()
     {
         ThanksForPlayingGo.SetActive(false);
-
-        audSource = Camera.main.gameObject.GetComponent<AudioSource>();
-        Debug.Assert(audSource);
     }
 
     // Update is called once per frame
@@ -53,7 +48,7 @@ public class ResetPuzzleManager : MonoBehaviour
     {
         if (!PuzzleDone && numSuccessfulPressed >= PuzzlePieces.Count)
         {
-            audSource.PlayOneShot(NoteToPlayOnCompletion);
+            Service.Flow.PuzzleAudioSource.PlayOneShot(NoteToPlayOnCompletion);
             PuzzleDone = true;
 
             StartCoroutine(DelayReset());
