@@ -171,6 +171,9 @@ public class UIManager : MonoBehaviour
     private Button StartGameButton;
 
     [SerializeField]
+    private GameObject CreditsGo;
+
+    [SerializeField]
     private EaserEase ThunderFlashGraph;
 
     private bool hasShownOnce = false;
@@ -298,6 +301,7 @@ public class UIManager : MonoBehaviour
         }
 
         TitleScreenGroup.alpha = 0.0f;
+        CreditsGo.SetActive(false);
 
         ProcessGameStartFade();
     }
