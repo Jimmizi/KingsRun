@@ -7,7 +7,7 @@ public class DiceRollRigger : MonoBehaviour
 {
     Scene predictionScene;
 
-    class Pairing
+    public class Pairing
     {
         public GameObject realObject;
         public GameObject predictionObject;
@@ -17,11 +17,13 @@ public class DiceRollRigger : MonoBehaviour
         public Die predictedDie;
         public List<Quaternion> simulatedRotations = new List<Quaternion>();
         public List<Vector3> simulatedPositions = new List<Vector3>();
-        public int lastMovementFrame = 0;
+        public int firstMovementFrame = -1;
+        public int lastMovementFrame = -1;
+        public float totalMovement = 0;
         public Quaternion rotationAdjustment = Quaternion.identity;
     }
 
-    Dictionary<string, Pairing> predictionPairings = new Dictionary<string, Pairing>();
+    public Dictionary<string, Pairing> predictionPairings = new Dictionary<string, Pairing>();
     int simulatedFrame = -1;
 
     // Start is called before the first frame update
@@ -66,8 +68,9 @@ public class DiceRollRigger : MonoBehaviour
                 {                                        
                     anySimulated = true;
 
-                    float adjustBy = Mathf.Min(40, pairing.lastMovementFrame * 0.5f);
-                    float adjustmentRate = Mathf.Clamp01(simulatedFrame / adjustBy);
+                    int activeFrames = pairing.lastMovementFrame - pairing.firstMovementFrame;
+                    float adjustBy = Mathf.Clamp(activeFrames * 0.5f, 1, 40 );
+                    float adjustmentRate = Mathf.Clamp01(simulatedFrame - pairing.firstMovementFrame / adjustBy);
                     Quaternion.Slerp(Quaternion.identity, pairing.rotationAdjustment, adjustmentRate);
                     Quaternion rotation = pairing.rotationAdjustment;
 
@@ -106,7 +109,7 @@ public class DiceRollRigger : MonoBehaviour
         }
     }
 
-    public void SimulateThrow(GameObject[] diceToSimulate)
+    public void SimulateThrow(Die[] diceToSimulate)
     {
         List<Pairing> pairingsToSimulate = new List<Pairing>();
         simulatedFrame = 0;
@@ -115,12 +118,14 @@ public class DiceRollRigger : MonoBehaviour
         {
             pairing.simulatedPositions.Clear();
             pairing.simulatedRotations.Clear();
+            pairing.firstMovementFrame = -1;
             pairing.lastMovementFrame = -1;
+            pairing.totalMovement = 0;
         }
 
-        foreach (GameObject die in diceToSimulate)
+        foreach (Die die in diceToSimulate)
         {
-            Pairing pairing = FindOrCreatePredictionPairing(die);
+            Pairing pairing = FindOrCreatePredictionPairing(die.gameObject);
             SyncPhysicsProperties(pairing.realObject, pairing.predictionObject);
 
             pairingsToSimulate.Add(pairing);
@@ -136,15 +141,21 @@ public class DiceRollRigger : MonoBehaviour
             {
                 pairing.simulatedPositions.Add(pairing.predictionObject.transform.position);
                 pairing.simulatedRotations.Add(pairing.predictionObject.transform.rotation);
-                
-                if (pairing.predictedRigidBody.velocity.sqrMagnitude > 0.01f
-                    || pairing.predictedRigidBody.angularVelocity.sqrMagnitude > 0.01f )
+
+                float movement =
+                    pairing.predictedRigidBody.velocity.sqrMagnitude +
+                    pairing.predictedRigidBody.angularVelocity.sqrMagnitude;
+
+                if (movement > 0.01f)
                 {
                     isAnyMoving = true;
-                }
-                else
-                {
+                    pairing.totalMovement += movement;
+
                     pairing.lastMovementFrame = i;
+                    if (pairing.firstMovementFrame < 0)
+                    {
+                        pairing.firstMovementFrame = i;
+                    }
                 }
             }
 
@@ -162,17 +173,48 @@ public class DiceRollRigger : MonoBehaviour
                 rigidBody.isKinematic = true;
             }
 
-            if (pairing.predictedDie && pairing.lastMovementFrame >= 0)
+            pairing.rotationAdjustment = Quaternion.identity;
+        }
+    }
+
+    public bool RigDieResult(Die die, int newSide)
+    {
+        Pairing pairing;
+        if (predictionPairings.TryGetValue(die.gameObject.name, out pairing))
+        {
+            if (pairing.predictedDie)
             {
-                int targetValue = 6;
-                Quaternion lastSimulatedRotation = pairing.simulatedRotations[pairing.lastMovementFrame];
-                pairing.rotationAdjustment = pairing.predictedDie.GetRequiredRotationToValue(targetValue);
-            }
-            else
-            {
-                pairing.rotationAdjustment = Quaternion.identity;
+                pairing.rotationAdjustment = pairing.predictedDie.GetRequiredRotationToValue(newSide);
+                return true;
             }
         }
+        return false;
+    }
+
+    public int GetPredictedResult(Die die)
+    {
+        Pairing pairing;
+        if (predictionPairings.TryGetValue(die.gameObject.name, out pairing))
+        {
+            if (pairing.predictedDie)
+            {
+                return pairing.predictedDie.value;
+            }
+        }
+        return 0;
+    }
+
+    public float GetPredictedTotalMovement(Die die)
+    {
+        Pairing pairing;
+        if (predictionPairings.TryGetValue(die.gameObject.name, out pairing))
+        {
+            if (pairing.predictedDie)
+            {
+                return pairing.totalMovement;
+            }
+        }
+        return 0;
     }
 
     private Pairing FindOrCreatePredictionPairing(GameObject original)

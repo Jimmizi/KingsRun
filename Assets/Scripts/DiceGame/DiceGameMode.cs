@@ -24,6 +24,14 @@ public class DiceGameMode : MonoBehaviour
         GameEnd
     }
 
+    class DieMetaData
+    {
+        public float movement;
+        public int result;
+        public Die die;
+        public bool isPlayer;
+    };
+
     [SerializeField]
     Die[] playerDice;
 
@@ -45,7 +53,8 @@ public class DiceGameMode : MonoBehaviour
 
     GameObject[] rollingDice = null;
     List<Die> allDice = new List<Die>();
-    Dictionary<Die,Rigidbody> diceRigidBodies = new Dictionary<Die,Rigidbody>();
+    Dictionary<Die, Rigidbody> diceRigidBodies = new Dictionary<Die,Rigidbody>();
+    Dictionary<Die, DieMetaData> diceMetaData = new Dictionary<Die, DieMetaData>();
 
     bool pendingPlayerAutoAdvance = false;
 
@@ -76,11 +85,19 @@ public class DiceGameMode : MonoBehaviour
         {
             playerController.picker.validPickups.Add(playerDie.gameObject);
             allDice.Add(playerDie);
+
+            diceMetaData[playerDie] = new DieMetaData();
+            diceMetaData[playerDie].die = playerDie;
+            diceMetaData[playerDie].isPlayer = true;
         }
 
         foreach (Die aiDie in aiDice)
         {
             allDice.Add(aiDie);
+
+            diceMetaData[aiDie] = new DieMetaData();
+            diceMetaData[aiDie].die = aiDie;
+            diceMetaData[aiDie].isPlayer = false;
         }
 
         foreach (Die die in allDice)
@@ -368,6 +385,46 @@ public class DiceGameMode : MonoBehaviour
     {
         yield return new WaitForSeconds(Time.fixedDeltaTime * 10);
 
-        rigger.SimulateThrow(thrownObjects);
+        rigger.SimulateThrow(allDice.ToArray());
+         
+        var sortedDice = new List<Die>(allDice.Count);
+        int playerTotal = 0;
+        int aiTotal = 0;
+        foreach (Die die in allDice)
+        {
+            diceMetaData[die].movement = rigger.GetPredictedTotalMovement(die);
+            diceMetaData[die].result = rigger.GetPredictedResult(die);
+            if (diceMetaData[die].isPlayer)
+            {
+                playerTotal += diceMetaData[die].result;
+            }
+            else
+            {
+                aiTotal += diceMetaData[die].result;
+            }
+
+            if (diceMetaData[die].movement > 100)
+            {
+                sortedDice.Add(die);
+            }
+        }
+
+        int targetDeltaScore = -2;
+        int deltaScore = playerTotal - aiTotal;
+        int adjustment = targetDeltaScore - deltaScore;
+
+        sortedDice.Sort((a, b) => diceMetaData[b].movement.CompareTo(diceMetaData[a].movement));
+        foreach (Die die in sortedDice)
+        {
+            int direction = diceMetaData[die].isPlayer ? 1 : -1;
+            int targetResult = Mathf.Clamp(diceMetaData[die].result + adjustment*direction,1,6);
+            if (diceMetaData[die].result != targetResult)
+            {
+                rigger.RigDieResult(die, targetResult);
+                adjustment += (diceMetaData[die].result - targetResult) * direction;
+                diceMetaData[die].result = targetResult;
+            }
+        }
     }
+
 }
