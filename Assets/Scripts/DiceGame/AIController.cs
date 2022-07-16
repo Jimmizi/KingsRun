@@ -6,9 +6,6 @@ public class AIController : MonoBehaviour
 {
     public AIPicker picker { get; set; }
 
-    [SerializeField]
-    Die[] testPickDice;
-
     // Start is called before the first frame update
     void Awake()
     {
@@ -17,14 +14,18 @@ public class AIController : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        StartCoroutine(AIPickupRoutine(testPickDice));
+    {        
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void PickupDice(Die[] diceToPick)
+    {
+        StartCoroutine(AIPickupRoutine(diceToPick));
     }
 
     IEnumerator AIPickupRoutine(Die[] diceToPick)

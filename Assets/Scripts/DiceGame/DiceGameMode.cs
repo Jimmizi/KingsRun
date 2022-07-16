@@ -4,14 +4,62 @@ using UnityEngine;
 
 public class DiceGameMode : MonoBehaviour
 {
-    [SerializeField]
-    Die playerDiePrefab;
+    public enum GameResult
+    {
+        None,
+        Draw,
+        WhiteVictory,
+        BlackVictory
+    }
+
+    public enum GameState
+    {
+        WaitingToStart,
+        WhitePickingDice,
+        WhiteDiceRolling,
+        WhiteThrowSettled,
+        BlackPickingDice,
+        BlackDiceRolling,
+        BlackThrowSettled,
+        GameEnd
+    }
 
     [SerializeField]
-    Die aiDiePrefab;
+    Die[] playerDice;
+
+    [SerializeField]
+    Die[] aiDice;
+
+    [SerializeField]
+    Material whiteDieMaterial;
+
+    [SerializeField]
+    Material blackDieMaterial;
+
+    [SerializeField]
+    float settleTime = 2.0f;
+    float settleTimer = 2.0f;
 
     PlayerController playerController;
     AIController aiController;
+
+    GameObject[] rollingDice = null;
+    List<Die> allDice = new List<Die>();
+    Dictionary<Die,Rigidbody> diceRigidBodies = new Dictionary<Die,Rigidbody>();
+
+    bool pendingPlayerAutoAdvance = false;
+
+    public delegate void OnGameStateChangedHandler(GameState newState, GameState oldState);
+    public event OnGameStateChangedHandler OnGameStateChanged;
+
+    public int numRounds = 3;
+    public int currentRound = 0;
+
+    public bool isPlayerFirst = false;
+    public bool autoStartGame = false;
+    public bool autoAdvancePlayers = false;
+    public GameState gameState = GameState.WaitingToStart;
+    public GameResult gameResult = GameResult.None;
 
     DiceRollRigger rigger;
 
@@ -19,19 +67,301 @@ public class DiceGameMode : MonoBehaviour
     {
         rigger = GetComponent<DiceRollRigger>();
         playerController = FindObjectOfType<PlayerController>();
-        aiController = FindObjectOfType<AIController>();        
+        aiController = FindObjectOfType<AIController>();
     }
-
-    // Start is called before the first frame update
+    
     void Start()
-    {
+    {        
+        foreach (Die playerDie in playerDice)
+        {
+            playerController.picker.validPickups.Add(playerDie.gameObject);
+            allDice.Add(playerDie);
+        }
+
+        foreach (Die aiDie in aiDice)
+        {
+            allDice.Add(aiDie);
+        }
+
+        foreach (Die die in allDice)
+        {
+            diceRigidBodies[die] = die.GetComponent<Rigidbody>();
+        }
+
         playerController.picker.OnObjectsThrown += OnPlayerDiceRolled;
         aiController.picker.OnObjectsThrown += OnPlayerDiceRolled;
+
+        ResetGame();
+
+        if (autoStartGame)
+        {
+            StartGame(isPlayerFirst);
+        }
+    }
+
+    public void ResetGame()
+    {
+        currentRound = 0;
+        gameResult = GameResult.None;
+        SetGameState(GameState.WaitingToStart);
+    }
+
+    public void StartGame(bool playerFirst)
+    {
+        currentRound = 1;
+        isPlayerFirst = playerFirst;
+
+        foreach (Die die in playerDice)
+        {
+            var dieRenderer = die.GetComponent<Renderer>();
+            dieRenderer.sharedMaterial = playerFirst ? whiteDieMaterial : blackDieMaterial;
+        }
+
+        foreach (Die die in aiDice)
+        {
+            var dieRenderer = die.GetComponent<Renderer>();
+            dieRenderer.sharedMaterial = playerFirst ? blackDieMaterial : whiteDieMaterial;
+        }
+
+        SetGameState(GameState.WhitePickingDice);
+    }
+
+    public bool NextPlayer()
+    {
+        switch (gameState)
+        {
+            case GameState.WhiteThrowSettled:
+                SetGameState(GameState.BlackPickingDice);
+                return true;
+
+            case GameState.BlackThrowSettled:
+                SetGameState(GameState.WhitePickingDice);
+                return true;
+        }
+
+        return false;
+    }
+
+    void SetGameState(GameState newState)
+    {        
+        if (gameState != newState)
+        {
+            GameState oldState = gameState;
+            gameState = newState;
+            switch(gameState)
+            {
+                case GameState.WhitePickingDice:
+                    if (isPlayerFirst) HandlePlayerPickStart(); else HandleAIPickStart(); 
+                    break;
+                case GameState.BlackPickingDice:
+                    if (!isPlayerFirst) HandlePlayerPickStart(); else HandleAIPickStart();
+                    break;
+                case GameState.WhiteDiceRolling:
+                case GameState.BlackDiceRolling:
+                    HandleDiceStartedRolling();
+                    break;
+
+                case GameState.WhiteThrowSettled:
+                case GameState.BlackThrowSettled:
+                    HandleDiceThrownResolved();
+                    break;
+
+                case GameState.GameEnd:
+                    HandleGameEnd();
+                    break;
+            }
+
+            if (OnGameStateChanged != null)
+            {
+                OnGameStateChanged(newState, oldState);
+            }
+        }
+
+        if (pendingPlayerAutoAdvance)
+        {
+            pendingPlayerAutoAdvance = false;
+            NextPlayer();
+        }
+    }
+
+    public bool IsPlayerTurn()
+    {
+        switch(gameState)
+        {
+            case GameState.WhitePickingDice:
+            case GameState.WhiteDiceRolling:
+            case GameState.WhiteThrowSettled:
+                return isPlayerFirst;
+            case GameState.BlackPickingDice:
+            case GameState.BlackDiceRolling:
+            case GameState.BlackThrowSettled:
+                return !isPlayerFirst;
+        }
+        return false;
+    }
+
+    public int GetPlayerScore()
+    {
+        return GetDieTotal(playerDice);
+    }
+
+    public int GetAIScore()
+    {
+        return GetDieTotal(aiDice);
+    }
+
+    void HandlePlayerPickStart()
+    {
+        playerController.picker.pickUpEnabled = true;
+    }
+
+    void HandleAIPickStart()
+    {
+        List<Die> diePickList = new List<Die>();
+
+        do
+        {            
+            for (int i = 0; i < aiDice.Length; i++)
+            {
+                int dieIndexToPick = Random.Range(0, aiDice.Length);
+                Die dieToPick = aiDice[dieIndexToPick];
+                if (!diePickList.Contains(dieToPick))
+                {
+                    diePickList.Add(dieToPick);
+                }
+            }
+        } while (diePickList.Count == 0);
+
+        aiController.PickupDice(diePickList.ToArray());
+    }
+
+    void HandleDiceStartedRolling()
+    {
+        playerController.picker.pickUpEnabled = false;
+        if (!IsPlayerTurn())
+        {
+            StartCoroutine(ThrowSim(rollingDice));
+        }
+    }
+
+    void HandleDiceThrownResolved()
+    {
+        if (gameState == GameState.BlackThrowSettled)
+        {
+            if (currentRound < numRounds)
+            {
+                currentRound++;
+                if (autoAdvancePlayers)
+                {
+                    pendingPlayerAutoAdvance = true;
+                }
+            }
+            else
+            {
+                SetGameState(GameState.GameEnd);
+            }
+        } 
+        else if (gameState == GameState.WhiteThrowSettled)
+        {
+            if (autoAdvancePlayers)
+            {
+                pendingPlayerAutoAdvance = true;
+            }
+        }
+    }
+
+    void HandleGameEnd()
+    {
+        DetermineWinner();
+    }
+
+    void DetermineWinner()
+    {
+        int whiteDieTotal = GetDieTotal(isPlayerFirst ? playerDice : aiDice);
+        int blackDieTotal = GetDieTotal(isPlayerFirst ? aiDice : playerDice);
+
+        if (whiteDieTotal > blackDieTotal)
+        {
+            gameResult = GameResult.WhiteVictory;
+        }
+        else if (blackDieTotal > whiteDieTotal)
+        {
+            gameResult = GameResult.BlackVictory;
+        }
+        else
+        {
+            gameResult = GameResult.Draw;
+        }
+    }
+
+    int GetDieTotal(Die[] dice)
+    {
+        // TODO: Dead face
+        int totalDie = 0;
+        foreach (Die die in dice)
+        {
+            totalDie += die.value;
+        }
+        return totalDie;
+    }
+
+
+    void FixedUpdate()
+    {
+        if (gameState == GameState.WhiteDiceRolling
+            || gameState == GameState.BlackDiceRolling)
+        {
+            UpdateRollingDice();
+        }
+    }
+
+    void UpdateRollingDice()
+    {
+        float movementDelta = 0.001f;
+
+        foreach(Die die in allDice)
+        {
+            Rigidbody dieRigidBody = diceRigidBodies[die];
+            if (dieRigidBody 
+                && dieRigidBody.velocity.sqrMagnitude > movementDelta
+                && dieRigidBody.angularVelocity.sqrMagnitude > movementDelta)
+            {
+                settleTimer = settleTime;
+                return;
+            }
+        }
+
+        settleTimer -= Time.fixedDeltaTime;
+        if (settleTimer < 0)
+        {
+            if (gameState == GameState.WhiteDiceRolling)
+            {
+                SetGameState(GameState.WhiteThrowSettled);
+            }
+            else if (gameState == GameState.BlackDiceRolling)
+            {
+                SetGameState(GameState.BlackThrowSettled);
+            }
+        }
     }
 
     private void OnPlayerDiceRolled(GameObject[] thrownObjects)
     {
-        StartCoroutine(ThrowSim(thrownObjects));
+        rollingDice = thrownObjects;
+        if (rollingDice == null || rollingDice.Length == 0)
+        {
+            // Nothing thrown, try again
+            return;
+        }
+
+        if (gameState == GameState.WhitePickingDice)
+        {
+            SetGameState(GameState.WhiteDiceRolling);
+        }
+        else if (gameState == GameState.BlackPickingDice)
+        {
+            SetGameState(GameState.BlackDiceRolling);
+        }
     }
 
     IEnumerator ThrowSim(GameObject[] thrownObjects)
@@ -39,11 +369,5 @@ public class DiceGameMode : MonoBehaviour
         yield return new WaitForSeconds(Time.fixedDeltaTime * 10);
 
         rigger.SimulateThrow(thrownObjects);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
