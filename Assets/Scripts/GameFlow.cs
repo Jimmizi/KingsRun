@@ -18,8 +18,7 @@ public class GameFlow : MonoBehaviour
 {
     public enum State
     {
-
-        WaitForGameStart,
+        Title,
         GameInit,
         GameUpdate,
         GameOver
@@ -65,14 +64,13 @@ public class GameFlow : MonoBehaviour
         Assert.IsNotNull(StartEvent);
 
         Service.UI.OnFirstGameShown += OnGameStart;
-        Service.UI.ProcessGameStartFade();
     }
 
     void Update()
     {
         switch (GameState)
         {
-            case State.WaitForGameStart:
+            case State.Title:
                 break;
             case State.GameInit:
                 StateGameInit();

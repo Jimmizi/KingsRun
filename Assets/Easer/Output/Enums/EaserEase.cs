@@ -18,4 +18,5 @@ public enum EaserEase{
 	InOutBounce = 14,
 	CustomCurve = 15,
 	ButtonMove = 16,
+	ThunderFlash = 17,
 }
