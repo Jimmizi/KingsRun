@@ -18,6 +18,7 @@ public class Picker : MonoBehaviour
     [SerializeField]
     public bool pickUpEnabled = true;
 
+    public List<GameObject> validPickups = new List<GameObject>();
     List<Pickup> heldPickups = new List<Pickup>();
     
     public delegate void OnObjectsThrowHandler(GameObject[] thrownObjects);
@@ -32,6 +33,11 @@ public class Picker : MonoBehaviour
             {
                 ThrowObjects();
             }
+            return;
+        }
+
+        if (validPickups == null || validPickups.Count == 0)
+        {
             return;
         }
 
@@ -97,10 +103,10 @@ public class Picker : MonoBehaviour
         {
             if( hit.collider != null )
             {
-                var pickable = hit.collider.GetComponent<Pickable>();
-                if (pickable != null)
+                GameObject colliderObject = hit.collider.gameObject;
+                if (validPickups.Contains(colliderObject))
                 {
-                    Pickup heldPickup = heldPickups.Find((pickup) => pickup.gameObject == pickable.gameObject);
+                    Pickup heldPickup = heldPickups.Find((pickup) => pickup.gameObject == colliderObject);
                     if (heldPickup != null)
                     {
                         // we're already holding this pickup check the next
@@ -108,8 +114,8 @@ public class Picker : MonoBehaviour
                     }
 
                     heldPickup = new Pickup();
-                    heldPickup.gameObject = hit.collider.gameObject;
-                    heldPickup.pickPoint = pickable.transform.InverseTransformPoint(hit.point);
+                    heldPickup.gameObject = colliderObject;
+                    heldPickup.pickPoint = colliderObject.transform.InverseTransformPoint(hit.point);
                     heldPickups.Add(heldPickup);
                     return;
                 }
