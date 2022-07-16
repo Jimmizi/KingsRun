@@ -4,28 +4,37 @@ using UnityEngine;
 
 class Pickup
 {
-    public Pickable pickable; //
+    public GameObject gameObject;
     public Vector3 pickPoint; // pick up point in local space relative to pickable.transform
-    public Vector3PID holdPID = new Vector3PID(3, 3, 0.2f);
+    public Vector3PID holdPID = new Vector3PID(30, 20, 3);
 }
+
 
 public class Picker : MonoBehaviour
 {
     [SerializeField]
     float holdDistance = 10;
 
-    List<Pickup> heldPickups = new List<Pickup>();
-    DiceRollRigger diceRollRigger;
+    [SerializeField]
+    public bool pickUpEnabled = true;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        diceRollRigger = GetComponent<DiceRollRigger>();
-    }
+    List<Pickup> heldPickups = new List<Pickup>();
+    
+    public delegate void OnObjectsThrowHandler(GameObject[] thrownObjects);
+    public event OnObjectsThrowHandler OnObjectsThrown;
 
     // Update is called once per frame
     void Update()
     {
+        if (!pickUpEnabled)
+        {
+            if (heldPickups.Count > 0)
+            {
+                ThrowObjects();
+            }
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             PickObject();
@@ -40,7 +49,10 @@ public class Picker : MonoBehaviour
         {
             ThrowObjects();            
         }
+    }
 
+    private void FixedUpdate()
+    {
         Vector3 mousePos = Input.mousePosition;
         mousePos.z = holdDistance;
 
@@ -48,19 +60,19 @@ public class Picker : MonoBehaviour
 
         foreach (Pickup pickup in heldPickups)
         {
-            var rigidBody = pickup.pickable.GetComponent<Rigidbody>();
+            var rigidBody = pickup.gameObject.GetComponent<Rigidbody>();
             if (rigidBody)
             {
-                Vector3 force = newPos - pickup.pickable.transform.TransformPoint(pickup.pickPoint);
+                Vector3 force = newPos - pickup.gameObject.transform.TransformPoint(pickup.pickPoint);
 
-                force = pickup.holdPID.Update(force, Time.deltaTime);
+                force = pickup.holdPID.Update(force, Time.fixedDeltaTime);
 
-                rigidBody.AddForceAtPosition(force*0.01f, pickup.pickPoint);
+                rigidBody.AddForceAtPosition(force * 0.01f, pickup.pickPoint);
                 rigidBody.AddForce(force);
             }
             else
             {
-                pickup.pickable.transform.position = Vector3.Lerp(pickup.pickable.transform.position, newPos, Time.deltaTime * 2.0f);
+                pickup.gameObject.transform.position = Vector3.Lerp(pickup.gameObject.transform.position, newPos, Time.deltaTime * 2.0f);
             }
         }
     }
@@ -88,7 +100,7 @@ public class Picker : MonoBehaviour
                 var pickable = hit.collider.GetComponent<Pickable>();
                 if (pickable != null)
                 {
-                    Pickup heldPickup = heldPickups.Find((pickup) => pickup.pickable == pickable);
+                    Pickup heldPickup = heldPickups.Find((pickup) => pickup.gameObject == pickable.gameObject);
                     if (heldPickup != null)
                     {
                         // we're already holding this pickup check the next
@@ -96,7 +108,7 @@ public class Picker : MonoBehaviour
                     }
 
                     heldPickup = new Pickup();
-                    heldPickup.pickable = pickable;
+                    heldPickup.gameObject = hit.collider.gameObject;
                     heldPickup.pickPoint = pickable.transform.InverseTransformPoint(hit.point);
                     heldPickups.Add(heldPickup);
                     return;
@@ -112,10 +124,15 @@ public class Picker : MonoBehaviour
             GameObject[] pickedObjects = new GameObject[heldPickups.Count];
             for (int i = 0; i < pickedObjects.Length; i++)
             {
-                pickedObjects[i] = heldPickups[i].pickable.gameObject;
+                pickedObjects[i] = heldPickups[i].gameObject;
             }
+
             heldPickups.Clear();
-            diceRollRigger.SimulateThrow(pickedObjects);
+
+            if (OnObjectsThrown!=null)
+            {
+                OnObjectsThrown(pickedObjects);
+            }
         }
     }
 }

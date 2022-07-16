@@ -13,6 +13,8 @@ public class DiceRollRigger : MonoBehaviour
         public GameObject predictionObject;
         public Rigidbody realRigidBody;
         public Rigidbody predictedRigidBody;
+        public Die realDie;
+        public Die predictedDie;
         public List<Quaternion> simulatedRotations = new List<Quaternion>();
         public List<Vector3> simulatedPositions = new List<Vector3>();
         public int lastMovementFrame = 0;
@@ -64,7 +66,7 @@ public class DiceRollRigger : MonoBehaviour
                 {                                        
                     anySimulated = true;
 
-                    float adjustBy = Mathf.Min(20, pairing.lastMovementFrame);
+                    float adjustBy = Mathf.Min(40, pairing.lastMovementFrame * 0.5f);
                     float adjustmentRate = Mathf.Clamp01(simulatedFrame / adjustBy);
                     Quaternion.Slerp(Quaternion.identity, pairing.rotationAdjustment, adjustmentRate);
                     Quaternion rotation = pairing.rotationAdjustment;
@@ -160,12 +162,11 @@ public class DiceRollRigger : MonoBehaviour
                 rigidBody.isKinematic = true;
             }
 
-            Die die = pairing.realObject.GetComponent<Die>();
-            if (die && pairing.lastMovementFrame >= 0)
+            if (pairing.predictedDie && pairing.lastMovementFrame >= 0)
             {
                 int targetValue = 6;
                 Quaternion lastSimulatedRotation = pairing.simulatedRotations[pairing.lastMovementFrame];
-                pairing.rotationAdjustment = die.GetRequiredRotationToValue(lastSimulatedRotation, targetValue);
+                pairing.rotationAdjustment = pairing.predictedDie.GetRequiredRotationToValue(targetValue);
             }
             else
             {
@@ -183,6 +184,8 @@ public class DiceRollRigger : MonoBehaviour
             pairing.predictionObject = CreatePredictionReplica(original);
             pairing.realRigidBody = pairing.realObject.GetComponent<Rigidbody>();
             pairing.predictedRigidBody = pairing.predictionObject.GetComponent<Rigidbody>();
+            pairing.realDie = pairing.realObject.GetComponent<Die>();
+            pairing.predictedDie = pairing.predictionObject.GetComponent<Die>();
 
             predictionPairings.Add(original.name, pairing);
         }
