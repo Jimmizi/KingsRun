@@ -14,6 +14,7 @@ public class ChatBox : MonoBehaviour
     public Text SpeakerTextComponent;
     public Text SpeechTextComponent;
 
+    public CanvasGroup NextButtonGroup;
     public Text NextLineMarker;
     private Vector3 mLineMarkerStartPos;
     private float mLineMarkerTimer;
@@ -91,6 +92,13 @@ public class ChatBox : MonoBehaviour
     private bool mNextLinePressed;
     private bool mLineComplete;
 
+    private bool nextPressed;
+
+    public void GoToNext()
+    {
+        nextPressed = true;
+    }
+
     private void SetSpeakerName()
     {
         //SpeakerTextComponent.text = mCurrentConversationData.Lines[mCurrentConvLine].Speaker;
@@ -164,6 +172,7 @@ public class ChatBox : MonoBehaviour
                                          NextLineMarker.color.g,
                                          NextLineMarker.color.b,
                                          0f);
+        NextButtonGroup.alpha = 0.0f;
     }
 
     /// <summary>
@@ -383,7 +392,7 @@ public class ChatBox : MonoBehaviour
                 return;
             }
             //If we're done with appending text, wait until the player has pressed something to advance text
-            else if (!Input.anyKey)
+            else if (!nextPressed)
             {
                 mNextLinePressed = false;
                 mNeedEndOfLineMarker = true;
@@ -410,6 +419,7 @@ public class ChatBox : MonoBehaviour
                 return;
             }
 
+            nextPressed = false;
             mNextLinePressed = true;
             mNeedEndOfLineMarker = false;
 
@@ -612,6 +622,7 @@ public class ChatBox : MonoBehaviour
                 elapsedTime += Time.deltaTime;
                 float currentAlpha = Mathf.Lerp(startAlpha, endAlpha, elapsedTime / totalDuration);
 
+                NextButtonGroup.alpha = currentAlpha;
                 NextLineMarker.color = new Color(NextLineMarker.color.r,
                                                  NextLineMarker.color.g,
                                                  NextLineMarker.color.b, 

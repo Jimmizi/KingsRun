@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
 
     public enum ScreenFadeState
     {
+
         GameVisible,
         GameHidden,
         GamePaused,
@@ -85,6 +86,36 @@ public class UIManager : MonoBehaviour
             StartCoroutine(Start_HideGame());
         }
     }
+
+    public void ProcessGameStartFade()
+    {
+        Debug.Assert(!hasShownOnce);
+
+        IEnumerator DelayGameShow()
+        {
+            float fTime = 0.0f;
+            while (fTime < startHiddenShowDelayTime)
+            {
+                fTime += Time.deltaTime;
+                yield return new WaitForSeconds(Time.deltaTime);
+            }
+
+            StartCoroutine(Start_ShowGame());
+        }
+
+        if (startGameHidden)
+        {
+            BlackScreenGroup.alpha = 1.0f;
+            currentFadeState = ScreenFadeState.GameHidden;
+            StartCoroutine(DelayGameShow());
+        }
+        else
+        {
+            BlackScreenGroup.alpha = 0.0f;
+            hasShownOnce = true;
+            OnFirstGameShown?.Invoke();
+        }
+    }
     
     public bool IsGameVisible => currentFadeState == ScreenFadeState.GameVisible;
     public bool IsGamePaused => currentFadeState == ScreenFadeState.GamePaused;
@@ -116,35 +147,13 @@ public class UIManager : MonoBehaviour
     private CanvasGroup BlackScreenGroup;
 
     private bool hasShownOnce = false;
+    
 
     // Private functions
 
     private void Start()
     {
-        IEnumerator DelayGameShow()
-        {
-            float fTime = 0.0f;
-            while (fTime < startHiddenShowDelayTime)
-            {
-                fTime += Time.deltaTime;
-                yield return new WaitForSeconds(Time.deltaTime);
-            }
-
-            StartCoroutine(Start_ShowGame());
-        }
-
-        if (startGameHidden)
-        {
-            BlackScreenGroup.alpha = 1.0f;
-            currentFadeState = ScreenFadeState.GameHidden;
-            StartCoroutine(DelayGameShow());
-        }
-        else
-        {
-            BlackScreenGroup.alpha = 0.0f;
-            hasShownOnce = true;
-            OnFirstGameShown?.Invoke();
-        }
+        
     }
 
     private void Awake()
