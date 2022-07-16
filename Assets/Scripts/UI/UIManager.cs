@@ -49,6 +49,8 @@ public class UIManager : MonoBehaviour
     {
         currentFadeState = ScreenFadeState.TitleStart;
         isRunningAfterQuitGame = true;
+
+        Service.Data.TrySetData("QuitViaButton", 1);
     }
 
     public void ResetMenu()
@@ -125,6 +127,8 @@ public class UIManager : MonoBehaviour
 
             StartCoroutine(Start_ShowGame());
         }
+
+        Service.QuitButtonObj.SetGoActive(false);
 
         if (!instant)
         {
@@ -216,11 +220,22 @@ public class UIManager : MonoBehaviour
         EventData loadMemberEvent = JsonDataExecuter.MakeEvent(Service.Flow.JsonScriptToLoadDataMembers);
         Debug.Assert(loadMemberEvent != null);
         JsonDataExecuter.ProcessEvent(loadMemberEvent, false);
+
+        int numTimesPlayed = GetNumTimesPlayed();
+        int? quitViaButton = Service.Data.TryGetData("QuitViaButton");
+
+        // If we've entered the game but we're restarting after having not pressed the button to quit, reset the times played
+        if (numTimesPlayed > 0 && (!quitViaButton.HasValue || quitViaButton.Value == 0))
+        {
+            Debug.Log("Resetting NumTimesPlayed due to not having quit before via the button.");
+            Service.Data.TrySetData("NumTimesPlayed", 0);
+        }
     }
 
     int GetNumTimesPlayed()
     {
-        return Service.Data.TryGetData("NumTimesPlayed").Value;
+        int? timePlayed = Service.Data.TryGetData("NumTimesPlayed");
+        return timePlayed.HasValue ? timePlayed.Value : 0;
     }
 
     private void Awake()
@@ -290,9 +305,7 @@ public class UIManager : MonoBehaviour
         ReturnedToTitleGo.SetActive(false);
         SecondTimeLaunchingGo.SetActive(false);
         LastTimeLaunchingGo.SetActive(false);
-
         
-
         if (!isRunningAfterQuitGame)
         {
             int iNumTimesPlayed = GetNumTimesPlayed();

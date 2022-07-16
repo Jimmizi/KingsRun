@@ -3,10 +3,12 @@
     "Type": "declaredatamembers",
     "Keys": 
     [
-        "NumTimesPlayed"
+        "NumTimesPlayed",
+        "QuitViaButton"
     ],
     "Values": 
     [
+        0,
         0
     ]
 }

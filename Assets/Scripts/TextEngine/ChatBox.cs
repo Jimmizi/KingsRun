@@ -68,7 +68,19 @@ public class ChatBox : MonoBehaviour
 
     private bool mTypingLoopPlaying;
 
-    public bool PausePlayback;
+    private bool PausePlayback;
+
+    public void SetPausePlayback()
+    {
+        PausePlayback = true;
+        AddText("-");
+        StopTypingSoundIfPossible();
+    }
+
+    public void UnpausePlayback()
+    {
+        PausePlayback = false;
+    }
 
     public bool Processing
     {
@@ -169,7 +181,7 @@ public class ChatBox : MonoBehaviour
         mCurrentChoiceData = null;
 
         SetButtons(false);
-        StartCoroutine(FadeChatGroup(0.0f, 1.0f, 0.5f));
+        //StartCoroutine(FadeChatGroup(0.0f, 1.0f, 0.5f));
 
         SetReadyToStart();
         ResetConversationToCurrentLine();
@@ -279,7 +291,8 @@ public class ChatBox : MonoBehaviour
             }
             else
             {
-                StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
+                SetText("");
+                //StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
                 StopTypingSoundIfPossible();
             }
         }
@@ -449,6 +462,14 @@ public class ChatBox : MonoBehaviour
                             Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
                         }
                     }
+
+                    if (!mCurrentConversationData.ShowQuitButtonStartOfLine 
+                        && mCurrentConversationData.ShowQuitButtonLine == mCurrentConvLine)
+                    {
+                        Debug.Log("Showing quit button");
+                        Service.QuitButtonObj.SetGoActive(true);
+                        Service.QuitButtonObj.SetButtonActive(false);
+                    }
                 }
 
                 return;
@@ -495,6 +516,14 @@ public class ChatBox : MonoBehaviour
                     {
                         Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
                     }
+                }
+
+                if (mCurrentConversationData.ShowQuitButtonStartOfLine
+                    && mCurrentConversationData.ShowQuitButtonLine == mCurrentConvLine)
+                {
+                    Debug.Log("Showing quit button");
+                    Service.QuitButtonObj.SetGoActive(true);
+                    Service.QuitButtonObj.SetButtonActive(false);
                 }
             }
             else
@@ -586,7 +615,8 @@ public class ChatBox : MonoBehaviour
     void Awake()
     {
         Service.Text = this;
-        AlphaGroup.alpha = 0;
+        SetText("");
+        //AlphaGroup.alpha = 0;
         ButtonAlphaGroup.alpha = 0;
         NextLineMarkerGroup.alpha = 0;
         mLineMarkerStartPos = NextLineMarker.transform.position;

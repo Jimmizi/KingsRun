@@ -10,6 +10,8 @@ using Vector3 = UnityEngine.Vector3;
 [RequireComponent(typeof(Button))]
 public class QuitButton : MonoBehaviour
 {
+    public bool EnableDebugTesting = false;
+
     public List<TextAsset> InterruptDialogue = new List<TextAsset>();
     private int timesPressed = 0;
 
@@ -70,13 +72,19 @@ public class QuitButton : MonoBehaviour
             return;
         }
 
+#if UNITY_EDITOR
+        if (EnableDebugTesting)
+        {
+            MoveToFreePlace();
+            return;
+        }
+#endif
+
         Debug.Assert(timesPressed < InterruptDialogue.Count);
 
         currentlyMoving = true;
-        
-        Service.Text.PausePlayback = true;
-        Service.Text.AddText("-");
-        
+
+        Service.Text.SetPausePlayback();
         StartCoroutine(OnQuitButtonPressed(true));
     }
 
@@ -104,7 +112,7 @@ public class QuitButton : MonoBehaviour
         }
 
         ConversationData data = JsonDataExecuter.MakeConversation(InterruptDialogue[timesPressed++]);
-        Service.Text.PausePlayback = false;
+        Service.Text.UnpausePlayback();
         Service.Text.StartOrInterruptChat(data); // Will resume processing if paused first time in here
     }
 
@@ -266,6 +274,13 @@ public class QuitButton : MonoBehaviour
         rectTransform.anchoredPosition = vTargetPosition;
         uiButton.interactable = setInteractableAfterMove;
         currentlyMoving = false;
+
+#if UNITY_EDITOR
+        if (EnableDebugTesting)
+        {
+            uiButton.interactable = true;
+        }
+#endif
     }
 
     private static Vector3[] WorldCorners = new Vector3[4];
