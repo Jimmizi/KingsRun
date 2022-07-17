@@ -34,6 +34,8 @@ public class DiceGameMode : MonoBehaviour
         public int result;
         public Die die;
         public bool isPlayer;
+        public Vector3 initialPosition;
+        public Quaternion initialRotation;
     };
 
     class RigParameters
@@ -105,8 +107,7 @@ public class DiceGameMode : MonoBehaviour
             playerController.picker.validPickups.Add(playerDie.gameObject);
             allDice.Add(playerDie);
 
-            diceMetaData[playerDie] = new DieMetaData();
-            diceMetaData[playerDie].die = playerDie;
+            diceMetaData[playerDie] = new DieMetaData();            
             diceMetaData[playerDie].isPlayer = true;
         }
 
@@ -115,13 +116,17 @@ public class DiceGameMode : MonoBehaviour
             allDice.Add(aiDie);
 
             diceMetaData[aiDie] = new DieMetaData();
-            diceMetaData[aiDie].die = aiDie;
             diceMetaData[aiDie].isPlayer = false;
         }
 
         foreach (Die die in allDice)
         {
             diceRigidBodies[die] = die.GetComponent<Rigidbody>();
+
+            diceMetaData[die].die = die;
+            diceMetaData[die].initialPosition = die.transform.position;
+            diceMetaData[die].initialRotation = die.transform.rotation;
+
             die.gameObject.SetActive(false);
         }
 
@@ -140,6 +145,14 @@ public class DiceGameMode : MonoBehaviour
     {
         currentRound = 0;
         gameResult = GameResult.None;
+
+        foreach (DieMetaData meta in diceMetaData.Values)
+        {
+            meta.die.transform.position = meta.initialPosition;
+            meta.die.transform.rotation = meta.initialRotation;
+            meta.die.gameObject.SetActive(false);
+        }
+
         SetGameState(GameState.WaitingToStart);
     }
 
