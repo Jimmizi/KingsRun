@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DiceGameMode : MonoBehaviour
 {
+    const int deadFace = 4;
+
     public enum GameResult
     {
         None,
@@ -18,9 +20,11 @@ public class DiceGameMode : MonoBehaviour
         WhitePickingDice,
         WhiteDiceRolling,
         WhiteThrowSettled,
+        WhiteDiceDestruction,
         BlackPickingDice,
         BlackDiceRolling,
         BlackThrowSettled,
+        BlackDiceDestruction,
         GameEnd
     }
 
@@ -55,6 +59,9 @@ public class DiceGameMode : MonoBehaviour
 
     [SerializeField]
     Material blackDieMaterial;
+
+    [SerializeField]
+    GameObject dieKillParticles;
 
     [SerializeField]
     float settleTime = 2.0f;
@@ -115,6 +122,7 @@ public class DiceGameMode : MonoBehaviour
         foreach (Die die in allDice)
         {
             diceRigidBodies[die] = die.GetComponent<Rigidbody>();
+            die.gameObject.SetActive(false);
         }
 
         playerController.picker.OnObjectsThrown += OnPlayerDiceRolled;
@@ -149,7 +157,13 @@ public class DiceGameMode : MonoBehaviour
         foreach (Die die in aiDice)
         {
             var dieRenderer = die.GetComponent<Renderer>();
-            dieRenderer.sharedMaterial = playerFirst ? blackDieMaterial : whiteDieMaterial;
+            dieRenderer.sharedMaterial = playerFirst ? blackDieMaterial : whiteDieMaterial;            
+        }
+
+        foreach (Die die in allDice)
+        {
+            die.gameObject.SetActive(true);
+            die.value = deadFace;
         }
 
         SetGameState(GameState.WhitePickingDice);
@@ -185,9 +199,15 @@ public class DiceGameMode : MonoBehaviour
                 case GameState.BlackPickingDice:
                     if (!isPlayerFirst) HandlePlayerPickStart(); else HandleAIPickStart();
                     break;
+
                 case GameState.WhiteDiceRolling:
                 case GameState.BlackDiceRolling:
                     HandleDiceStartedRolling();
+                    break;
+
+                case GameState.WhiteDiceDestruction:
+                case GameState.BlackDiceDestruction:
+                    HandleDiceDestruction();
                     break;
 
                 case GameState.WhiteThrowSettled:
@@ -219,10 +239,12 @@ public class DiceGameMode : MonoBehaviour
         {
             case GameState.WhitePickingDice:
             case GameState.WhiteDiceRolling:
+            case GameState.WhiteDiceDestruction:
             case GameState.WhiteThrowSettled:
                 return isPlayerFirst;
             case GameState.BlackPickingDice:
             case GameState.BlackDiceRolling:
+            case GameState.BlackDiceDestruction:
             case GameState.BlackThrowSettled:
                 return !isPlayerFirst;
         }
@@ -248,18 +270,32 @@ public class DiceGameMode : MonoBehaviour
     {
         List<Die> diePickList = new List<Die>();
 
-        do
-        {            
-            for (int i = 0; i < aiDice.Length; i++)
+        List<Die> shuffledAiDice = new List<Die>(aiDice);
+        ShuffleDieList(shuffledAiDice);
+
+        foreach (Die die in shuffledAiDice)
+        {
+            if (!die.gameObject.activeInHierarchy)
+                continue;
+
+            if (die.value == deadFace)
             {
-                int dieIndexToPick = Random.Range(0, aiDice.Length);
-                Die dieToPick = aiDice[dieIndexToPick];
-                if (!diePickList.Contains(dieToPick))
-                {
-                    diePickList.Add(dieToPick);
-                }
+                diePickList.Add(die);
             }
-        } while (diePickList.Count == 0);
+            else if (die.value == 1 || die.value == 2)
+            {
+                diePickList.Add(die);
+            }
+            else if (die.value < 6 && Random.value > die.value / 6.0f)
+            {
+                diePickList.Add(die);
+            }
+        }
+
+        if (diePickList.Count == 0)
+        {
+            diePickList.Add(shuffledAiDice[0]);
+        }
 
         aiController.PickupDice(diePickList.ToArray());
     }
@@ -268,6 +304,11 @@ public class DiceGameMode : MonoBehaviour
     {
         playerController.picker.pickUpEnabled = false;
         StartCoroutine(ThrowSim(rollingDice));
+    }
+
+    void HandleDiceDestruction()
+    {
+        StartCoroutine(DiceDestructionSequence());
     }
 
     void HandleDiceThrownResolved()
@@ -321,12 +362,14 @@ public class DiceGameMode : MonoBehaviour
     }
 
     int GetDieTotal(Die[] dice)
-    {
-        // TODO: Dead face
+    {        
         int totalDie = 0;
         foreach (Die die in dice)
         {
-            totalDie += die.value;
+            if (die.value != deadFace)
+            {
+                totalDie += die.value;
+            }
         }
         return totalDie;
     }
@@ -345,7 +388,12 @@ public class DiceGameMode : MonoBehaviour
     {
         float movementDelta = 0.001f;
 
-        foreach(Die die in allDice)
+        if (rigger.isSimulating)
+        {
+            return;
+        }
+
+        foreach (Die die in allDice)
         {
             Rigidbody dieRigidBody = diceRigidBodies[die];
             if (dieRigidBody 
@@ -362,11 +410,11 @@ public class DiceGameMode : MonoBehaviour
         {
             if (gameState == GameState.WhiteDiceRolling)
             {
-                SetGameState(GameState.WhiteThrowSettled);
+                SetGameState(GameState.WhiteDiceDestruction);
             }
             else if (gameState == GameState.BlackDiceRolling)
             {
-                SetGameState(GameState.BlackThrowSettled);
+                SetGameState(GameState.BlackDiceDestruction);
             }
         }
     }
@@ -397,13 +445,64 @@ public class DiceGameMode : MonoBehaviour
         rigger.SimulateThrow(allDice.ToArray());
 
         RigParameters rig = new RigParameters();
-        rig.minPlayerScore = 0;
+        rig.minPlayerScore = 1;
         rig.maxPlayerScore = 10;
         
         rig.minAiScore = 20;
         rig.maxAiScore = 40;
 
         RigResults(rig);
+    }
+
+    IEnumerator DiceDestructionSequence()
+    {        
+        bool preventBlackDestruction = currentRound == 1 && gameState == GameState.WhiteDiceDestruction;
+        List<Die> blackDice = new List<Die>(isPlayerFirst ? aiDice : playerDice);
+
+        List<Die> shuffledDice = new List<Die>(allDice);
+        ShuffleDieList(shuffledDice);
+        foreach (Die die in shuffledDice)
+        {
+            if (die.value == deadFace && die.gameObject.activeInHierarchy)
+            {
+                if (preventBlackDestruction && blackDice.Contains(die))
+                {
+                    continue;
+                }
+
+                DestroyDie(die);
+                yield return new WaitForSeconds(0.4f);
+            }
+        }
+
+        if (gameState == GameState.WhiteDiceDestruction)
+        {
+            SetGameState(GameState.WhiteThrowSettled);
+        }
+        else if (gameState == GameState.BlackDiceDestruction)
+        {
+            SetGameState(GameState.BlackThrowSettled);
+        }
+    }
+
+    void DestroyDie(Die die)
+    {
+        die.gameObject.SetActive(false);
+        if (dieKillParticles)
+        {
+            Instantiate(dieKillParticles, die.transform.position, Quaternion.identity);
+        }
+    }
+
+    void ShuffleDieList(List<Die> diceList)
+    {        
+        for (int i = 0; i < diceList.Count; i++)
+        {
+            int j = Random.Range(0, diceList.Count - 1);
+            Die tempDie = diceList[i];
+            diceList[i] = diceList[j];
+            diceList[j] = tempDie;
+        }
     }
 
     void RigResults(RigParameters rigParams)
@@ -416,16 +515,20 @@ public class DiceGameMode : MonoBehaviour
         {
             diceMetaData[die].movement = rigger.GetPredictedTotalMovement(die);
             diceMetaData[die].result = rigger.GetPredictedResult(die);
-            if (diceMetaData[die].isPlayer)
+
+            if (diceMetaData[die].result != deadFace)
             {
-                playerTotal += diceMetaData[die].result;
-            }
-            else
-            {
-                aiTotal += diceMetaData[die].result;
+                if (diceMetaData[die].isPlayer)
+                {
+                    playerTotal += diceMetaData[die].result;
+                }
+                else
+                {
+                    aiTotal += diceMetaData[die].result;
+                }
             }
 
-            if (diceMetaData[die].movement > 100)
+            if (diceMetaData[die].movement > 300)
             {
                 sortedDice.Add(die);
             }
@@ -450,20 +553,32 @@ public class DiceGameMode : MonoBehaviour
 
             if (isPlayer)
             {
-                int dieDeltaAdjustment = Mathf.Clamp(diceMetaData[die].result + deltaAdjustment, 1, 6);
-                int diePlayerAdjustment = Mathf.Clamp(diceMetaData[die].result + playerScoreAdjustment, 1, 6);
+                int dieDeltaAdjustment = Mathf.Clamp(diceMetaData[die].result + deltaAdjustment, 0, 6);
+                int diePlayerAdjustment = Mathf.Clamp(diceMetaData[die].result + playerScoreAdjustment, 0, 6);
                 targetResult = Mathf.Min(dieDeltaAdjustment, diePlayerAdjustment);
             }
             else
             {
-                int dieDeltaAdjustment = Mathf.Clamp(diceMetaData[die].result - deltaAdjustment, 1, 6);
-                int dieAiAdjustment = Mathf.Clamp(diceMetaData[die].result + aiScoreAdjustment, 1, 6);
+                int dieDeltaAdjustment = Mathf.Clamp(diceMetaData[die].result - deltaAdjustment, 0, 6);
+                int dieAiAdjustment = Mathf.Clamp(diceMetaData[die].result + aiScoreAdjustment, 0, 6);
                 targetResult = Mathf.Min(dieDeltaAdjustment, dieAiAdjustment);
+            }
+
+            if (targetResult == deadFace)
+            {
+                --targetResult;
+            }
+
+            int targetSide = targetResult;
+
+            if (targetResult == 0)
+            {
+                targetSide = deadFace;
             }
 
             if (diceMetaData[die].result != targetResult)
             {
-                rigger.RigDieResult(die, targetResult);
+                rigger.RigDieResult(die, targetSide);
 
                 int dieAdjustment = diceMetaData[die].result - targetResult;                
                 diceMetaData[die].result = targetResult;

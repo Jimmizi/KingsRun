@@ -7,6 +7,7 @@ class Pickup
     public GameObject gameObject;
     public Vector3 pickPoint; // pick up point in local space relative to pickable.transform
     public Vector3PID holdPID = new Vector3PID(30, 20, 3);
+    public Rigidbody rigidBody = null;
 }
 
 
@@ -65,16 +66,15 @@ public class Picker : MonoBehaviour
         Vector3 newPos = Camera.main.ScreenToWorldPoint(mousePos);
 
         foreach (Pickup pickup in heldPickups)
-        {
-            var rigidBody = pickup.gameObject.GetComponent<Rigidbody>();
-            if (rigidBody)
+        {            
+            if (pickup.rigidBody)
             {
                 Vector3 force = newPos - pickup.gameObject.transform.TransformPoint(pickup.pickPoint);
 
                 force = pickup.holdPID.Update(force, Time.fixedDeltaTime);
 
-                rigidBody.AddForceAtPosition(force * 0.01f, pickup.pickPoint);
-                rigidBody.AddForce(force);
+                pickup.rigidBody.AddForceAtPosition(force * 0.01f, pickup.pickPoint);
+                pickup.rigidBody.AddForce(force);
             }
             else
             {
@@ -93,8 +93,6 @@ public class Picker : MonoBehaviour
         Vector3 direction = rayEnd - rayOrigin;
         float distance = direction.magnitude;
         direction /= distance;
-
-        Debug.DrawLine(rayOrigin, rayEnd, Color.red, 10);
 
         LayerMask mask = LayerMask.GetMask("Dice");
 
@@ -115,6 +113,7 @@ public class Picker : MonoBehaviour
 
                     heldPickup = new Pickup();
                     heldPickup.gameObject = colliderObject;
+                    heldPickup.rigidBody = colliderObject.GetComponent<Rigidbody>();
                     heldPickup.pickPoint = colliderObject.transform.InverseTransformPoint(hit.point);
                     heldPickups.Add(heldPickup);
                     return;
@@ -131,6 +130,13 @@ public class Picker : MonoBehaviour
             for (int i = 0; i < pickedObjects.Length; i++)
             {
                 pickedObjects[i] = heldPickups[i].gameObject;
+
+                // Anti-cheese, if the player's not adding force, we will
+                if (heldPickups[i].rigidBody.velocity.sqrMagnitude < 50)
+                {
+                    heldPickups[i].rigidBody.AddExplosionForce(100, Camera.main.transform.position, 100, 2, ForceMode.Impulse);
+                    heldPickups[i].rigidBody.AddRelativeTorque(Random.insideUnitSphere * 10, ForceMode.Impulse);
+                }
             }
 
             heldPickups.Clear();
