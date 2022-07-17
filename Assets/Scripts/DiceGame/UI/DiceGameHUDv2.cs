@@ -26,6 +26,9 @@ public class DiceGameHUDv2 : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI gameEndText;
 
+    [SerializeField]
+    RoundCounterWidget roundCounter;
+
     int lastPlayerScore = 0;
     int lastAIScore = 0;
 
@@ -64,6 +67,14 @@ public class DiceGameHUDv2 : MonoBehaviour
     {
         switch (newState)
         {
+            case DiceGameMode.GameState.WhitePickingDice:
+                UpdateTurnCounter(0);
+                break;
+
+            case DiceGameMode.GameState.BlackPickingDice:
+                UpdateTurnCounter(1);
+                break;
+
             case DiceGameMode.GameState.WhiteThrowSettled:
             case DiceGameMode.GameState.BlackThrowSettled:
                 UpdateScore();
@@ -80,6 +91,14 @@ public class DiceGameHUDv2 : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void UpdateTurnCounter(int turn)
+    {
+        if (roundCounter)
+        {
+            roundCounter.activeTurn = 1 + turn + (Service.DiceGame.currentRound - 1 ) * 2;
+        }
     }
 
     public void UpdateScore()
