@@ -120,12 +120,14 @@ public class DiceGameHUDv2 : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        ShowEndGameScreen();         
+        ShowEndGameScreen();
         yield return new WaitForSeconds(4f);
 
         Service.Text.ResumeFromDiceGame();
         Service.DiceGame.ResetGame();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(2f);
+
+        pageSwitcher.HideAllPages();
     }
 
     void ShowEndGameScreen()
