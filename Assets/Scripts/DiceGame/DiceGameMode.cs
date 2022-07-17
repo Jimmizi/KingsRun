@@ -264,6 +264,7 @@ public class DiceGameMode : MonoBehaviour
     void HandlePlayerPickStart()
     {
         playerController.picker.pickUpEnabled = true;
+        playerController.picker.pickAll = (currentRound == 1);
     }
 
     void HandleAIPickStart()
@@ -286,7 +287,7 @@ public class DiceGameMode : MonoBehaviour
             {
                 diePickList.Add(die);
             }
-            else if (die.value < 6 && Random.value > die.value / 6.0f)
+            else if (Random.value > die.value / 6.5f)
             {
                 diePickList.Add(die);
             }
@@ -297,7 +298,7 @@ public class DiceGameMode : MonoBehaviour
             diePickList.Add(shuffledAiDice[0]);
         }
 
-        aiController.PickupDice(diePickList.ToArray());
+        aiController.PickupDice(diePickList.ToArray(), currentRound == 1);
     }
 
     void HandleDiceStartedRolling()

@@ -19,6 +19,9 @@ public class Picker : MonoBehaviour
     [SerializeField]
     public bool pickUpEnabled = true;
 
+    [SerializeField]
+    public bool pickAll = false;
+
     public List<GameObject> validPickups = new List<GameObject>();
     List<Pickup> heldPickups = new List<Pickup>();
     
@@ -44,7 +47,14 @@ public class Picker : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            PickObject();
+            if (pickAll)
+            {
+                PickAllObjects();
+            }
+            else
+            {
+                PickObject();
+            }
         }
 
         if (Input.GetMouseButton(0) && Input.GetMouseButtonDown(1))
@@ -79,6 +89,23 @@ public class Picker : MonoBehaviour
             else
             {
                 pickup.gameObject.transform.position = Vector3.Lerp(pickup.gameObject.transform.position, newPos, Time.deltaTime * 2.0f);
+            }
+        }
+    }
+
+    void PickAllObjects()
+    {
+        heldPickups.Clear();
+
+        foreach (GameObject pickable in validPickups)
+        {
+            if (pickable.activeInHierarchy)
+            {
+                var heldPickup = new Pickup();
+                heldPickup.gameObject = pickable;
+                heldPickup.rigidBody = pickable.GetComponent<Rigidbody>();
+                heldPickup.pickPoint = Random.insideUnitCircle * 0.1f;
+                heldPickups.Add(heldPickup);
             }
         }
     }
