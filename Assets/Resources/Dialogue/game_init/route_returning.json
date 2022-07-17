@@ -8,6 +8,7 @@
     "Type": "event",
     "EventsToFire": 
     [
-        "game_init/increment_times_played"
+        "game_init/increment_times_played",
+        "room_returning_1/enter"
     ]
 }

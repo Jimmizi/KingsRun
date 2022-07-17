@@ -98,6 +98,8 @@ public class QuitButton : MonoBehaviour
         }
         else
         {
+            Service.Data.TrySetData("QuitViaButton", 1);
+            Service.Data.SetQuitFromFile(JsonDataExecuter.LastConversationFileLoaded);
             uiButton.interactable = false;
         }
 
@@ -111,7 +113,7 @@ public class QuitButton : MonoBehaviour
             }
         }
 
-        ConversationData data = JsonDataExecuter.MakeConversation(InterruptDialogue[timesPressed++]);
+        ConversationData data = JsonDataExecuter.MakeConversation(InterruptDialogue[timesPressed++], false);
         Service.Text.UnpausePlayback();
         Service.Text.StartOrInterruptChat(data); // Will resume processing if paused first time in here
     }

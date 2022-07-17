@@ -32,7 +32,7 @@ public class ScreenDebug : MonoBehaviour
         
 
         Vector2 vLeftPosition = new Vector2(5, 5);
-        Vector2 vRightPosition = new Vector2(Screen.width - 405, 60);
+        Vector2 vRightPosition = new Vector2(Screen.width - 405, 90);
 
         GUIStyle rightStyle = new GUIStyle
         {
@@ -67,7 +67,7 @@ public class ScreenDebug : MonoBehaviour
 
         AddTextLeft($"Quip % Time: {Service.Flow.TimeBetweenQuipChance}");
         AddTextLeft($"Quip %: {Service.Flow.LastConvQuipChance} < {Service.Flow.LastConvQuipChanceThreshold}");
-
+        AddTextLeft($"Last file quit from: {Service.Data.GetFileLastQuitFrom()}");
 
         // Right side
 
@@ -79,6 +79,11 @@ public class ScreenDebug : MonoBehaviour
         if (GUI.Button(new Rect(Screen.width - 205, 30, 200, 24), "Save Data"))
         {
             Service.Data.SaveAll();
+        }
+
+        if (GUI.Button(new Rect(Screen.width - 205, 60, 200, 24), "Times played 1"))
+        {
+            Service.Data.TrySetData("NumTimesPlayed", 1);
         }
 
         var persData = Service.Data.DebugGetIntData();

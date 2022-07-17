@@ -1,0 +1,5 @@
+{
+    "Description": "Hack just incase we don't get to writing separate story for returning. For now just carry on from before.",
+    "Type": "event",
+    "NextConversationIsLastOneQuitFrom":true
+}

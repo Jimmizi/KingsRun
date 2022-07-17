@@ -25,6 +25,8 @@ public class ConversationData
         public string Speech;
     }
 
+    public string Filepath = "";
+
     /// <summary>
     /// Lines in this section of dialogue
     /// </summary>
@@ -63,6 +65,10 @@ public class ConversationData
     // When finishing up the dice game, add this conversation file
     public string ConversationToLaunchAfterDiceGame = "";
 
+    // Hacked conversation route - easier than having to set up a whole bunch of events to fire off conversations
+    //  NOTE will only work if we haven't added events to fire
+    public string NextConversation = "";
+    
     public bool WillLaunchDiceGame()
     {
         return LaunchDiceGameMode >= 0 && LaunchDiceGameMode <= 2;

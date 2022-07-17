@@ -252,6 +252,38 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 688488606, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 874812651, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 920679651, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1600099210, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1728436946, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938990362, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834808069161692, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834808116685349, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4070834809220949032, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -363,6 +395,18 @@ PrefabInstance:
     - target: {fileID: 4070834809220949043, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
       propertyPath: m_Name
       value: OneManagerToRuleThemAll
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834809240685236, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_Alpha
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834809349850545, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8144507411751447309, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
