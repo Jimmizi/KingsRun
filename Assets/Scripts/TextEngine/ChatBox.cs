@@ -73,6 +73,8 @@ public class ChatBox : MonoBehaviour
 
     private bool PausePlayback;
 
+    
+
     public void SetPausePlayback()
     {
         PausePlayback = true;
@@ -193,6 +195,8 @@ public class ChatBox : MonoBehaviour
     // Dice game start 
     public void ResumeFromDiceGame()
     {
+        Service.UI.HideDiceGame();
+
         Debug.Log("Resuming from dice game in ChatBox");
 
         Debug.Assert(Service.Flow.GameState == GameFlow.State.DiceGame);
@@ -216,6 +220,8 @@ public class ChatBox : MonoBehaviour
 
     public void StartDiceGame()
     {
+        Service.UI.ShowDiceGame();
+
         Debug.Log("Starting dice game in ChatBox");
 
         // Need this data
@@ -674,6 +680,14 @@ public class ChatBox : MonoBehaviour
                         Service.QuitButtonObj.SetGoActive(true);
                         Service.QuitButtonObj.SetButtonActive(false);
                     }
+
+                    if (!mCurrentConversationData.HideQuitButtonStartOfLine
+                        && mCurrentConversationData.HideQuitButtonLine == mCurrentConvLine)
+                    {
+                        Debug.Log("Hiding quit button");
+                        Service.QuitButtonObj.SetGoActive(false);
+                        Service.QuitButtonObj.SetButtonActive(false);
+                    }
                 }
 
                 return;
@@ -720,6 +734,20 @@ public class ChatBox : MonoBehaviour
                     {
                         Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
                     }
+                }
+
+                if (mCurrentConversationData.QuitButtonLineToActivate == mCurrentConvLine)
+                {
+                    Debug.Log("Setting quit button active on line");
+                    Service.QuitButtonObj.SetButtonActive(true);
+                }
+
+                if (mCurrentConversationData.HideQuitButtonStartOfLine
+                    && mCurrentConversationData.HideQuitButtonLine == mCurrentConvLine)
+                {
+                    Debug.Log("Hiding quit button");
+                    Service.QuitButtonObj.SetGoActive(false);
+                    Service.QuitButtonObj.SetButtonActive(false);
                 }
 
                 if (mCurrentConversationData.ShowQuitButtonStartOfLine

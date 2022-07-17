@@ -1,0 +1,12 @@
+{
+    "Filepath": "room_fresh_1/conv/end_thanks",
+    "Lines": 
+    [
+        "[i]unfortunately we have ran out of content. from the creators of the game: thank you so much for playing our game out of the many games out there.",
+        "[i]we very much hope you enjoyed this vertical slice of what could be a much longer game."
+    ],
+
+    "HideQuitButtonStartOfLine":true,
+    "HideQuitButtonLine":0,
+    "QuitGameAfterConversationFinish":true
+}

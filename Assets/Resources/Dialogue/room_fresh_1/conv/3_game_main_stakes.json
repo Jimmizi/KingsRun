@@ -1,0 +1,19 @@
+{
+    "Filepath": "room_fresh_1/conv/3_game_main_stakes",
+    "Lines": 
+    [
+        "such splendid play. oh it excites me so, that the game is as fresh as the first time i laid eyes upon it.",
+        "i hope you have enjoyed our games thus far. i surely do.",
+        "now then, i believe the time is upon us to add some stakes. minor for now.",
+        "oh you were reluctant to introduce stakes? unfortunately such an establishment exists only due to such stakes being present.",
+        "not to worry we shall start with something small... lets see...",
+        "aha... the stakes of the first game shall be as such. a cocktail from our exclusive menu, for the life of the house plant that sits on your desk at home.",
+        "how did i know about that plant? just a lucky guess you might say, which your questioning thus confirmed. how about it?",
+        "excellent, lets commence."
+    ],
+
+    "LaunchDiceGameMode": 1,
+    "DiceGameIntensity": 0.25,
+
+    "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/4_game_main_add_quit_button"
+}

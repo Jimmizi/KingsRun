@@ -43,7 +43,7 @@ public class ScreenDebug : MonoBehaviour
         
         void AddTextLeft(string text)
         {
-            GUI.Label(new Rect(vLeftPosition.x, vLeftPosition.y, 400, 24), text);
+            GUI.Label(new Rect(vLeftPosition.x, vLeftPosition.y, 900, 24), text);
             vLeftPosition.y += 14;
         }
         void AddTextRight(string text)
@@ -81,11 +81,26 @@ public class ScreenDebug : MonoBehaviour
             Service.Data.SaveAll();
         }
 
-        if (GUI.Button(new Rect(Screen.width - 205, 60, 200, 24), "Times played 1"))
+        if (GUI.Button(new Rect(Screen.width - 205, 55, 200, 24), "Start from title screen 2"))
         {
             Service.Data.TrySetData("NumTimesPlayed", 1);
             Service.Data.TrySetData("QuitViaButton", 1);
         }
+
+        if (GUI.Button(new Rect(Screen.width - 205, 80, 200, 24), "Start from title screen 3"))
+        {
+            Service.Data.TrySetData("NumTimesPlayed", 2);
+            Service.Data.TrySetData("QuitViaButton", 1);
+        }
+
+        if (GUI.Button(new Rect(Screen.width - 205, 105, 200, 24), "Start from quit button intro"))
+        {
+            Service.Data.TrySetData("NumTimesPlayed", 1);
+            Service.Data.TrySetData("QuitViaButton", 1);
+            Service.Data.SetQuitFromFile("room_fresh_1/conv/4_game_main_add_quit_button");
+        }
+
+        vRightPosition.y = 130;
 
         var persData = Service.Data.DebugGetIntData();
         foreach (var data in persData)

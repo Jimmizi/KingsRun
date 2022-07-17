@@ -1,0 +1,19 @@
+{
+    "Filepath": "room_fresh_1/conv/2_game_main",
+    "Lines": 
+    [
+        "not too bad for your first game. i would like a extend some praise to you in fact. many fair much worse than you for their first time.",
+        "did you find the game exciting? splendid. i am honored you enjoyed it such.",
+        "well, i shall not keep you waiting from experiencing it again. let us have another stakes free game just to ensure you fully understand.",
+        "but first, i shall give you a free game tip on the house.",
+        "it is rather beneficial to only reroll those dice of yours which are low in value...",
+        "hah I merely jest. of course you know such a basic fact of the game. on to the actual tip.",
+        "it is said that an advanced player of the king's run might use their dice to alter the dice of the opponent... turning the game in their favour.",
+        "now, whilst we let that ruminate within the contours of your psyche, shall we start another game?"
+    ],
+
+    "LaunchDiceGameMode": 0,
+    "DiceGameIntensity": 0.15,
+
+    "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/3_game_main_stakes"
+}

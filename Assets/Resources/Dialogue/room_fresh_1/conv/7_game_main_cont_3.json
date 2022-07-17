@@ -1,0 +1,12 @@
+{
+    "Filepath": "room_fresh_1/conv/7_game_main_cont_3",
+    "Lines": 
+    [
+        "To be filled out."
+    ],
+
+    "LaunchDiceGameMode": 0,
+    "DiceGameIntensity": 0.25,
+
+    "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/8_game_main_cont_4"
+}

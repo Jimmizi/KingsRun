@@ -179,6 +179,9 @@ public class UIManager : MonoBehaviour
     private CanvasGroup BlackScreenGroup;
 
     [SerializeField]
+    private CanvasGroup DiceGameFader;
+
+    [SerializeField]
     private CanvasGroup TitleScreenGroup;
 
     [SerializeField]
@@ -328,6 +331,7 @@ public class UIManager : MonoBehaviour
 
         TitleScreenGroup.alpha = 0.0f;
         BlackScreenGroup.alpha = 1.0f;
+        DiceGameFader.alpha = 1.0f;
         ThunderFlashGroup.alpha = 0;
 
         TitleGo.SetActive(false);
@@ -518,6 +522,76 @@ public class UIManager : MonoBehaviour
         BlackScreenGroup.alpha = 1.0f;
 
         OnGameHidden?.Invoke();
+    }
+
+    public void ShowDiceGame()
+    {
+        StartCoroutine(Start_ShowDiceGame());
+    }
+
+    public void HideDiceGame()
+    {
+        StartCoroutine(Start_HideDiceGame());
+    }
+
+    private IEnumerator Start_ShowDiceGame()
+    {
+        currentFadeState = ScreenFadeState.ShowingGame;
+        DiceGameFader.alpha = 1.0f;
+
+        float fTime = 0.0f;
+        float fTimeSegment = fadeTime / (float)fadeIterations;
+        float fNextTimeTarget = fTimeSegment;
+        float fFadeSegment = 1.0f / (float)fadeIterations;
+
+        while (fTime < fadeTime && DiceGameFader.alpha > 0.0f)
+        {
+            fTime += Time.deltaTime;
+
+            if (fTime >= fNextTimeTarget)
+            {
+                fNextTimeTarget += fTimeSegment;
+                DiceGameFader.alpha -= fFadeSegment;
+            }
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        currentFadeState = ScreenFadeState.GameVisible;
+        DiceGameFader.alpha = 0.0f;
+
+        if (!hasShownOnce)
+        {
+            hasShownOnce = true;
+            OnStartGame?.Invoke();
+        }
+
+        OnGameShown?.Invoke();
+    }
+
+    private IEnumerator Start_HideDiceGame()
+    {
+        DiceGameFader.alpha = 0.0f;
+
+        float fTime = 0.0f;
+        float fTimeSegment = fadeTime / (float)fadeIterations;
+        float fNextTimeTarget = fTimeSegment;
+        float fFadeSegment = 1.0f / (float)fadeIterations;
+
+        while (fTime < fadeTime && DiceGameFader.alpha < 1.0f)
+        {
+            fTime += Time.deltaTime;
+
+            if (fTime >= fNextTimeTarget)
+            {
+                fNextTimeTarget += fTimeSegment;
+                DiceGameFader.alpha += fFadeSegment;
+            }
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+        
+        DiceGameFader.alpha = 1.0f;
     }
 
     private IEnumerator Start_PauseGame()
