@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ChatBox : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class ChatBox : MonoBehaviour
     #region Public settings
 
     public AudioClip TextDisplayClip;
-
+    
     public Text SpeakerTextComponent;
     public Text SpeechTextComponent;
     public TMP_Text SpeechTextProComponent;
@@ -31,6 +32,7 @@ public class ChatBox : MonoBehaviour
     public CanvasGroup ButtonAlphaGroup;
 
     
+
     /// <summary>
     /// How long to wait between appending characters to the speech box
     /// </summary>
@@ -44,6 +46,7 @@ public class ChatBox : MonoBehaviour
 
     private float mConvEndOfLineSkipTimer = 0.0f;
 
+    private string NextConversationFileToLaunchAfterDiceGame = "";
     private ConversationData conversationToGoBackToAfterInterrupt = null;
 
     private ConversationData mCurrentConversationData = null;
@@ -187,6 +190,198 @@ public class ChatBox : MonoBehaviour
         ResetConversationToCurrentLine();
     }
 
+    // Dice game start 
+    public void ResumeFromDiceGame()
+    {
+        Debug.Log("Resuming from dice game in ChatBox");
+
+        Debug.Assert(Service.Flow.GameState == GameFlow.State.DiceGame);
+        Service.Flow.GameState = GameFlow.State.GameUpdate;
+        
+        var convFile = (TextAsset)Resources.Load("Dialogue/" + NextConversationFileToLaunchAfterDiceGame, typeof(TextAsset));
+        Debug.Assert(convFile != null);
+
+        ConversationData nextConv = JsonDataExecuter.MakeConversation(convFile.text);
+        Debug.Assert(nextConv != null);
+
+        // Clobber over any mid dice game quips
+        conversationToGoBackToAfterInterrupt = null;
+        NextConversationFileToLaunchAfterDiceGame = "";
+
+        StartChat(nextConv);
+    }
+
+    public void StartDiceGame()
+    {
+        Debug.Log("Starting dice game in ChatBox");
+
+        // Need this data
+        Debug.Assert(mCurrentConversationData.ConversationToLaunchAfterDiceGame.Length > 0);
+
+        // Clear out any events just to make sure 
+        JsonDataExecuter.ClearOutQueuedEvents();
+
+        // Go into dice game to not process anything we don't need to
+        Service.Flow.SetIsPlayingDice();
+
+        NextConversationFileToLaunchAfterDiceGame = mCurrentConversationData.ConversationToLaunchAfterDiceGame;
+
+        int diceGameType = mCurrentConversationData.LaunchDiceGameMode;
+        float gameIntensity = mCurrentConversationData.DiceGameIntensity;
+
+        // TODO Start game
+
+        mCurrentConversationData = null;
+        conversationToGoBackToAfterInterrupt = null;
+        EndChat();
+    }
+
+    public TextAsset DiceRollPositiveQuipsFile;
+    public TextAsset DiceRollNegativeQuipsFile;
+    public TextAsset ConvPositiveQuipsFile;
+    public TextAsset ConvNegativeQuipsFile;
+
+    private ConversationData positiveDiceRollQuips;
+    private ConversationData negativeDiceRollQuips;
+    private ConversationData positiveConvQuips;
+    private ConversationData negativeConvQuips;
+
+    void LoadQuips()
+    {
+        Debug.Assert(DiceRollPositiveQuipsFile != null && DiceRollNegativeQuipsFile != null);
+        Debug.Assert(ConvPositiveQuipsFile != null && ConvNegativeQuipsFile != null);
+
+        positiveDiceRollQuips = JsonDataExecuter.MakeConversation(DiceRollPositiveQuipsFile);
+        negativeDiceRollQuips = JsonDataExecuter.MakeConversation(DiceRollNegativeQuipsFile);
+
+        positiveConvQuips = JsonDataExecuter.MakeConversation(ConvPositiveQuipsFile);
+        negativeConvQuips = JsonDataExecuter.MakeConversation(ConvNegativeQuipsFile);
+    }
+
+    public enum QuipType
+    {
+        Positive,
+        Negative
+    };
+
+    public static QuipType RandomQuipType => (QuipType)Random.Range(0, 2);
+
+    private Queue<int> lastConvPositiveQuipPicks = new Queue<int>();
+    private Queue<int> lastConvNegativeQuipPicks = new Queue<int>();
+    private Queue<int> lastDiceRollPositiveQuipPicks = new Queue<int>();
+    private Queue<int> lastDiceRollNegativeQuipPicks = new Queue<int>();
+
+    int GetQuipToPlayIndex(int count, ref Queue<int> quipQueue)
+    {
+        List<int> availableQuips = new List<int>();
+
+        for (int i = 0; i < count; ++i)
+        {
+            availableQuips.Add(i);
+        }
+
+        // Remove any quips last played the last three times
+        foreach (var i in quipQueue)
+        {
+            availableQuips.Remove(i);
+        }
+        
+        if (availableQuips.Count == 0)
+        {
+            return -1;
+        }
+
+        int rand = Random.Range(0, availableQuips.Count);
+        int quipToUse = availableQuips[rand];
+
+        // Make sure the queue only keeps 3 last quips
+        if (quipQueue.Count >= 3)
+        {
+            quipQueue.Dequeue();
+        }
+
+        // Add this so that the next three quips played can't be this again
+        quipQueue.Enqueue(quipToUse);
+
+        return quipToUse;
+    }
+
+    // Played from GameFlow randomly during dice game
+    public void TryPlayRandomConvQuip(QuipType eType)
+    {
+        // Means we're already playing a quip
+        if (mProcessingChat)
+        {
+            return;
+        }
+
+        if (!Service.Flow.ShouldPlayConvQuip())
+        {
+            return;
+        }
+
+        int iQuipCount = eType == QuipType.Positive ? positiveConvQuips.Quips.Count : negativeConvQuips.Quips.Count;
+        int randomQuip = -1;
+
+        if (eType == QuipType.Positive)
+        {
+            randomQuip = GetQuipToPlayIndex(iQuipCount,ref lastConvPositiveQuipPicks);
+        }
+        else
+        {
+            randomQuip = GetQuipToPlayIndex(iQuipCount, ref lastConvNegativeQuipPicks);
+        }
+
+        if (randomQuip == -1)
+        {
+            return;
+        }
+
+        ConversationData data = new ConversationData();
+        data.Lines.Add(eType == QuipType.Positive ? positiveConvQuips.Quips[randomQuip] : negativeConvQuips.Quips[randomQuip]);
+
+        StartChat(data);
+    }
+
+    // Should be triggered from dice game when rolling (perhaps a chance)
+    public void TryPlayRandomDiceRollQuip(QuipType eType)
+    {
+        // Means we're already playing a quip
+        if (mProcessingChat)
+        {
+            return;
+        }
+
+        if (!Service.Flow.ShouldPlayDiceRollQuip())
+        {
+            return;
+        }
+
+        int iQuipCount = eType == QuipType.Positive ? positiveDiceRollQuips.Quips.Count : negativeDiceRollQuips.Quips.Count;
+        int randomQuip = -1;
+
+        if (eType == QuipType.Positive)
+        {
+            randomQuip = GetQuipToPlayIndex(iQuipCount, ref lastDiceRollPositiveQuipPicks);
+        }
+        else
+        {
+            randomQuip = GetQuipToPlayIndex(iQuipCount, ref lastDiceRollNegativeQuipPicks);
+        }
+
+        if (randomQuip == -1)
+        {
+            return;
+        }
+        
+        ConversationData data = new ConversationData();
+        data.Lines.Add(eType == QuipType.Positive ? positiveDiceRollQuips.Quips[randomQuip] : negativeDiceRollQuips.Quips[randomQuip]);
+
+        Service.Text.StartChat(data);
+    }
+
+    // dice game end
+
     public void StartOrInterruptChat(ConversationData newConv)
     {
         if (mCurrentConversationData == null)
@@ -291,6 +486,8 @@ public class ChatBox : MonoBehaviour
             }
             else
             {
+                // On purpose don't clean up mCurrentConversationData so that JsonDataExecuter can clean itself up
+
                 SetText("");
                 //StartCoroutine(FadeChatGroup(1.0f, 0.0f, 0.5f));
                 StopTypingSoundIfPossible();
@@ -548,6 +745,12 @@ public class ChatBox : MonoBehaviour
                     return;
                 }
 
+                if (mCurrentConversationData.WillLaunchDiceGame())
+                {
+                    StartDiceGame();
+                    return;
+                }
+
                 //Once we're out of lines, set to -1 to begin processing end of conversation events
                 mCurrentConvLine = -1;
             }
@@ -631,6 +834,8 @@ public class ChatBox : MonoBehaviour
         Debug.Assert(NextLineButton != null);
 
         NextLineButton.interactable = false;
+
+        LoadQuips();
     }
     
     void Update()

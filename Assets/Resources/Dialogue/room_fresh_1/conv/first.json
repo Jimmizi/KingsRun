@@ -1,7 +1,12 @@
 {
     "Lines": 
     [
-        "Please enjoy this very exciting and dramatic prose I offer to you, giving ample chance to interrupt me at any moment now-__or now..._ huh-_ perhaps you were decent after all.",
-        "Prepare for my epic story of fantastical tales sure to delight and appeal to your serious nature."
-    ]
+        "Please enjoy this very exciting and dramatic prose I offer to you...",
+        "Lets launch a dice game - press S to finish it."
+    ],
+
+    "LaunchDiceGameMode": 0,
+    "DiceGameIntensity": 0.5,
+
+    "ConversationToLaunchAfterDiceGame": "room_fresh_1/conv/second"
 }

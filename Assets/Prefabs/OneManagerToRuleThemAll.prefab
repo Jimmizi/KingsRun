@@ -3207,7 +3207,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Game title
+  m_text: King's run
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee30ff33411097f428dbe64ddc4d199d, type: 2}
   m_sharedMaterial: {fileID: -3417812861429974907, guid: ee30ff33411097f428dbe64ddc4d199d, type: 2}
@@ -3666,6 +3666,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 146ed6a0f4cec3e4488cac7f91ddda67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DiceRollQuipChanceMin: 10
+  DiceRollQuipChanceMax: 20
+  ConvQuipChanceMin: 10
+  ConvQuipChanceMax: 40
+  TimeBetweenConvQuipsTestMin: 15
+  TimeBetweenConvQuipsTestMax: 30
   PuzzleAudioSource: {fileID: 0}
   TextBoxAudioSource: {fileID: 0}
   JsonScriptToLoadDataMembers: {fileID: 4900000, guid: 71066873a4eedd14a8d01cca18601ed4, type: 3}
@@ -3715,8 +3721,11 @@ MonoBehaviour:
   UnderscorePauseTime: 0.75
   CommaPauseTime: 0.25
   PeriodPauseTime: 0.5
-  PausePlayback: 0
   nextPressed: 0
+  DiceRollPositiveQuipsFile: {fileID: 4900000, guid: 8fd003ecf197b4445a9d36b56ff537c5, type: 3}
+  DiceRollNegativeQuipsFile: {fileID: 4900000, guid: 8d4f292ce927bbc4eb71488f663b2802, type: 3}
+  ConvPositiveQuipsFile: {fileID: 4900000, guid: 54f26f9c48107b143a87c00d65164cb3, type: 3}
+  ConvNegativeQuipsFile: {fileID: 4900000, guid: 227650a440b26284cad7867ef0dcdbf0, type: 3}
 --- !u!114 &1741028054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3868,11 +3877,11 @@ RectTransform:
   m_Father: {fileID: 4070834809220949032}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -91, y: -10.1}
-  m_SizeDelta: {x: 55, y: 55}
-  m_Pivot: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -5, y: -5}
+  m_SizeDelta: {x: 48, y: 48}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &4070834809349850549
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3979,6 +3988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66ec0641afd12a941996cd61d5fce8df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnableDebugTesting: 0
   InterruptDialogue:
   - {fileID: 4900000, guid: 4803a1ed14c5c994bae93104910c67b1, type: 3}
   - {fileID: 4900000, guid: 000df8f0eea33c749a49600919e6486e, type: 3}
