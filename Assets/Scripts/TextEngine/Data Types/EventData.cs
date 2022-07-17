@@ -32,6 +32,8 @@ public class EventData
 
     public bool AddsEventsToFrontOfQueue = false;
 
+    public bool NextConversationIsLastOneQuitFrom = false;
+
     #region Damage Event
 
     /// <summary>

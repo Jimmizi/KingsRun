@@ -204,6 +204,9 @@ public class ChatBox : MonoBehaviour
         ConversationData nextConv = JsonDataExecuter.MakeConversation(convFile.text);
         Debug.Assert(nextConv != null);
 
+        // Otherwise this will be old data from whatever the last event was
+        JsonDataExecuter.mCurrentConversationData = nextConv;
+
         // Clobber over any mid dice game quips
         conversationToGoBackToAfterInterrupt = null;
         NextConversationFileToLaunchAfterDiceGame = "";
@@ -251,11 +254,11 @@ public class ChatBox : MonoBehaviour
         Debug.Assert(DiceRollPositiveQuipsFile != null && DiceRollNegativeQuipsFile != null);
         Debug.Assert(ConvPositiveQuipsFile != null && ConvNegativeQuipsFile != null);
 
-        positiveDiceRollQuips = JsonDataExecuter.MakeConversation(DiceRollPositiveQuipsFile);
-        negativeDiceRollQuips = JsonDataExecuter.MakeConversation(DiceRollNegativeQuipsFile);
+        positiveDiceRollQuips = JsonDataExecuter.MakeConversation(DiceRollPositiveQuipsFile, false);
+        negativeDiceRollQuips = JsonDataExecuter.MakeConversation(DiceRollNegativeQuipsFile, false);
 
-        positiveConvQuips = JsonDataExecuter.MakeConversation(ConvPositiveQuipsFile);
-        negativeConvQuips = JsonDataExecuter.MakeConversation(ConvNegativeQuipsFile);
+        positiveConvQuips = JsonDataExecuter.MakeConversation(ConvPositiveQuipsFile, false);
+        negativeConvQuips = JsonDataExecuter.MakeConversation(ConvNegativeQuipsFile, false);
     }
 
     public enum QuipType
@@ -750,7 +753,7 @@ public class ChatBox : MonoBehaviour
                     StartDiceGame();
                     return;
                 }
-
+                
                 //Once we're out of lines, set to -1 to begin processing end of conversation events
                 mCurrentConvLine = -1;
             }

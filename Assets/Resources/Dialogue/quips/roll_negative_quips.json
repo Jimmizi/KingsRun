@@ -3,6 +3,13 @@
     [
         "Ahh, too bad.^",
         "Huh... interesting.^",
-        "Maybe try rolling higher?^"
+        "Have you tried rolling higher?^",
+        "It seems luck does not favour you.^",
+        "Maybe try rolling with the other hand?^",
+        "Did you mean to roll that badly?^",
+        "Better luck next time.^",
+        "A pity.^",
+        "You have rolled dice before right?^",
+        ""
     ]
 }

@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// This class runs through and executes the data events, conversations and choices
@@ -16,6 +18,8 @@ public class JsonDataExecuter
 
     public bool Processing => mProcessingJson;
 
+    public static string LastConversationFileLoaded = "";
+
     private static string mLastSceneNameAdded = "";
 
     private static CurrentTextFormat mFormatProcessing;
@@ -24,7 +28,7 @@ public class JsonDataExecuter
     private static EventData mCurrentEvent = null;
     private static bool processedConditionOnCurrentEvent = false;
 
-    private static ConversationData mCurrentConversationData = null;
+    public static ConversationData mCurrentConversationData = null;
     private static ChoiceData mCurrentChoiceData = null;
 
     private static bool mDelayStarted;
@@ -35,12 +39,14 @@ public class JsonDataExecuter
         mQueuedEvents.Clear();
     }
 
-    public static ConversationData MakeConversation(TextAsset jsonFile)
+    public static ConversationData MakeConversation(TextAsset jsonFile, bool saveLastConv = true)
     {
         Debug.Assert(jsonFile != null);
-        return MakeConversation(jsonFile.text);
+
+        ConversationData data = MakeConversation(jsonFile.text, saveLastConv);
+        return data;
     }
-    public static ConversationData MakeConversation(string json)
+    public static ConversationData MakeConversation(string json, bool saveLastConv = true)
     {
         ConversationData data = JsonUtility.FromJson<ConversationData>(json);
         if (data.Equals(new ConversationData()))
@@ -55,6 +61,11 @@ public class JsonDataExecuter
                 // Not the biggest issue, but if much bigger than 130, once the font has resized and the spacing reduced we do have a chance to start overflowing
                 Debug.LogWarning($"Warning: dialogue line more than 130 ({line.Length}) - Consider making this into multiple lines otherwise it will incur font resizing. Line: {line}");
             }
+        }
+
+        if (saveLastConv)
+        {
+            LastConversationFileLoaded = data.Filepath;
         }
 
         return data;
@@ -340,7 +351,7 @@ public class JsonDataExecuter
 
         Assert.IsNull(mCurrentConversationData, "conversation was already loaded when we tried to add a new one: " + evt.OpenConversationFile);
         Assert.IsNotNull(convFile, "failed to load conversation " + evt.OpenConversationFile);
-
+        
         LoadConversation(convFile.text);
 
         return true;
@@ -365,6 +376,24 @@ public class JsonDataExecuter
 
     private static bool ProcessEvent_Event(EventData evt)
     {
+        if (evt.NextConversationIsLastOneQuitFrom)
+        {
+            string lastFile = Service.Data.GetFileLastQuitFrom();
+
+            Debug.Log($"Going to last file quit from: {lastFile}");
+
+            if (lastFile.Length > 0)
+            {
+                EventData convEvent = new EventData();
+                convEvent.Type = "conversation";
+                convEvent.OpenConversationFile = Service.Data.GetFileLastQuitFrom();
+
+                ProcessEvent_Conversation(convEvent);
+
+                return true;
+            }
+        }
+
         //Just add the events in this to the queue and we're done with this event
         AddEventNamesToQueue(evt.EventsToFire);
         return true;
@@ -554,12 +583,28 @@ public class JsonDataExecuter
                     {
                         Service.Text.EndCleanup();
 
+                        // Easier way to launch the next conversation part
+                        string sNextConversation = mCurrentConversationData.EventsToFire.Count == 0
+                            ? mCurrentConversationData.NextConversation // Defaults as ""
+                            : "";
+                        
                         //Done with chatbox, fire any events off
                         AddEventNamesToQueue(mCurrentConversationData.EventsToFire);
 
                         //Conversations always launch events
                         mFormatProcessing = CurrentTextFormat.Event;
                         mCurrentConversationData = null;
+
+                        // Basically process as if a Conversation event
+                        if (sNextConversation.Length > 0)
+                        {
+                            var convFile = (TextAsset)Resources.Load("Dialogue/" + sNextConversation, typeof(TextAsset));
+                            
+                            Assert.IsNotNull(convFile, "failed to load conversation " + sNextConversation);
+                            
+                            LoadConversation(convFile.text);
+                            mFormatProcessing = CurrentTextFormat.Conversation;
+                        }
                     }
                 }
                 break;

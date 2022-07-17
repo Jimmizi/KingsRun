@@ -6,6 +6,17 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
+
+    public void SetQuitFromFile(string file)
+    {
+        PlayerPrefs.SetString("QuitFromFile", file);
+    }
+
+    public string GetFileLastQuitFrom()
+    {
+        return PlayerPrefs.GetString("QuitFromFile", "");
+    }
+
     public int? TryGetData(string key)
     {
         if (intData.ContainsKey(key))
