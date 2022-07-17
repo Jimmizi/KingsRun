@@ -206,6 +206,9 @@ public class UIManager : MonoBehaviour
     private GameObject LastTimeLaunchingGo;
 
     [SerializeField]
+    private AudioClip DoorShutClip;
+
+    [SerializeField]
     private EaserEase ThunderFlashGraph;
 
     private bool hasShownOnce = false;
@@ -367,6 +370,11 @@ public class UIManager : MonoBehaviour
         currentFadeState = ScreenFadeState.TitleFading;
         StartGameButton.interactable = false;
         TitleScreenGroup.alpha = 1.0f;
+
+        if (GetNumTimesPlayed() == 0)
+        {
+            Service.Flow.DoorAudioSource.PlayOneShot(DoorShutClip);
+        }
 
         if (StartGameButton.GetComponentInChildren<Animator>() != null)
         {
