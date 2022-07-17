@@ -83,6 +83,7 @@ Let go of left click when you are ready to roll your dice.
 Following a skull will remove that die from play.
 
 The current scores of the dice present on the table are shown at the top of the screen.
+Player on the left. The Dealer on the right.
 
 Rerolling dice, having them knocked over, or having them removed from play will bring
 change to your score.
