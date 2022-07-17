@@ -34,6 +34,9 @@ public class ConversationData
 
     public List<string> Lines = new List<string>();
 
+    // One liners specifically for dice game musings
+    public List<string> Quips = new List<string>();
+
     /// <summary>
     /// List of events to fire. Only the first choice or conversation event is accepted if there are duplicates.
     /// </summary>
@@ -50,4 +53,18 @@ public class ConversationData
 
     public string DataToSetAfterLines = "";
     public int DataValue = 0;
+
+    // -1 = No game, 0 = Free Play, 1 = Win, 2 = Loss
+    public int LaunchDiceGameMode = -1;
+
+    // Scalar value of how intense (how close) a non free play dice game will be
+    public float DiceGameIntensity = 0.0f;
+
+    // When finishing up the dice game, add this conversation file
+    public string ConversationToLaunchAfterDiceGame = "";
+
+    public bool WillLaunchDiceGame()
+    {
+        return LaunchDiceGameMode >= 0 && LaunchDiceGameMode <= 2;
+    }
 }

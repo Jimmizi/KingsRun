@@ -30,6 +30,11 @@ public class JsonDataExecuter
     private static bool mDelayStarted;
     private static float mDelayTimer;
 
+    public static void ClearOutQueuedEvents()
+    {
+        mQueuedEvents.Clear();
+    }
+
     public static ConversationData MakeConversation(TextAsset jsonFile)
     {
         Debug.Assert(jsonFile != null);

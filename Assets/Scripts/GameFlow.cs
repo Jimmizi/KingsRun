@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Random = UnityEngine.Random;
 
 public enum CurrentTextFormat
 {
@@ -21,8 +23,66 @@ public class GameFlow : MonoBehaviour
         Title,
         GameInit,
         GameUpdate,
+        DiceGame,
         GameOver
     }
+
+    // Random chance to play a dice roll quip
+    public float DiceRollQuipChanceMin = 10.0f;
+    public float DiceRollQuipChanceMax = 20.0f;
+
+    // Random chance to play a conv quip
+    public float ConvQuipChanceMin = 10.0f;
+    public float ConvQuipChanceMax = 30.0f;
+
+    // Random timer between conv quips trying
+    public float TimeBetweenConvQuipsTestMin = 15.0f;
+    public float TimeBetweenConvQuipsTestMax = 30.0f;
+
+    public float TimeBetweenQuipChance => nextTimeBetweenConvQuips;
+
+    private float nextTimeBetweenConvQuips = 0.0f;
+    private bool allowQuips = false;
+
+#if UNITY_EDITOR
+    public float LastConvQuipChanceThreshold = 0.0f;
+    public float LastConvQuipChance = 0.0f;
+#endif
+
+    public bool ShouldPlayDiceRollQuip()
+    {
+        float fRandomChanceThreshold = Random.Range(DiceRollQuipChanceMin, DiceRollQuipChanceMax);
+        float fChance = Random.Range(0.0f, 100.0f);
+
+        return fChance < fRandomChanceThreshold;
+    }
+
+    public bool ShouldPlayConvQuip()
+    {
+        float fRandomChanceThreshold = Random.Range(ConvQuipChanceMin, ConvQuipChanceMax);
+        float fChance = Random.Range(0.0f, 100.0f);
+
+#if UNITY_EDITOR
+        LastConvQuipChanceThreshold = fRandomChanceThreshold;
+        LastConvQuipChance = fChance;
+#endif
+
+        return fChance < fRandomChanceThreshold;
+    }
+
+    public bool IsPlayingDice()
+    {
+        return GameState == State.DiceGame;
+    }
+
+    public void SetIsPlayingDice(bool allowRandomQuips = true)
+    {
+        GameState = State.DiceGame;
+        allowQuips = allowRandomQuips;
+
+        nextTimeBetweenConvQuips = Random.Range(TimeBetweenConvQuipsTestMin, TimeBetweenConvQuipsTestMax);
+    }
+
 
     public AudioSource PuzzleAudioSource;
     public AudioSource TextBoxAudioSource;
@@ -40,6 +100,8 @@ public class GameFlow : MonoBehaviour
         }
     }
 
+    
+    
     public void QuitGameToTitle()
     {
         GameState = State.Title;
@@ -98,6 +160,9 @@ public class GameFlow : MonoBehaviour
             case State.GameUpdate:
                 StateGameUpdate();
                 break;
+            case State.DiceGame:
+                StateDiceGame();
+                break;
             case State.GameOver:
                 break;
             default:
@@ -121,5 +186,18 @@ public class GameFlow : MonoBehaviour
     private void StateGameUpdate()
     {
         mExecuter.Update();
+    }
+
+    private void StateDiceGame()
+    {
+        if (allowQuips)
+        {
+            nextTimeBetweenConvQuips -= Time.deltaTime;
+            if (nextTimeBetweenConvQuips < 0.0f)
+            {
+                nextTimeBetweenConvQuips = Random.Range(TimeBetweenConvQuipsTestMin, TimeBetweenConvQuipsTestMax);
+                Service.Text.TryPlayRandomConvQuip(ChatBox.RandomQuipType);
+            }
+        }
     }
 }
