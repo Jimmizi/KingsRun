@@ -123,15 +123,7 @@ public class GameFlow : MonoBehaviour
     /// Event File to start off the game
     /// </summary>
     public TextAsset StartEvent;
-
-    [SerializeField]
-    private bool startGameHidden;
-
-    [SerializeField]
-    [Tooltip("Time to delay at the start of the game before fading in (if startGameHidden set)")]
-    private float startHiddenShowDelayTime = 1.0f;
-
-
+    
     private JsonDataExecuter mExecuter = new JsonDataExecuter();
     
     void Awake()
