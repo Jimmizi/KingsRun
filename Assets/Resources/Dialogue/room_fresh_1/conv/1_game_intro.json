@@ -28,6 +28,7 @@
 
         "this is a versus game. yourself against myself. we experience the game in rounds.",
         "Each round one of us will take their turn first followed by the other.",
+        "it is your go when the hex is flashing your shade - black or white. white if you are going first, black if you are going second.",
         "during your turn, pick up as many dice that you want to reroll and roll them. on the first round, all dice must be used. you must reroll at least one die every round.",
         "start picking up dice with left click. keep holding left click and then right click on more dice to add them to the roll.__",
         "let go of left click when you are ready to roll.",
