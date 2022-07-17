@@ -95,6 +95,8 @@ public class DiceGameMode : MonoBehaviour
 
     private void Awake()
     {
+        Service.DiceGame = this;
+
         rigger = GetComponent<DiceRollRigger>();
         playerController = FindObjectOfType<PlayerController>();
         aiController = FindObjectOfType<AIController>();
@@ -180,6 +182,11 @@ public class DiceGameMode : MonoBehaviour
         }
 
         SetGameState(GameState.WhitePickingDice);
+    }
+
+    public void PresetGameWithRigParameters(int gameType, float intensity)
+    {
+
     }
 
     public bool NextPlayer()

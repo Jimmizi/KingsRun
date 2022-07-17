@@ -13,4 +13,6 @@ public static class Service
     public static DataManager Data;
     public static QuitButton QuitButtonObj;
     public static ResetPuzzleManager Puzzle;
+    public static DiceGameMode DiceGame;
+    public static DiceGameHUDv2 DiceGameHUD;
 }

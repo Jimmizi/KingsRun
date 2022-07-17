@@ -229,6 +229,8 @@ public class ChatBox : MonoBehaviour
         int diceGameType = mCurrentConversationData.LaunchDiceGameMode;
         float gameIntensity = mCurrentConversationData.DiceGameIntensity;
 
+        Service.DiceGame.PresetGameWithRigParameters(diceGameType, gameIntensity);
+        Service.DiceGameHUD.ShowColorSelection();
         // TODO Start game
 
         mCurrentConversationData = null;

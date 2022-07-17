@@ -24,4 +24,12 @@ public class PageSwitcher : MonoBehaviour
             child.SetActive(child == activePage);
         }
     }
+
+    public void HideAllPages()
+    {
+        foreach (GameObject child in children)
+        {
+            child.SetActive(false);
+        }
+    }
 }
