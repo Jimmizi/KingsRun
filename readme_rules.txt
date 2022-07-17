@@ -71,6 +71,11 @@ once per round.
 You'll be asked at the start if the game whether you want to go first in the round
 or last in the round.
 
+If you are going first you will be playing as white. Otherwise going second you will be
+playing as black.
+
+It is your turn when your shade (black/white) is blinking under the scores.
+
 During your turn, pick up as many dice that you want to reroll and then roll them.
 Left click on a die to start holding it. Right click on more dice to add them to
 your hand for rerolling.

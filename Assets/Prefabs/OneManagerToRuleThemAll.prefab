@@ -5455,6 +5455,7 @@ MonoBehaviour:
   pauseFadeTime: 0.5
   fadeIterations: 5
   BlackScreenGroup: {fileID: 4070834809240685236}
+  DiceGameFader: {fileID: 2556500671706213229}
   TitleScreenGroup: {fileID: 423960621}
   ThunderFlashGroup: {fileID: 1471654953}
   ThunderFlashTime: 1.5
@@ -5554,10 +5555,10 @@ MonoBehaviour:
   NextLineButton: {fileID: 4070834808069161694}
   AlphaGroup: {fileID: 8144507411751447305}
   ButtonAlphaGroup: {fileID: 8144507410040503258}
-  TimeBetweenCharacters: 0.02
-  UnderscorePauseTime: 0.75
-  CommaPauseTime: 0.25
-  PeriodPauseTime: 0.5
+  TimeBetweenCharacters: 0.015
+  UnderscorePauseTime: 0.65
+  CommaPauseTime: 0.2
+  PeriodPauseTime: 0.4
   nextPressed: 0
   DiceRollPositiveQuipsFile: {fileID: 4900000, guid: 8fd003ecf197b4445a9d36b56ff537c5, type: 3}
   DiceRollNegativeQuipsFile: {fileID: 4900000, guid: 8d4f292ce927bbc4eb71488f663b2802, type: 3}

@@ -603,7 +603,9 @@ public class ChatBox : MonoBehaviour
                             //These only add to the pause timer, also get added
                             if (nextChar.Equals(","))
                             {
-                                if(bReachedSpeedUpChar)
+                                StopTypingSoundIfPossible();
+
+                                if (bReachedSpeedUpChar)
                                     mUnderscorePauseTimer = CommaPauseTime;
                             }
                             else if (nextChar.Equals("."))
