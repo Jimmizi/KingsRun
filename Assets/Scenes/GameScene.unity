@@ -2373,8 +2373,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: OneManagerToRuleThemAll
       objectReference: {fileID: 0}
+    - target: {fileID: 4070834809220949044, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: DiceGameFader
+      value: 
+      objectReference: {fileID: 4070834808587886329}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+--- !u!225 &4070834808587886329 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 2556500671706213229, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+  m_PrefabInstance: {fileID: 4070834808587886328}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6072801222179611069
 PrefabInstance:
   m_ObjectHideFlags: 0

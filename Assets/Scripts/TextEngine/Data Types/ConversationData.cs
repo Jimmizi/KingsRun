@@ -47,9 +47,14 @@ public class ConversationData
     public int ShowQuitButtonLine = -1;
     public bool ShowQuitButtonStartOfLine = false;
 
+    public int HideQuitButtonLine = -1;
+    public bool HideQuitButtonStartOfLine = false;
+
     public int QuitButtonInterruptLineToResetButton = -1;
     public bool MoveQuitButtonAtStartOfLine = false;
     public float QuitButtonMoveSpeedOverride = 0.0f;
+
+    public int QuitButtonLineToActivate = -1;
 
     public bool QuitGameAfterConversationFinish = false;
 
