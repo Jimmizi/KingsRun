@@ -208,6 +208,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4070834808116685351, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_text
+      value: King's run
+      objectReference: {fileID: 0}
     - target: {fileID: 4070834809220949032, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
       propertyPath: m_Pivot.x
       value: 0
