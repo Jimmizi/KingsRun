@@ -7,6 +7,7 @@
         "not to worry, the importance of the forgotten item is not that high.",
         "ah there we go. sorry, just a rule in the regulations that requires it be here. you can just forget about it now and we can continue playing.",
         "alright. moving on.",
+        "[i]the dealer clicks his fingers together.",
         "here is the exclusive drinks menu, select from it whatever you wish...",
         "in celebration of your victory, shall up the stakes a little more? yes, that would be most fitting.",
         "so how about this. the success of your job, against the wellbeing of your feline pet? oh, just another lucky guess.",
@@ -20,7 +21,7 @@
     "QuitButtonLineToActivate": 4,
 
     "LaunchDiceGameMode": 2,
-    "DiceGameIntensity": 0.6,
+    "DiceGameIntensity": 0.1,
 
     "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/5_game_main_cont_1"
 }

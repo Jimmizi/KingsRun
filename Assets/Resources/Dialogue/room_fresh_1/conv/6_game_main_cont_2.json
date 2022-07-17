@@ -2,11 +2,22 @@
     "Filepath": "room_fresh_1/conv/6_game_main_cont_2",
     "Lines": 
     [
-        "To be filled out."
+        "such an unlucky turn of events. such travesty.",
+        "here i was thinking you had gotten the hang of the game. alas. perhaps such things were not meant to be.",
+        "[i]this time, the click of the dealers fingers hurts a little more.",
+        "i am sorry dear old friend. truely a shame. it hurts me to see you hurt, it really does._",
+        "what was that? you wish to try revert the bet just made?",
+        "... it is possible, yes. though such a feat would require an even greater set of stakes for the next game._",
+        "so you were sure? okay then, let us see what the stakes shall be...",
+        "alright, here they are. shall you win, you will regain the ability to receive lov-_ actually no lets throw in a little bonus.",
+        "you will receive both the ability to love, as well as the affections of that certain someone from the subway. sound good?_",
+        "perfect. in compromise if you shall lose however... you will forfeit the wellness of your left limb...",
+        "... in other words it shall be removed._ absurd you say? well the chance of such high winnings constitute the chance of such high losses.",
+        "lets begin the next game shall we."
     ],
 
-    "LaunchDiceGameMode": 0,
-    "DiceGameIntensity": 0.25,
+    "LaunchDiceGameMode": 2,
+    "DiceGameIntensity": 0.1,
 
     "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/7_game_main_cont_3"
 }

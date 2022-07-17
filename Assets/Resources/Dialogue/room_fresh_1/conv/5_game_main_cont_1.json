@@ -2,11 +2,22 @@
     "Filepath": "room_fresh_1/conv/5_game_main_cont_1",
     "Lines": 
     [
-        "To be filled out."
+        "oh what a shame. you were playing so well before. do make the rest of your time with little lulu precious will you. for me?",
+        "[i]the dealer clicks his fingers together once again.",
+        "one thing that piqued my curiosity... what brought you here do you know?_._._. ah yes, a seemingly common tale of dread and woe.",
+        "fear not, for you are in the only establishment that can cure you. you doubt so? well, surely have you not noticed you seem to be enjoying yourself.",
+        "i do see it to be true. my words do not just flatter our fine establishment, you seem to be in better spirits than before.",
+        "it is all down to our wonderful game, the king's run of course.",
+        "ah you wish to play again do you. well let me not keep you from it.",
+        "say, are there any stakes that pop into your thoughts for the next game?",
+        "i see. you want the affections of that person you see on the subway to work... such can be granted. now for a suitable forfeit...",
+        "aha, i have thought of one. the forfeit being that you shall not hold the affects of anyone.",
+        "yes. splendid. a last effort gamble for love. all or nothing.",
+        "lets begin."
     ],
 
-    "LaunchDiceGameMode": 0,
-    "DiceGameIntensity": 0.25,
+    "LaunchDiceGameMode": 2,
+    "DiceGameIntensity": 0.7,
 
     "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/6_game_main_cont_2"
 }
