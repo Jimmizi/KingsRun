@@ -44,7 +44,8 @@ public class DiceRollRigger : MonoBehaviour
         Collider[] colliders = FindObjectsOfType<Collider>();
         foreach(Collider collider in colliders)
         {
-            if (collider.gameObject.isStatic)
+            var rigidBody = collider.GetComponent<Rigidbody>();
+            if (!rigidBody)
             {
                 CreatePredictionReplica(collider.gameObject);
             }
