@@ -14,7 +14,7 @@
         "[i]with nothing interesting or urgent you were on your way to, you approach the door and reach for the handle.",
         "[i]cracking open the door, a waft of cigarette smoke poors out, making you rear back. Still determined by this mystery, you enter Devin's Dice Bar.",
         "[i]closing the door you see an expansive room, with multiple tables set up in the middle of the area. Dealers talk in low tones to the customers of each table.",
-        "[i]it strikes you as odd that none the tables you can see have more than one customer present.",
+        "[i]it strikes you as odd that none of the tables you can see have more than one customer present.",
         "[i]still surveying the room, your eyes meet those of a dice dealer, the only free table in the room. Odd.",
         "[i]not undeterred just yet, you start making your way to this table.",
         "[i]you're met by an older gentleman, with a kind hard edged face and well trimmed greying beard.",
@@ -31,11 +31,11 @@
         "during your turn, pick up as many dice that you want to reroll and roll them. on the first round, all dice must be used. you must reroll at least one die every round.",
         "start picking up dice with left click. keep holding left click and then right click on more dice to add them to the roll.__",
         "let go of left click when you are ready to roll.",
-        "the current score of your dice is displayed at the top of the screen, in white. mine is in black.",
+        "the current score of your dice is displayed at the top of the screen, on the left. mine is on the right.",
         "whoever has the highest score in dice on the table at the end of the last round wins.",
         "be careful not to roll a skull - that will remove your die from the table.",
 
-        "not too complicated for you i hope?_ good._ if you need a refresher on the rules, find the readme_rules file bundled with the game.",
+        "not too complicated for you i hope?_ good._ if you need a refresher on the rules, download the readme_rules.txt file, or find it in the windows build.",
         "alright, enough explanation. how about we try this out with a simple game first? a stakes free game. think of it as the good will of the house."
     ],
 
