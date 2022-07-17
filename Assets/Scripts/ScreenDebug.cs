@@ -84,6 +84,7 @@ public class ScreenDebug : MonoBehaviour
         if (GUI.Button(new Rect(Screen.width - 205, 60, 200, 24), "Times played 1"))
         {
             Service.Data.TrySetData("NumTimesPlayed", 1);
+            Service.Data.TrySetData("QuitViaButton", 1);
         }
 
         var persData = Service.Data.DebugGetIntData();

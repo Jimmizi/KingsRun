@@ -209,6 +209,30 @@ public class UIManager : MonoBehaviour
     private AudioClip DoorShutClip;
 
     [SerializeField]
+    private AudioClip TitleScreenOneClip;
+
+    [SerializeField]
+    private AudioClip TitleScreenTwoClip;
+
+    [SerializeField]
+    private AudioClip TitleScreenThreeClip;
+
+    [SerializeField]
+    private AudioClip IndoorRainClip;
+
+    [SerializeField]
+    private AudioClip OutdoorRainClip;
+
+    [SerializeField]
+    private AudioClip MenuMusicClip;
+
+    [SerializeField]
+    private AudioClip AmbientMusicClip;
+
+    [SerializeField]
+    private AudioClip ThunderSoundClip;
+
+    [SerializeField]
     private EaserEase ThunderFlashGraph;
 
     private bool hasShownOnce = false;
@@ -293,7 +317,12 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator BringInTitleScreen()
     {
-        // TODO Bring in rain/music sound
+        Service.Flow.RainAudioSource.clip = OutdoorRainClip;
+        Service.Flow.RainAudioSource.Play();
+
+        Service.Flow.MusicAudioSource.volume = 1.0f;
+        Service.Flow.MusicAudioSource.clip = MenuMusicClip;
+        Service.Flow.MusicAudioSource.Play();
 
         Service.Puzzle.PuzzleDone = false;
 
@@ -315,12 +344,20 @@ public class UIManager : MonoBehaviour
             // We've quit once and come back in
             if (iNumTimesPlayed == 1)
             {
+                Service.Flow.MusicAudioSource.volume = 1.0f;
+                Service.Flow.MusicAudioSource.clip = TitleScreenTwoClip;
+                Service.Flow.MusicAudioSource.Play();
+
                 SecondTimeLaunchingGo.SetActive(true);
                 Service.QuitButtonObj.SetGoActive(false);
             }
             // We've quit again and are now blocked from entering
             else if(iNumTimesPlayed > 1)
             {
+                Service.Flow.MusicAudioSource.volume = 1.0f;
+                Service.Flow.MusicAudioSource.clip = TitleScreenThreeClip;
+                Service.Flow.MusicAudioSource.Play();
+
                 LastTimeLaunchingGo.SetActive(true);
             }
             else
@@ -335,14 +372,19 @@ public class UIManager : MonoBehaviour
         }
         else
         {
+            Service.Flow.MusicAudioSource.volume = 1.0f;
+            Service.Flow.MusicAudioSource.clip = TitleScreenOneClip;
+            Service.Flow.MusicAudioSource.Play();
+
             TitleGo.SetActive(true);
             ReturnedToTitleGo.SetActive(true);
         }
         
         float fTime = 0.0f;
         yield return new WaitForSeconds(1.0f);
-
-        // TODO Play sfx
+        
+        Service.Flow.ThunderAudioSource.PlayOneShot(ThunderSoundClip);
+        
         ThunderFlashGroup.alpha = 1.0f;
         TitleScreenGroup.alpha = 1.0f;
 
@@ -371,8 +413,13 @@ public class UIManager : MonoBehaviour
         StartGameButton.interactable = false;
         TitleScreenGroup.alpha = 1.0f;
 
+        Service.Flow.RainAudioSource.volume = 0.5f;
+        Service.Flow.RainAudioSource.clip = IndoorRainClip;
+        Service.Flow.RainAudioSource.Play();
+
         if (GetNumTimesPlayed() == 0)
         {
+            Service.Flow.DoorAudioSource.loop = false;
             Service.Flow.DoorAudioSource.PlayOneShot(DoorShutClip);
         }
 
@@ -398,6 +445,10 @@ public class UIManager : MonoBehaviour
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
+
+        Service.Flow.MusicAudioSource.volume = 0.2f;
+        Service.Flow.MusicAudioSource.clip = AmbientMusicClip;
+        Service.Flow.MusicAudioSource.Play();
 
         TitleScreenGroup.alpha = 0.0f;
         CreditsGo.SetActive(false);

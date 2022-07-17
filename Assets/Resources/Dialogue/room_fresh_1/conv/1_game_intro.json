@@ -1,0 +1,26 @@
+{
+    "Filepath": "room_fresh_1/conv/1_game_intro",
+    "Lines": 
+    [
+        "[i]seattle._ rain._ dispair._ quite a regular scene traipsing back home on the friday after work.",
+        "[i]one bad occurance after another in your life that led you to this point.",
+        "[i]rain soaks you through, pouring down your face as if moonlighting a water fountain.",
+        "[i]footsteps splash water on the concrete sidewalk.",
+        "[i]you're stuck in a cycle that never ends...",
+        "[i]day in._ day out._ same schedule._ same sight-... hang on a second.",
+        "[i]the place you see before you is different, it doesn't fit in with the old building style.",
+        "[i]shielding your eyes from the rain and look up to the sign that reads 'Devin's Dice Bar'.",
+        "[i]you think they must have opened recently. very recently. there are no windows to peer into to garner the popularity of the place.",
+        "[i]with nothing interesting or urgent you were on your way to, you approach the door and reach for the handle.",
+        "[i]cracking open a door, a waft of cigarette smoke poors out, making you rear back. Still determined by this mystery, you enter Devin's Dice Bar.",
+        "[i]closing the door you see an expansive room, with multiple tables set up in the middle of the area. Dealers talk in low tones to the customers of each table.",
+        "[i]it strikes you as odd that none the tables you can see have more than one customer present.",
+        "[i]still surveying the room, your eyes meet those of a dice dealer, the only free table in the room. Odd."
+
+    ],
+
+    "LaunchDiceGameMode": 0,
+    "DiceGameIntensity": 0.5,
+
+    "ConversationToLaunchAfterDiceGame": "room_fresh_1/conv/second"
+}
