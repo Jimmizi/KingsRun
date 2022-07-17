@@ -26,6 +26,8 @@ public class DiceRollRigger : MonoBehaviour
     public Dictionary<string, Pairing> predictionPairings = new Dictionary<string, Pairing>();
     int simulatedFrame = -1;
 
+    public bool isSimulating => simulatedFrame >= 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -253,6 +255,7 @@ public class DiceRollRigger : MonoBehaviour
     // Syncs the physics properties from source object to target object
     private void SyncPhysicsProperties(GameObject source, GameObject target)
     {
+        target.SetActive(source.activeInHierarchy);
         target.transform.position = source.transform.position;
         target.transform.rotation = source.transform.rotation;
 

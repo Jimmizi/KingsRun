@@ -23,19 +23,22 @@ public class AIController : MonoBehaviour
         
     }
 
-    public void PickupDice(Die[] diceToPick)
+    public void PickupDice(Die[] diceToPick, bool simultaneously)
     {
-        StartCoroutine(AIPickupRoutine(diceToPick));
+        StartCoroutine(AIPickupRoutine(diceToPick, simultaneously));
     }
 
-    IEnumerator AIPickupRoutine(Die[] diceToPick)
+    IEnumerator AIPickupRoutine(Die[] diceToPick, bool simultaneously)
     {
         yield return new WaitForSeconds(3);
 
         for (int i = 0; i < diceToPick.Length; i++)
         {
             picker.Pickup(diceToPick[i].gameObject);
-            yield return new WaitForSeconds(1);
+            if (!simultaneously)
+            {
+                yield return new WaitForSeconds(1);
+            }
         }
 
         yield return new WaitForSeconds(2);
