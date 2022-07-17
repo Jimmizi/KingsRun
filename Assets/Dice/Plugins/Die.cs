@@ -22,12 +22,30 @@ using System.Collections;
 /// </summary>
 public class Die : MonoBehaviour {
 
-	//------------------------------------------------------------------------------------------------------------------------------
-	// public attributes
-	//------------------------------------------------------------------------------------------------------------------------------
-	
-	// current value, 0 is undetermined (die is rolling) or invalid.
-	public int value = 0;	
+    [SerializeField]
+    int debugValue = 0;
+
+    public int value
+    {
+        get
+        {
+            Vector3 upsideVector;
+            debugValue = GetUpSideAndVector(out upsideVector);
+            return debugValue;
+        }
+
+        set
+        {
+            transform.rotation = GetRequiredRotationToValue(value);
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------------------
+    // public attributes
+    //------------------------------------------------------------------------------------------------------------------------------
+
+    // current value, 0 is undetermined (die is rolling) or invalid.
+    private int _raycastValue = 0;	
 
 	//------------------------------------------------------------------------------------------------------------------------------
 	// protected and private attributes
@@ -69,10 +87,10 @@ public class Die : MonoBehaviour {
     }
 
 	// calculate this die's value
-    protected int GetValue()
+    protected int RaycastGetValue()
     {
 		// value = 0 -> undetermined or invalid
-        value = 0;
+        _raycastValue = 0;
         float delta = 1;
 		// start with side 1 going up.
         int side = 1;
@@ -95,7 +113,7 @@ public class Die : MonoBehaviour {
                     float nDelta = Mathf.Abs(localHitNormalized.x - testHitVector.x) + Mathf.Abs(localHitNormalized.y - testHitVector.y) + Mathf.Abs(localHitNormalized.z - testHitVector.z);
                     if (nDelta < delta)
                     {
-                        value = side;
+                        _raycastValue = side;
                         delta = nDelta;
                     }
                 }
@@ -105,14 +123,14 @@ public class Die : MonoBehaviour {
 			// if we got a Vector.zero as the testHitVector we have checked all sides of this die
         } while (testHitVector != Vector3.zero);
 
-        return value;
+        return _raycastValue;
     }
 
     void Update()
     {
 		// determine the value is the die is not rolling
-        if (!rolling && localHit)
-            GetValue();
+        //if (!rolling && localHit)
+        //    RaycastGetValue();
     }
 
 
@@ -134,12 +152,49 @@ public class Die : MonoBehaviour {
 	
     public virtual Quaternion GetRequiredRotationToValue(Quaternion FromRotation, int side)
     {
-        Vector3 targetUpVector = FromRotation * HitVector(side);
-        return Quaternion.FromToRotation(targetUpVector, Vector3.up);
+        Vector3 currentUpVector;
+        GetUpSideAndVector(FromRotation, out currentUpVector);
+
+        Vector3 targetUpVector = FromRotation * HitVector(side);        
+        return Quaternion.FromToRotation(targetUpVector, currentUpVector);
     }
 
     public virtual Quaternion GetRequiredRotationToValue(int side)
     {
         return GetRequiredRotationToValue(transform.rotation, side);
+    }
+
+    public virtual int GetUpSideAndVector(Quaternion FromRotation, out Vector3 outUpsideVector)
+    {
+        float maxDot = -2;
+        Vector3 closestVector = Vector3.zero;
+        int closestSide = 0;
+
+        int maxSides = 100;
+        for (int side = 1; side < maxSides; side++)
+        {
+            Vector3 localHitVector = HitVector(side);
+            if (localHitVector == Vector3.zero)
+            {
+                break;
+            }
+
+            Vector3 worldHitVector = FromRotation* localHitVector;
+            float upDot = Vector3.Dot(worldHitVector,Vector3.up);
+            if (upDot > maxDot)
+            {
+                maxDot = upDot;
+                closestVector = worldHitVector;
+                closestSide = side;
+            }
+        }
+
+        outUpsideVector = closestVector;
+        return closestSide;
+    }
+
+    public virtual int GetUpSideAndVector(out Vector3 outUpsideVector)
+    {
+        return GetUpSideAndVector(transform.rotation, out outUpsideVector);
     }
 }

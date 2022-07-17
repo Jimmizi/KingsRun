@@ -255,10 +255,7 @@ public class DiceGameMode : MonoBehaviour
     void HandleDiceStartedRolling()
     {
         playerController.picker.pickUpEnabled = false;
-        if (!IsPlayerTurn())
-        {
-            StartCoroutine(ThrowSim(rollingDice));
-        }
+        StartCoroutine(ThrowSim(rollingDice));
     }
 
     void HandleDiceThrownResolved()

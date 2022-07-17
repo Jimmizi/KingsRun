@@ -46,7 +46,15 @@ public class DiceGameHUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        switch (gameMode.gameState)
+        {
+            case DiceGameMode.GameState.WhitePickingDice:
+            case DiceGameMode.GameState.BlackPickingDice:
+            case DiceGameMode.GameState.WhiteDiceRolling:
+            case DiceGameMode.GameState.BlackDiceRolling:
+                UpdateScore();
+                break;
+        }
     }
 
     private void OnGameStateChanged(DiceGameMode.GameState newState, DiceGameMode.GameState oldState)
