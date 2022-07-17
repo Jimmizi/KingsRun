@@ -18,18 +18,30 @@ public class RoundCounterWidget : MonoBehaviour
     public int activeTurn = 0;
 
     [SerializeField]
+    float flickerTime = 1.0f;
+    
     float flickerTimer = 1.0f;
+    bool flickerToggle = false;
+    int numOnTurns = -1;
 
-    IEnumerator Start()
+    void Update()
     {
-        while (true)
+        if (flickerTimer >= 0)
         {
-            SetNumTurns(activeTurn);
-            yield return new WaitForSeconds(flickerTimer);
-
-            SetNumTurns(activeTurn-1);
-            yield return new WaitForSeconds(flickerTimer);
+            flickerTimer -= Time.deltaTime;
+            if (flickerTimer <= 0)
+            {
+                flickerTimer = flickerTime;
+                flickerToggle = !flickerToggle;
+            }
         }
+
+        int newNumOnTurns = flickerToggle ? activeTurn : activeTurn - 1;
+        if (newNumOnTurns != numOnTurns)
+        {
+            numOnTurns = newNumOnTurns;
+            SetNumTurns(numOnTurns);
+        }        
     }
 
     void SetNumTurns(int numTurns)
