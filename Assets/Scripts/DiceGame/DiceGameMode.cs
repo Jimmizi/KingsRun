@@ -71,6 +71,7 @@ public class DiceGameMode : MonoBehaviour
 
     PlayerController playerController;
     AIController aiController;
+    RigParameters[] rigParams = new RigParameters[6];
 
     GameObject[] rollingDice = null;
     List<Die> allDice = new List<Die>();
@@ -155,6 +156,7 @@ public class DiceGameMode : MonoBehaviour
             meta.die.gameObject.SetActive(false);
         }
 
+        PresetGameWithRigParameters(-1, 0);
         SetGameState(GameState.WaitingToStart);
     }
 
@@ -186,7 +188,41 @@ public class DiceGameMode : MonoBehaviour
 
     public void PresetGameWithRigParameters(int gameType, float intensity)
     {
+        // -1 = No game, 0 = Free Play, 1 = Win, 2 = Loss
+        // Scalar value of how intense (how close) a non free play dice game will be
 
+        // victory 0.0f to 1.0f for intensity - 0 means, easy win, 1 means hard victory
+        // loss 0.0f means close defeat (maybe even win first round), 1.0f means hard loss
+
+        for (int i = 0; i < 6; i++)
+        {
+            rigParams[i] = new RigParameters();
+        }
+
+        if (gameType < 1 )
+        {
+            return;
+        }
+
+        if (gameType == 1)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                rigParams[i].minScoreDelta = (int)Mathf.Lerp(-20 * intensity, 2.0f, i/6.0f);
+                rigParams[i].maxScoreDelta = (int)(20 * (1 - intensity) + 2);
+                rigParams[i].minPlayerScore = (int)(20 * (1 - intensity) + 4);
+            }
+        }
+        else if (gameType == 2)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                rigParams[i].minScoreDelta = (int)(-20 * intensity + 2);
+                rigParams[i].maxScoreDelta = (int)Mathf.Lerp(20 * (1 - intensity), -4.0f, i / 6.0f);
+                rigParams[i].minPlayerScore = (int)Mathf.Lerp((20 * (1 - intensity) + 1), 0, i / 6.0f);
+                rigParams[i].minAiScore = 10;
+            }
+        }
     }
 
     public bool NextPlayer()
@@ -270,6 +306,25 @@ public class DiceGameMode : MonoBehaviour
         }
         return false;
     }
+
+    public int GetTurnColor()
+    {
+        switch (gameState)
+        {
+            case GameState.WhitePickingDice:
+            case GameState.WhiteDiceRolling:
+            case GameState.WhiteDiceDestruction:
+            case GameState.WhiteThrowSettled:
+                return 0;
+            case GameState.BlackPickingDice:
+            case GameState.BlackDiceRolling:
+            case GameState.BlackDiceDestruction:
+            case GameState.BlackThrowSettled:
+                return 1;
+        }
+        return 0;
+    }
+
 
     public int GetPlayerScore()
     {
@@ -465,14 +520,8 @@ public class DiceGameMode : MonoBehaviour
 
         rigger.SimulateThrow(allDice.ToArray());
 
-        RigParameters rig = new RigParameters();
-        rig.minPlayerScore = 1;
-        rig.maxPlayerScore = 10;
-        
-        rig.minAiScore = 20;
-        rig.maxAiScore = 40;
-
-        RigResults(rig);
+        int rigIndex = Mathf.Clamp((currentRound - 1) * 2 + GetTurnColor(), 0, rigParams.Length-1);
+        RigResults(rigParams[rigIndex]);
     }
 
     IEnumerator DiceDestructionSequence()
