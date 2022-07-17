@@ -3164,6 +3164,26 @@ PrefabInstance:
       propertyPath: ThunderAudioSource
       value: 
       objectReference: {fileID: 6072801222179611070}
+    - target: {fileID: 4070834809220949035, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834809220949036, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: CommaPauseTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834809220949036, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: PeriodPauseTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834809220949036, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: UnderscorePauseTime
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070834809220949036, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
+      propertyPath: TimeBetweenCharacters
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 4070834809220949043, guid: 1b98ef651fe206044938c7875f60f8f6, type: 3}
       propertyPath: m_Name
       value: OneManagerToRuleThemAll
