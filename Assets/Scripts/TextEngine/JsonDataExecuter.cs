@@ -382,6 +382,11 @@ public class JsonDataExecuter
 
             Debug.Log($"Going to last file quit from: {lastFile}");
 
+            if (lastFile.Length == 0)
+            {
+                Debug.LogError("Invalid last file quit.");
+            }
+
             if (lastFile.Length > 0)
             {
                 EventData convEvent = new EventData();
@@ -389,6 +394,11 @@ public class JsonDataExecuter
                 convEvent.OpenConversationFile = Service.Data.GetFileLastQuitFrom();
 
                 ProcessEvent_Conversation(convEvent);
+
+                if (mCurrentConversationData == null)
+                {
+                    Debug.LogError($"failed to load last room quit: {lastFile}");
+                }
 
                 return true;
             }

@@ -87,6 +87,9 @@ public class GameFlow : MonoBehaviour
     public AudioSource PuzzleAudioSource;
     public AudioSource TextBoxAudioSource;
     public AudioSource DoorAudioSource;
+    public AudioSource MusicAudioSource;
+    public AudioSource RainAudioSource;
+    public AudioSource ThunderAudioSource;
 
     public TextAsset JsonScriptToLoadDataMembers;
 

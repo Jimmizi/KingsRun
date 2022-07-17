@@ -3641,6 +3641,14 @@ MonoBehaviour:
   ReturnedToTitleGo: {fileID: 874812651}
   SecondTimeLaunchingGo: {fileID: 920679651}
   LastTimeLaunchingGo: {fileID: 1938990362}
+  DoorShutClip: {fileID: 8300000, guid: d0ef497418f59ae468ebe21e4f11786d, type: 3}
+  TitleScreenTwoClip: {fileID: 8300000, guid: 46d3be3ae239a9c4fb7b67c5974aa197, type: 3}
+  TitleScreenThreeClip: {fileID: 8300000, guid: 67e714fc0d2c4fc4a85a9478425b1f2b, type: 3}
+  IndoorRainClip: {fileID: 8300000, guid: 3da60e7ab87883143a8600f61df60b25, type: 3}
+  OutdoorRainClip: {fileID: 8300000, guid: 1a469e5914d6b994daaa4ad2b17b2754, type: 3}
+  MenuMusicClip: {fileID: 8300000, guid: 0dc61b9b2f0d6e045b2ed1d7c3d566b0, type: 3}
+  AmbientMusicClip: {fileID: 8300000, guid: 2b328dce62eb3b44d8899925510e682c, type: 3}
+  ThunderSoundClip: {fileID: 8300000, guid: 2a5d48717dcb96f45a1158a7b825f93e, type: 3}
   ThunderFlashGraph: 17
 --- !u!114 &4070834809220949033
 MonoBehaviour:
@@ -3668,12 +3676,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DiceRollQuipChanceMin: 10
   DiceRollQuipChanceMax: 20
-  ConvQuipChanceMin: 10
-  ConvQuipChanceMax: 40
+  ConvQuipChanceMin: 25
+  ConvQuipChanceMax: 50
   TimeBetweenConvQuipsTestMin: 15
   TimeBetweenConvQuipsTestMax: 30
+  LastConvQuipChanceThreshold: 0
+  LastConvQuipChance: 0
   PuzzleAudioSource: {fileID: 0}
   TextBoxAudioSource: {fileID: 0}
+  DoorAudioSource: {fileID: 0}
+  MusicAudioSource: {fileID: 0}
+  RainAudioSource: {fileID: 0}
+  ThunderAudioSource: {fileID: 0}
   JsonScriptToLoadDataMembers: {fileID: 4900000, guid: 71066873a4eedd14a8d01cca18601ed4, type: 3}
   StartEvent: {fileID: 4900000, guid: 40b81134160f58640b39461d5b6acbbb, type: 3}
   startGameHidden: 0
@@ -3837,7 +3851,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4070834809240685235}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0

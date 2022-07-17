@@ -1,0 +1,15 @@
+{
+    "Filepath": "room_fresh_1/conv/1_game_intro",
+    "Lines": 
+    [
+        "[i]seattle._ rain._ dispair._ quite a regular scene traipsing back home on the friday after work.",
+        "[i]one bad occurance after another in your life that led you to this point.",
+        "[i]stuck in a cycle that never ends...",
+        "[i]day in._ day out._ same schedule._ same sight-... hang on a second."
+    ],
+
+    "LaunchDiceGameMode": 0,
+    "DiceGameIntensity": 0.5,
+
+    "ConversationToLaunchAfterDiceGame": "room_fresh_1/conv/second"
+}
