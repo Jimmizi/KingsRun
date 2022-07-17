@@ -32,6 +32,18 @@ public class DiceGameMode : MonoBehaviour
         public bool isPlayer;
     };
 
+    class RigParameters
+    {
+        public int minScoreDelta = -50;
+        public int maxScoreDelta = +50;
+
+        public int minPlayerScore = 0;
+        public int maxPlayerScore = 50;
+
+        public int minAiScore = 0;
+        public int maxAiScore = 50;
+    };
+
     [SerializeField]
     Die[] playerDice;
 
@@ -383,10 +395,23 @@ public class DiceGameMode : MonoBehaviour
         yield return new WaitForSeconds(Time.fixedDeltaTime * 10);
 
         rigger.SimulateThrow(allDice.ToArray());
-         
+
+        RigParameters rig = new RigParameters();
+        rig.minPlayerScore = 0;
+        rig.maxPlayerScore = 10;
+        
+        rig.minAiScore = 20;
+        rig.maxAiScore = 40;
+
+        RigResults(rig);
+    }
+
+    void RigResults(RigParameters rigParams)
+    {
         var sortedDice = new List<Die>(allDice.Count);
         int playerTotal = 0;
         int aiTotal = 0;
+
         foreach (Die die in allDice)
         {
             diceMetaData[die].movement = rigger.GetPredictedTotalMovement(die);
@@ -405,23 +430,55 @@ public class DiceGameMode : MonoBehaviour
                 sortedDice.Add(die);
             }
         }
-
-        int targetDeltaScore = -2;
+        
         int deltaScore = playerTotal - aiTotal;
-        int adjustment = targetDeltaScore - deltaScore;
+        int targetDeltaScore = Mathf.Clamp(deltaScore, rigParams.minScoreDelta, rigParams.maxScoreDelta);
+        int deltaAdjustment = targetDeltaScore - deltaScore;
+
+        int targetPlayerScore = Mathf.Clamp(playerTotal, rigParams.minPlayerScore, rigParams.maxPlayerScore);
+        int playerScoreAdjustment = targetPlayerScore - playerTotal;
+
+        int targetAiScore = Mathf.Clamp(aiTotal, rigParams.minAiScore, rigParams.maxAiScore);
+        int aiScoreAdjustment = targetAiScore - aiTotal;
 
         sortedDice.Sort((a, b) => diceMetaData[b].movement.CompareTo(diceMetaData[a].movement));
         foreach (Die die in sortedDice)
         {
-            int direction = diceMetaData[die].isPlayer ? 1 : -1;
-            int targetResult = Mathf.Clamp(diceMetaData[die].result + adjustment*direction,1,6);
+            bool isPlayer = diceMetaData[die].isPlayer;
+            int direction = isPlayer ? 1 : -1;
+            int targetResult = 0;
+
+            if (isPlayer)
+            {
+                int dieDeltaAdjustment = Mathf.Clamp(diceMetaData[die].result + deltaAdjustment, 1, 6);
+                int diePlayerAdjustment = Mathf.Clamp(diceMetaData[die].result + playerScoreAdjustment, 1, 6);
+                targetResult = Mathf.Min(dieDeltaAdjustment, diePlayerAdjustment);
+            }
+            else
+            {
+                int dieDeltaAdjustment = Mathf.Clamp(diceMetaData[die].result - deltaAdjustment, 1, 6);
+                int dieAiAdjustment = Mathf.Clamp(diceMetaData[die].result + aiScoreAdjustment, 1, 6);
+                targetResult = Mathf.Min(dieDeltaAdjustment, dieAiAdjustment);
+            }
+
             if (diceMetaData[die].result != targetResult)
             {
                 rigger.RigDieResult(die, targetResult);
-                adjustment += (diceMetaData[die].result - targetResult) * direction;
+
+                int dieAdjustment = diceMetaData[die].result - targetResult;                
                 diceMetaData[die].result = targetResult;
+
+                if (isPlayer)
+                {
+                    deltaAdjustment += dieAdjustment;
+                    playerScoreAdjustment += dieAdjustment;
+                }
+                else
+                {
+                    deltaAdjustment -= dieAdjustment;
+                    aiScoreAdjustment += dieAdjustment;
+                }
             }
         }
     }
-
 }
