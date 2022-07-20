@@ -238,6 +238,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private EaserEase ThunderFlashGraph;
 
+    public ParticleSystem RainPtfx;
+
     private bool hasShownOnce = false;
     private bool isRunningAfterQuitGame = false;
 
@@ -352,6 +354,8 @@ public class UIManager : MonoBehaviour
                 Service.Flow.MusicAudioSource.clip = TitleScreenTwoClip;
                 Service.Flow.MusicAudioSource.Play();
 
+                //
+
                 SecondTimeLaunchingGo.SetActive(true);
                 Service.QuitButtonObj.SetGoActive(false);
             }
@@ -362,6 +366,8 @@ public class UIManager : MonoBehaviour
                 Service.Flow.MusicAudioSource.clip = TitleScreenThreeClip;
                 Service.Flow.MusicAudioSource.Play();
 
+                //RainPtfx.Stop();
+
                 LastTimeLaunchingGo.SetActive(true);
             }
             else
@@ -370,6 +376,8 @@ public class UIManager : MonoBehaviour
                 CreditsGo.SetActive(true);
                 PressToPlayGo.SetActive(true);
                 TitleGo.SetActive(true);
+
+                //RainPtfx.Play();
 
                 Service.QuitButtonObj.SetGoActive(true);
             }
@@ -425,6 +433,10 @@ public class UIManager : MonoBehaviour
         {
             Service.Flow.DoorAudioSource.loop = false;
             Service.Flow.DoorAudioSource.PlayOneShot(DoorShutClip);
+        }
+        else
+        {
+            RainPtfx.Stop();
         }
 
         if (StartGameButton.GetComponentInChildren<Animator>() != null)

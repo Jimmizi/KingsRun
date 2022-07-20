@@ -2,11 +2,13 @@
     "Filepath": "room_fresh_1/conv/8_game_main_cont_4",
     "Lines": 
     [
-        "To be filled out 4."
+        "i truly did enjoy this little time we had together.",
+        "[i]as the dealer clicks his fingers for the last time, your vision begins to falter.",
+        "i will pop in for a visit on the other side, once you have finished your... induction.",
+        "[i]the sounds and sights of the hallway fade away. the last image you see is the crooked smile of Ol Uncle Nick."
     ],
 
-    "LaunchDiceGameMode": 0,
-    "DiceGameIntensity": 0.25,
-
-    "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/end_thanks"
+    "HideQuitButtonStartOfLine":true,
+    "HideQuitButtonLine":0,
+    "QuitGameAfterConversationFinish":true
 }

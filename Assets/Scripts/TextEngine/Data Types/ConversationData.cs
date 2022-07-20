@@ -74,6 +74,8 @@ public class ConversationData
     //  NOTE will only work if we haven't added events to fire
     public string NextConversation = "";
     
+    public int RainPtfxTurnOffAtStartOfLine = -1;
+    
     public bool WillLaunchDiceGame()
     {
         return LaunchDiceGameMode >= 0 && LaunchDiceGameMode <= 2;

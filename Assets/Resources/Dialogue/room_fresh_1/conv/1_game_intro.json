@@ -43,5 +43,7 @@
     "LaunchDiceGameMode": 0,
     "DiceGameIntensity": 0.0,
 
+    "RainPtfxTurnOffAtStartOfLine": 11,
+
     "ConversationToLaunchAfterDiceGame": "room_fresh_1/conv/2_game_main"
 }

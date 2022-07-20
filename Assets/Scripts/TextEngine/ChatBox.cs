@@ -31,7 +31,7 @@ public class ChatBox : MonoBehaviour
     public CanvasGroup AlphaGroup;
     public CanvasGroup ButtonAlphaGroup;
 
-    
+    public ParticleSystem RainPtfx;
 
     /// <summary>
     /// How long to wait between appending characters to the speech box
@@ -186,7 +186,11 @@ public class ChatBox : MonoBehaviour
         mCurrentChoiceData = null;
 
         SetButtons(false);
-        //StartCoroutine(FadeChatGroup(0.0f, 1.0f, 0.5f));
+        if (AlphaGroup.alpha < 1.0f)
+        {
+            StartCoroutine(FadeChatGroup(0.0f, 1.0f, 0.5f));
+
+        }
 
         SetReadyToStart();
         ResetConversationToCurrentLine();
@@ -730,6 +734,14 @@ public class ChatBox : MonoBehaviour
                 
                 ResetConversationToCurrentLine();
 
+                if (mCurrentConversationData.RainPtfxTurnOffAtStartOfLine == mCurrentConvLine)
+                {
+                    if (RainPtfx != null)
+                    {
+                        RainPtfx.Stop();
+                    }
+                }
+
                 if (mCurrentConversationData.MoveQuitButtonAtStartOfLine)
                 {
                     if (mCurrentConversationData.QuitButtonInterruptLineToResetButton == mCurrentConvLine)
@@ -856,7 +868,7 @@ public class ChatBox : MonoBehaviour
     {
         Service.Text = this;
         SetText("");
-        //AlphaGroup.alpha = 0;
+        AlphaGroup.alpha = 0;
         ButtonAlphaGroup.alpha = 0;
         NextLineMarkerGroup.alpha = 0;
         mLineMarkerStartPos = NextLineMarker.transform.position;

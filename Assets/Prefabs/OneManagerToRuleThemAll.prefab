@@ -2851,7 +2851,7 @@ MonoBehaviour:
   offTurnImage: {fileID: 21300000, guid: 7a6e110e758798b41af863c12f238e55, type: 3}
   onTurnImage: {fileID: 21300000, guid: 84aa4a1adb247344fa481764053941e8, type: 3}
   activeTurn: 0
-  flickerTimer: 1
+  flickerTime: 1
 --- !u!1 &1524839508
 GameObject:
   m_ObjectHideFlags: 0
@@ -5523,7 +5523,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4070834809220949043}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: beb728c8039ee9a4f8518b63a6b6abb9, type: 3}
   m_Name: 
@@ -5555,10 +5555,10 @@ MonoBehaviour:
   NextLineButton: {fileID: 4070834808069161694}
   AlphaGroup: {fileID: 8144507411751447305}
   ButtonAlphaGroup: {fileID: 8144507410040503258}
-  TimeBetweenCharacters: 0.015
-  UnderscorePauseTime: 0.65
-  CommaPauseTime: 0.2
-  PeriodPauseTime: 0.4
+  TimeBetweenCharacters: 0.01
+  UnderscorePauseTime: 0.3
+  CommaPauseTime: 0.1
+  PeriodPauseTime: 0.2
   nextPressed: 0
   DiceRollPositiveQuipsFile: {fileID: 4900000, guid: 8fd003ecf197b4445a9d36b56ff537c5, type: 3}
   DiceRollNegativeQuipsFile: {fileID: 4900000, guid: 8d4f292ce927bbc4eb71488f663b2802, type: 3}

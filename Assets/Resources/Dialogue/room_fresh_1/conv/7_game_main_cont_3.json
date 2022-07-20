@@ -2,13 +2,15 @@
     "Filepath": "room_fresh_1/conv/7_game_main_cont_3",
     "Lines": 
     [
-        "a very close game i say. i shall be taking my reward...",
+        "a very close game i say. if you do not mind, i shall be taking my reward...",
         "[i]as the dealer clicks his fingers together, pain shoots through you as you look down to not find your left arm.",
-        "[i]at this moment, you realise the stakes were real all along."
+        "[i]at this moment, you realise the stakes were real all along.",
+        "a fine addition to my collection. now now, i will give you an opportunity to get it back.",
+        "although the forfit will be your soul..."
     ],
 
-    "LaunchDiceGameMode": 0,
-    "DiceGameIntensity": 0.25,
+    "LaunchDiceGameMode": 2,
+    "DiceGameIntensity": 0.05,
 
     "ConversationToLaunchAfterDiceGame":"room_fresh_1/conv/8_game_main_cont_4"
 }
