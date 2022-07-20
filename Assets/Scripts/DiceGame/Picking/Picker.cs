@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-class Pickup
+public class Pickup
 {
     public GameObject gameObject;
     public Vector3 pickPoint; // pick up point in local space relative to pickable.transform
@@ -23,7 +23,7 @@ public class Picker : MonoBehaviour
     public bool pickAll = false;
 
     public List<GameObject> validPickups = new List<GameObject>();
-    List<Pickup> heldPickups = new List<Pickup>();
+    public List<Pickup> heldPickups = new List<Pickup>();
     
     public delegate void OnObjectsThrowHandler(GameObject[] thrownObjects);
     public event OnObjectsThrowHandler OnObjectsThrown;

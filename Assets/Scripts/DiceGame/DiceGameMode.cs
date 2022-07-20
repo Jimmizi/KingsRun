@@ -74,9 +74,9 @@ public class DiceGameMode : MonoBehaviour
     RigParameters[] rigParams = new RigParameters[6];
 
     GameObject[] rollingDice = null;
-    List<Die> allDice = new List<Die>();
+    public List<Die> allDice = new List<Die>();
     Dictionary<Die, Rigidbody> diceRigidBodies = new Dictionary<Die,Rigidbody>();
-    Dictionary<Die, DieMetaData> diceMetaData = new Dictionary<Die, DieMetaData>();
+    Dictionary<Die, DieMetaData> diceMetaData = new Dictionary<Die, DieMetaData>();    
 
     bool pendingPlayerAutoAdvance = false;
 
@@ -93,6 +93,21 @@ public class DiceGameMode : MonoBehaviour
     public GameResult gameResult = GameResult.None;
 
     DiceRollRigger rigger;
+
+    public List<Pickup> pickups
+    {
+        get
+        {
+            if (IsPlayerTurn())
+            {
+                return playerController.picker.heldPickups;
+            }
+            else
+            {
+                return aiController.picker.heldPickups;
+            }
+        }
+    }
 
     private void Awake()
     {

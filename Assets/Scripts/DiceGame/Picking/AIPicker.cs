@@ -7,7 +7,7 @@ public class AIPicker : MonoBehaviour
     public delegate void OnObjectsThrowHandler(GameObject[] thrownObjects);
     public event OnObjectsThrowHandler OnObjectsThrown;
 
-    List<Pickup> heldPickups = new List<Pickup>();
+    public List<Pickup> heldPickups = new List<Pickup>();
 
     [SerializeField]
     AIPickLocator locator;
