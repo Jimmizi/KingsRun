@@ -239,6 +239,7 @@ public class UIManager : MonoBehaviour
     private EaserEase ThunderFlashGraph;
 
     public ParticleSystem RainPtfx;
+    public ParticleSystem SmokePtfx;
 
     private bool hasShownOnce = false;
     private bool isRunningAfterQuitGame = false;
@@ -437,6 +438,7 @@ public class UIManager : MonoBehaviour
         else
         {
             RainPtfx.Stop();
+            SmokePtfx.Play();
         }
 
         if (StartGameButton.GetComponentInChildren<Animator>() != null)

@@ -75,7 +75,14 @@ public class ConversationData
     public string NextConversation = "";
     
     public int RainPtfxTurnOffAtStartOfLine = -1;
-    
+
+
+    public string PtfxToTurnOn = "";
+    public string PtfxToTurnOff = "";
+    public int PtfxOnLine = -1;
+    public int PtfxOffLine = -1;
+    public bool PtfxToggleHappensAtStartOfLine = true;
+
     public bool WillLaunchDiceGame()
     {
         return LaunchDiceGameMode >= 0 && LaunchDiceGameMode <= 2;

@@ -32,6 +32,7 @@ public class ChatBox : MonoBehaviour
     public CanvasGroup ButtonAlphaGroup;
 
     public ParticleSystem RainPtfx;
+    public ParticleSystem SmokePtfx;
 
     /// <summary>
     /// How long to wait between appending characters to the speech box
@@ -200,6 +201,7 @@ public class ChatBox : MonoBehaviour
     public void ResumeFromDiceGame()
     {
         Service.UI.HideDiceGame();
+        SmokePtfx.Play();
 
         Debug.Log("Resuming from dice game in ChatBox");
 
@@ -225,6 +227,7 @@ public class ChatBox : MonoBehaviour
     public void StartDiceGame()
     {
         Service.UI.ShowDiceGame();
+        SmokePtfx.Stop();
 
         Debug.Log("Starting dice game in ChatBox");
 
@@ -665,7 +668,7 @@ public class ChatBox : MonoBehaviour
 
                     if (!autoSkipEndOfLine)
                     {
-                        NextLineMarker.transform.position = mLineMarkerStartPos;
+                        NextLineMarker.GetComponent<RectTransform>().anchoredPosition = mLineMarkerStartPos;
                         StartCoroutine(FadeLineMarkerGroup(0.0f, 1.0f, 0.5f));
                     }
 
@@ -676,6 +679,34 @@ public class ChatBox : MonoBehaviour
                         if (mCurrentConversationData.QuitButtonInterruptLineToResetButton == mCurrentConvLine)
                         {
                             Service.QuitButtonObj.ResetPosition(mCurrentConversationData.QuitButtonMoveSpeedOverride);
+                        }
+                    }
+
+                    if (!mCurrentConversationData.PtfxToggleHappensAtStartOfLine)
+                    {
+                        if (mCurrentConversationData.PtfxToTurnOn.Length > 0 && mCurrentConversationData.PtfxOnLine == mCurrentConvLine)
+                        {
+                            GameObject goFound = GameObject.Find(mCurrentConversationData.PtfxToTurnOn);
+                            if (goFound != null)
+                            {
+                                ParticleSystem ps = goFound.GetComponent<ParticleSystem>();
+                                if (ps != null)
+                                {
+                                    ps.Play();
+                                }
+                            }
+                        }
+                        if (mCurrentConversationData.PtfxToTurnOff.Length > 0 && mCurrentConversationData.PtfxOffLine == mCurrentConvLine)
+                        {
+                            GameObject goFound = GameObject.Find(mCurrentConversationData.PtfxToTurnOn);
+                            if (goFound != null)
+                            {
+                                ParticleSystem ps = goFound.GetComponent<ParticleSystem>();
+                                if (ps != null)
+                                {
+                                    ps.Stop();
+                                }
+                            }
                         }
                     }
 
@@ -739,6 +770,34 @@ public class ChatBox : MonoBehaviour
                     if (RainPtfx != null)
                     {
                         RainPtfx.Stop();
+                    }
+                }
+
+                if (mCurrentConversationData.PtfxToggleHappensAtStartOfLine)
+                {
+                    if (mCurrentConversationData.PtfxToTurnOn.Length > 0 && mCurrentConversationData.PtfxOnLine == mCurrentConvLine)
+                    {
+                        GameObject goFound = GameObject.Find(mCurrentConversationData.PtfxToTurnOn);
+                        if (goFound != null)
+                        {
+                            ParticleSystem ps = goFound.GetComponent<ParticleSystem>();
+                            if (ps != null)
+                            {
+                                ps.Play();
+                            }
+                        }
+                    }
+                    if (mCurrentConversationData.PtfxToTurnOff.Length > 0 && mCurrentConversationData.PtfxOffLine == mCurrentConvLine)
+                    {
+                        GameObject goFound = GameObject.Find(mCurrentConversationData.PtfxToTurnOn);
+                        if (goFound != null)
+                        {
+                            ParticleSystem ps = goFound.GetComponent<ParticleSystem>();
+                            if (ps != null)
+                            {
+                                ps.Stop();
+                            }
+                        }
                     }
                 }
 
@@ -871,7 +930,7 @@ public class ChatBox : MonoBehaviour
         AlphaGroup.alpha = 0;
         ButtonAlphaGroup.alpha = 0;
         NextLineMarkerGroup.alpha = 0;
-        mLineMarkerStartPos = NextLineMarker.transform.position;
+        mLineMarkerStartPos = NextLineMarker.GetComponent<RectTransform>().anchoredPosition;
     }
 
     void Start()
@@ -905,13 +964,16 @@ public class ChatBox : MonoBehaviour
                 if (mLineMarkerTimer >= 0.60f)
                 {
                     mLineMarkerTimer = 0.0f;
-                    if (Math.Abs(NextLineMarker.transform.position.y - mLineMarkerStartPos.y) < 0.01f)
+
+                    RectTransform rt = NextLineMarker.GetComponent<RectTransform>();
+                    Vector2 ap = rt.anchoredPosition;
+                    if (Math.Abs(ap.y - mLineMarkerStartPos.y) < 0.01f)
                     {
-                        NextLineMarker.transform.position = mLineMarkerStartPos + new Vector3(0, 10, 0);
+                        rt.anchoredPosition = mLineMarkerStartPos + new Vector3(0, 10, 0);
                     }
                     else
                     {
-                        NextLineMarker.transform.position = mLineMarkerStartPos;
+                        rt.anchoredPosition = mLineMarkerStartPos;
                     }
                 }
 

@@ -45,5 +45,8 @@
 
     "RainPtfxTurnOffAtStartOfLine": 11,
 
+    "PtfxOnLine": 11,
+    "PtfxToTurnOn": "SmokePtfx",
+
     "ConversationToLaunchAfterDiceGame": "room_fresh_1/conv/2_game_main"
 }
