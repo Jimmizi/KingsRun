@@ -28,6 +28,24 @@ public class Picker : MonoBehaviour
     public delegate void OnObjectsThrowHandler(GameObject[] thrownObjects);
     public event OnObjectsThrowHandler OnObjectsThrown;
 
+    public BoxCollider DiceHoldBoundsBC;
+    private Bounds diceHoldBounds;
+
+    private Vector3 lastDiceBoundsHitPos = new Vector3();
+
+    void Start()
+    {
+        if (DiceHoldBoundsBC != null)
+        {
+            diceHoldBounds = DiceHoldBoundsBC.bounds;
+            lastDiceBoundsHitPos = diceHoldBounds.center;
+        }
+        else
+        {
+            Debug.LogError("No Dice Hold Bounds specified.");
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -70,16 +88,21 @@ public class Picker : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 mousePos = Input.mousePosition;
-        mousePos.z = holdDistance;
+        Vector3 rayOrigin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 rayEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.forward * 100);
+        Vector3 direction = rayEnd - rayOrigin;
+        RaycastHit hit;
 
-        Vector3 newPos = Camera.main.ScreenToWorldPoint(mousePos);
+        if (Physics.Raycast(rayOrigin, direction, out hit, Mathf.Infinity, LayerMask.GetMask("DiceBounds")))
+        {
+            lastDiceBoundsHitPos = hit.point;
+        }
 
         foreach (Pickup pickup in heldPickups)
-        {            
+        {
             if (pickup.rigidBody)
             {
-                Vector3 force = newPos - pickup.gameObject.transform.TransformPoint(pickup.pickPoint);
+                Vector3 force = lastDiceBoundsHitPos - pickup.gameObject.transform.TransformPoint(pickup.pickPoint);
 
                 force = pickup.holdPID.Update(force, Time.fixedDeltaTime);
 
@@ -88,7 +111,7 @@ public class Picker : MonoBehaviour
             }
             else
             {
-                pickup.gameObject.transform.position = Vector3.Lerp(pickup.gameObject.transform.position, newPos, Time.deltaTime * 2.0f);
+                pickup.gameObject.transform.position = Vector3.Lerp(pickup.gameObject.transform.position, lastDiceBoundsHitPos, Time.deltaTime * 2.0f);
             }
         }
     }

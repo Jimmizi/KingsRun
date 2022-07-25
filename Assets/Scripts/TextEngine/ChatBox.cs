@@ -200,6 +200,11 @@ public class ChatBox : MonoBehaviour
     // Dice game start 
     public void ResumeFromDiceGame()
     {
+        if (Service.Flow.JustRunDiceGame)
+        {
+            return;
+        }
+
         Service.UI.HideDiceGame();
         SmokePtfx.Play();
 
@@ -231,19 +236,28 @@ public class ChatBox : MonoBehaviour
 
         Debug.Log("Starting dice game in ChatBox");
 
-        // Need this data
-        Debug.Assert(mCurrentConversationData.ConversationToLaunchAfterDiceGame.Length > 0);
+        if (!Service.Flow.JustRunDiceGame)
+        {
+            // Need this data
+            Debug.Assert(mCurrentConversationData.ConversationToLaunchAfterDiceGame.Length > 0);
 
-        // Clear out any events just to make sure 
-        JsonDataExecuter.ClearOutQueuedEvents();
+            // Clear out any events just to make sure 
+            JsonDataExecuter.ClearOutQueuedEvents();
+
+            NextConversationFileToLaunchAfterDiceGame = mCurrentConversationData.ConversationToLaunchAfterDiceGame;
+        }
 
         // Go into dice game to not process anything we don't need to
         Service.Flow.SetIsPlayingDice();
-
-        NextConversationFileToLaunchAfterDiceGame = mCurrentConversationData.ConversationToLaunchAfterDiceGame;
-
-        int diceGameType = mCurrentConversationData.LaunchDiceGameMode;
-        float gameIntensity = mCurrentConversationData.DiceGameIntensity;
+        
+        int diceGameType = 0;
+        float gameIntensity = 0.0f;
+        
+        if (!Service.Flow.JustRunDiceGame)
+        {
+            diceGameType = mCurrentConversationData.LaunchDiceGameMode;
+            gameIntensity = mCurrentConversationData.DiceGameIntensity;
+        }
 
         if (Service.DiceGame)
         {

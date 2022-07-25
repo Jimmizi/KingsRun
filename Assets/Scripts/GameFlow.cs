@@ -24,7 +24,7 @@ public class GameFlow : MonoBehaviour
         GameInit,
         GameUpdate,
         DiceGame,
-        GameOver
+        GameOver,
     }
 
     // Random chance to play a dice roll quip
@@ -43,6 +43,8 @@ public class GameFlow : MonoBehaviour
 
     private float nextTimeBetweenConvQuips = 0.0f;
     private bool allowQuips = false;
+
+    public bool JustRunDiceGame = false;
 
 #if UNITY_EDITOR
     public float LastConvQuipChanceThreshold = 0.0f;
@@ -103,8 +105,6 @@ public class GameFlow : MonoBehaviour
             gameStateInternal = value;
         }
     }
-
-    
     
     public void QuitGameToTitle()
     {
@@ -142,10 +142,21 @@ public class GameFlow : MonoBehaviour
         {
             Service.UI.ProcessGameStartFade(true);
         }
-    }
 
+        if (JustRunDiceGame)
+        {
+            SetIsPlayingDice();
+        }
+    }
+    
     void Update()
     {
+        if (JustRunDiceGame)
+        {
+            StateDiceGame();
+            return;
+        }
+
         switch (GameState)
         {
             case State.Title:
@@ -168,7 +179,14 @@ public class GameFlow : MonoBehaviour
 
     private void OnGameStart()
     {
-        GameState = State.GameInit;
+        if (!JustRunDiceGame)
+        {
+            GameState = State.GameInit;
+        }
+        else
+        {
+            Service.Text.StartDiceGame();
+        }
     }
 
     private void StateGameInit()

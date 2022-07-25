@@ -262,6 +262,12 @@ public class UIManager : MonoBehaviour
             Debug.Log("Resetting NumTimesPlayed due to not having quit before via the button.");
             Service.Data.TrySetData("NumTimesPlayed", 0);
         }
+
+        if (Service.Flow.JustRunDiceGame)
+        {
+            ProcessGameStartFade(true);
+            RainPtfx.Stop();
+        }
     }
 
     int GetNumTimesPlayed()
@@ -287,6 +293,11 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
+        if (Service.Flow.JustRunDiceGame)
+        {
+            return;
+        }
+
         switch (currentFadeState)
         {
             case ScreenFadeState.TitleStart:

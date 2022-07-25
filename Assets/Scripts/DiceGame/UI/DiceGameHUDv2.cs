@@ -147,6 +147,11 @@ public class DiceGameHUDv2 : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         pageSwitcher.HideAllPages();
+
+        if (Service.Flow.JustRunDiceGame)
+        {
+            Service.Text.StartDiceGame();
+        }
     }
 
     void ShowEndGameScreen()
