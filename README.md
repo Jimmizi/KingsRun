@@ -1,4 +1,4 @@
-![](https://img.itch.zone/aW1nLzI5NDM3OTIucG5n/315x250%23c/V%2B3M%2FK.png)
+![](https://img.itch.zone/aW1nLzk0Nzc3NjUucG5n/315x250%23c/w%2FtN85.png)
 
 # King's Run
 Made for GMTK 2022
